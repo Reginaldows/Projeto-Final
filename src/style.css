@@ -1,0 +1,683 @@
+@import url("https://fonts.googleapis.com/css2?family=Ancizar+Sans:ital,wght@0,100..1000;1,100..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0; 
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  font-family: "Ancizar Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+  font-size: 16px;
+  background: linear-gradient(90deg, rgba(129, 198, 228, 1) 0%, rgba(255, 255, 255, 1) 50%);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.topo {
+  display: flex;
+  justify-content: center;
+  padding: 2px;
+}
+
+.visual {
+  width: 50%;
+  height: 220px;
+  margin: 0 auto;
+  text-align: center;
+  padding-top: 30px;
+  border-radius: 40px;
+  background: linear-gradient(90deg, rgba(129, 198, 228, 1) 0%, rgba(203, 233, 247, 1) 100%);
+}
+
+.visual img {
+  width: 150px;
+  height: 100px;
+  margin-top: 10px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  margin: 30px auto 0;
+  gap: 20px;
+  font-size: 16px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: #000000;
+}
+
+.campo label {
+  margin-left: 5px;
+}
+
+
+label {
+  color: #000000;
+}
+
+input {
+  padding: 7px;
+  background-color: #d0eff2;
+  color: #000000;
+  border-radius: 10px;
+  border: none;
+  font-size: 1em;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:hover {
+  cursor: pointer;
+  border: 1px solid #f78c2f;
+}
+
+input:focus {
+  border: 1px solid #f78c2f;
+  outline: none;
+}
+
+.formulario input::placeholder {
+  font-family: "Ancizar Sans", sans-serif;
+}
+
+.visibilidade {
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: 10px;
+  margin-top: -29px;
+  color: #000000;
+}
+
+.esqueceu {
+  display: flex;
+  font-size: 16px;
+  justify-content: flex-start;
+  margin-top: -8px;
+}
+
+.esqueceu-senha {
+  text-decoration: none;
+  color: black;
+  margin-top: 20px;
+}
+
+button {
+  width: 160px;
+  margin: 10px auto;
+  padding: 10px;
+  border-radius: 7px;
+  border: none;
+  color: beige;
+  font-family: "Ancizar Sans", sans-serif;
+  font-size: 20px;
+  background-color: orangered;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #81c6e4;
+}
+
+.conta p {
+  margin-top: -20px;
+  text-align: center;
+  color: #000000;
+}
+
+p a {
+  text-decoration: none;
+  color: orangered;
+}
+
+.formulario strong {
+  display: none;
+}
+
+.formulario p {
+  margin-left: 0;
+  text-align: center;
+}
+
+img {
+  width: 80px;
+  height: 50px;
+}
+
+label.campos-obrig::after {
+  content: " *";
+  color: red;
+}
+
+.visibilidade {
+  cursor: pointer;
+  
+}
+
+form fieldset {
+  width: 55%;
+  margin: 0 auto;
+  margin-top: 15px;
+  height: 460px;
+  border: none;
+  
+}
+
+fieldset label {
+  padding-left: 5px;
+  font-weight: bold;
+}
+
+fieldset input {
+  background-color: rgb(235, 235, 245);
+  margin-bottom: 5px;
+}
+
+.campo-senha {
+  position: relative;
+}
+
+.campo-senha i {
+  position: absolute;
+  right: 2px;
+  top: 132%;
+  transform: translateY(-50%); 
+  cursor: pointer;
+  color: #000000;
+}
+
+fieldset button {
+  display: block;
+  margin: 20px auto 0;
+}
+
+fieldset p {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 17px;
+}
+
+fieldset p b a:hover {
+  cursor: pointer;
+  color: #f78c2f;
+}
+
+.cadastro {
+  display: none;
+}
+
+form p {
+  text-align: center;
+}
+
+fieldset .visibilidade {
+  position: absolute;
+  padding-bottom: 5px;
+}
+
+.verificacao {
+  border: 1px solid #ccc; 
+  padding: 16px;          
+  border-radius: 8px;     
+  background-color: #f9f9f9;
+  max-width: 400px;        
+  margin: 28px auto;       
+}
+
+.verificacao p {
+  margin-top: -5px;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  font-size: 14px;
+}
+
+.lista li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.lista li i {
+  color: #8e8989;
+  margin-right: 8px;
+  transition: color 0.3s;
+}
+
+.lista li.validado i {
+  color: #0026ff;
+}
+
+#btn-criar:disabled {
+  background-color: orangered;
+  color: beige;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+
+#cpf-erro {
+  font-size: 17px;
+  color: red;
+ }
+
+.alterarsenha {
+  padding: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.alterarsenha p {
+  margin-top: 0.5rem;
+  color: #333;
+  font-size: 1rem;
+}
+
+.alterarsenha label {
+  display: block;
+  margin: 1rem 0 0.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.alterarsenha input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.alterarsenha #cpf-erro {
+  color: red;
+  margin-top: 0.25rem;
+  text-align: left;
+}
+
+.alterarsenha button {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 2rem;
+  background-color: orangered;
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.alterarsenha button:hover {
+  background-color: #81c6e4;
+}
+
+.img-senha {
+  width: 100%;
+  max-width: 250px;
+  height: auto;
+  margin: 1rem auto;
+  display: block;
+}
+
+.help {
+  display: none; 
+}
+
+.redefinir-senha {
+  width: 250px;
+  height: 189px;
+  margin-left: 60px;
+}
+
+.input-senha {
+  position: relative;
+  width: 35%; 
+  margin-bottom: 20px; 
+  margin-left: 80px;
+}
+
+.input-senha input {
+  width: 160%;
+  padding-right: 30px; 
+  box-sizing: border-box;
+}
+
+.input-senha .visibilidade {
+  position: absolute;
+  top: 128%;
+  left: 190px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #000000; 
+  user-select: none;
+}
+
+.redefinir .verificacao {
+  width: 60%;
+}
+
+.redefinir button {
+  width: 190px;
+  margin-left: 100px;
+  margin-top: -5px;
+}
+
+.area-senha {
+  display: none;
+}
+
+
+@media screen and (min-width: 768px) {
+  .logo-senai img {
+    width: 200px;
+    height: 90px;
+    margin-top: -40px;
+    margin-left: 50px;
+  }
+  
+  .visual {
+    width: 400px;
+    height: 290px;
+    margin-left: 170px;
+  }
+
+  .visual img {
+    width: 190px;
+    height: 170px;
+  }
+
+  .formulario {
+    width: 550px;
+    margin-left: 140px;
+    margin-top: 40px;
+    font-size: 18px;
+  }
+
+  .formulario strong {
+    display: none;
+  }
+
+  button {
+    width: 400px;
+    margin-left: 48px;
+  }
+  
+  .campo input {
+    margin-left: -45px;
+  }
+
+  .campo i {
+    margin-left: -45px;
+  }
+
+  .campo .visibilidade {
+    margin-left: 470px;
+    padding-top: 1px;
+  }
+
+  .esqueceu-senha {
+    margin-left: -38px;
+  }
+  .conta {
+    margin-right: 55px;
+  }
+  
+  .alterarsenha button {
+    margin-left: 2px;
+  }
+
+
+}
+
+@media screen and (min-width: 1024px) {
+
+  .logo-senai img {
+    position: absolute;
+    top: 20px;
+    left: 45%;
+    transform: translateX(-50%);
+  }
+
+  .visual {
+    margin-left: 90px;
+    font-size: 18px;
+    height: 310px;
+    color: #000000;
+    margin-top: 60px;
+  }
+  
+  .visual img {
+    width: 320px;
+    height: 250px;
+    margin-top: -10px;
+  }
+
+  .formulario {
+    margin-left: 900px;
+    margin-top: -370px;
+  }
+
+  .formulario strong {
+    display: block;
+    margin-left: -45px;
+  }
+
+  .formulario .esqueceu-senha {
+    margin-left: -38px;
+  }
+
+  .visibilidade {
+    margin-left: 520px;
+    margin-top: -32px;
+  }
+
+ .formulario button {
+    margin-left: 35px;
+  }
+
+ .formulario p {
+  margin-right: 32px;
+ }
+
+ fieldset input {
+  width: 53%;
+  display: block;
+  margin-left: -5px;
+ }
+
+ fieldset label {
+  margin-left: -5px;
+ }
+ .conta {
+  margin-right: 45px;
+ }
+
+ .cadastro {
+  display: block;
+  width: 430px;
+  height: 350px;
+ }
+
+ .tela-cadastro {
+  margin-left: 45px;
+  width: 500px;
+  border: 1px solid;
+  border-radius: 10%;
+  border: none;
+  margin-left: 950px;
+  color: #000000;
+  margin-top: 20px;
+ }
+
+
+ .tela-cadastro .cadastro {
+  margin-left: 25px
+ }
+
+ form fieldset {
+  margin-right: auto;
+  margin-left: 90px;
+  margin-top: -370px;
+ }
+
+ .verificacao {
+  margin-left: -9px;
+  margin-top: 2px;
+ }
+
+ fieldset .verificacao p {
+  color: #000000;
+ }
+
+ fieldset .visibilidade {
+  margin-right: 386px;
+  padding-top: 18px;
+ }
+
+fieldset button{
+  margin-left: 5px;
+}
+
+fieldset p b a {
+  margin-right: 388px;
+}
+
+.lista {
+    font-size: 16px;
+  }
+  
+  .lista li {
+    margin-bottom: 6px;
+    color: #555;
+  }
+  
+  .lista li i {
+    color: #8e8989;
+    margin-right: 8px;
+  }
+  
+  .lista li.validado i {
+    color: #0026ff;
+  }
+
+  .alterarsenha {
+    max-width: 1000px;
+  }
+
+  .help {
+    display: block;
+    margin-bottom: 1.5rem;
+    font-size: 1.2rem;
+    margin-top: 80px;
+    margin-left: 50px;
+  }
+
+  .img-senha {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin-left: 120px;
+    margin-top: 20px;
+  }
+
+  .alterarsenha p {
+    display: block;
+    margin-bottom: 1.5rem;
+    font-size: 17px;
+    margin-left: 600px;
+    margin-top: -320px;
+  }
+
+  .campos label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    margin-left: 280px;
+  }
+
+  .campos input {
+    width: 38%;
+    padding: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-left: 620px;
+  }
+
+  .alterarsenha button {
+    width: 38%;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-left: 620px;
+  }
+
+
+  .alterarsenha #cpf-erro {
+    margin-top: 5px;
+    color: red;
+    margin-left: 620px;
+  }
+
+.redefinir-senha {
+  width: 400px;
+  height: 350px;
+  margin-top: -6px;
+}
+
+.input-senha {
+  position: relative;
+  width: 15%; 
+  margin-bottom: 20px; 
+  margin-left: 950px;
+  top: -290px;
+  
+}
+
+.input-senha input {
+  width: 160%;
+  padding-right: 30px; 
+  box-sizing: border-box;
+}
+
+.input-senha .visibilidade {
+  position: absolute;
+  top: 128%;
+  left: -180px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #000000; 
+  user-select: none;
+}
+
+.redefinir .verificacao {
+  margin-left: 920px;
+  margin-top: -280px
+}
+
+.redefinir button {
+  margin-left: 1035px;
+}
+
+.area-senha {
+  display: block;
+  margin-left: 90px;
+  margin-top: 80px;
+}
+
+}
+
