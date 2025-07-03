@@ -1,13 +1,40 @@
 import { useState } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './style.css';  
 
 export default function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [login, setLogin] = useState('');
+  const [senha, setSenha] = useState('');
+  const [erro, setErro] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert("Formulário enviado!");
+    setErro('');
+
+    const formData = new URLSearchParams();
+    formData.append('login', login);
+    formData.append('senha', senha);
+
+    try {
+      const response = await fetch('http://localhost/php/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
+      });
+
+      const text = await response.text();
+
+      if (response.ok) {
+        navigate('/dashboard');
+      } else {
+        setErro(text);
+      }
+    } catch (error) {
+      console.error("Erro na conexão:", error);
+      setErro('Erro na conexão com o servidor.');
+    }
   };
 
   return (
@@ -44,6 +71,8 @@ export default function Login() {
               id="login"
               placeholder="Digite seu e-mail ou CPF"
               required
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
             />
           </div>
 
@@ -56,15 +85,17 @@ export default function Login() {
             </div>
             <input
               name="senha"
-              id="senha"   
-              type={showPassword ? "text" : "password"} 
+              id="senha"
+              type={showPassword ? "text" : "password"}
               placeholder="Digite sua senha"
               required
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
             />
             <i
               className={`fas ${showPassword ? "fa-eye-slash" : "fa-eye"} visibilidade`}
               style={{ cursor: "pointer" }}
-              onClick={() => setShowPassword(!showPassword)} 
+              onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
               role="button"
               tabIndex={0}
@@ -73,11 +104,13 @@ export default function Login() {
               }}
             ></i>
             <div className="esqueceu">
-              <a href="esquecisenha.html" className="esqueceu-senha">
+              <Link to="/esquecisenha" className="esqueceu-senha">
                 <b>Esqueci minha senha</b>
-              </a>
+              </Link>
             </div>
           </div>
+
+          {erro && <div className="mensagem-erro">{erro}</div>}
 
           <button type="submit">Entrar</button>
 

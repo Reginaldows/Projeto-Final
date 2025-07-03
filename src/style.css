@@ -13,7 +13,7 @@ html, body {
   font-weight: 100;
   font-style: normal;
   font-size: 16px;
-  background: linear-gradient(90deg, rgba(129, 198, 228, 1) 0%, rgba(255, 255, 255, 1) 50%);
+  background: linear-gradient(134deg,rgba(78, 193, 242, 1) 88%, rgba(228, 238, 240, 1) 95%);
   background-size: cover;
   background-repeat: no-repeat;
 }
@@ -24,13 +24,19 @@ html, body {
   padding: 2px;
 }
 
+.logo-senai img {
+  width: 250px;
+  height: 110px;
+}
+
 .visual {
   width: 50%;
   height: 220px;
-  margin: 0 auto;
+  margin: 0 auto -20px;
   text-align: center;
   padding-top: 30px;
   border-radius: 40px;
+  color: #000000;
   background: linear-gradient(90deg, rgba(129, 198, 228, 1) 0%, rgba(203, 233, 247, 1) 100%);
 }
 
@@ -225,11 +231,16 @@ fieldset .visibilidade {
   padding-bottom: 5px;
 }
 
+.tela-cadastro p {
+  color: #000000;
+}
+
 .verificacao {
   border: 1px solid #ccc; 
   padding: 16px;          
   border-radius: 8px;     
   background-color: #f9f9f9;
+  color: #000000;
   max-width: 400px;        
   margin: 28px auto;       
 }
@@ -382,9 +393,9 @@ fieldset .visibilidade {
 
 @media screen and (min-width: 768px) {
   .logo-senai img {
-    width: 200px;
-    height: 90px;
-    margin-top: -40px;
+    width: 300px;
+    height: 120px;
+    margin-top: -80px;
     margin-left: 50px;
   }
   
@@ -414,6 +425,10 @@ fieldset .visibilidade {
     width: 400px;
     margin-left: 48px;
   }
+
+  .logo-cadastro {
+    margin-left: -64px;
+  }
   
   .campo input {
     margin-left: -45px;
@@ -439,16 +454,49 @@ fieldset .visibilidade {
     margin-left: 2px;
   }
 
+  .img-senha {
+    margin-left: 170px;
+    height: 300px;
+    width: 400px;
+    max-width: none;
+  }
 
+  .topo-senha {
+    margin-left: 10px;
+  }
+
+  .help {
+    display: block;
+    color: #000000;
+    margin-left: 80px;
+    font-size: 20px;
+  }
+
+  .alterarsenha p {
+    font-size: 20px;
+    margin-left: 80px;
+    font-weight: bold;
+  }
+
+  .campos {
+    margin-left: 105px;
+  }
+
+  .alterarsenha button  {
+    margin-left: 98px;
+    width: 230px;
+  }
 }
 
 @media screen and (min-width: 1024px) {
 
   .logo-senai img {
     position: absolute;
-    top: 20px;
+    top: 40px;
     left: 45%;
     transform: translateX(-50%);
+    width: 320px;
+    height: 140px;
   }
 
   .visual {
@@ -473,6 +521,7 @@ fieldset .visibilidade {
   .formulario strong {
     display: block;
     margin-left: -45px;
+    color: #000000;
   }
 
   .formulario .esqueceu-senha {
@@ -517,14 +566,16 @@ fieldset .visibilidade {
   border: 1px solid;
   border-radius: 10%;
   border: none;
-  margin-left: 950px;
+  margin-left: 980px;
   color: #000000;
   margin-top: 20px;
  }
 
 
  .tela-cadastro .cadastro {
-  margin-left: 25px
+  margin-left: 65px;
+  margin-top: -20px;
+  
  }
 
  form fieldset {
@@ -543,7 +594,7 @@ fieldset .visibilidade {
  }
 
  fieldset .visibilidade {
-  margin-right: 386px;
+  margin-right: 390px;
   padding-top: 18px;
  }
 
@@ -552,7 +603,7 @@ fieldset button{
 }
 
 fieldset p b a {
-  margin-right: 388px;
+  margin-right: 410px;
 }
 
 .lista {
@@ -575,6 +626,7 @@ fieldset p b a {
 
   .alterarsenha {
     max-width: 1000px;
+    margin-left: 280px;
   }
 
   .help {
@@ -583,6 +635,7 @@ fieldset p b a {
     font-size: 1.2rem;
     margin-top: 80px;
     margin-left: 50px;
+    color: #000000;
   }
 
   .img-senha {
@@ -598,22 +651,24 @@ fieldset p b a {
     margin-bottom: 1.5rem;
     font-size: 17px;
     margin-left: 600px;
+    font-weight: normal;
     margin-top: -320px;
+    color: #000000;
   }
 
   .campos label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    margin-left: 280px;
+    margin-left: 150px;
   }
 
   .campos input {
-    width: 38%;
+    width: 43%;
     padding: 10px;
     font-size: 1rem;
     box-sizing: border-box;
-    margin-left: 620px;
+    margin-left: 490px;
   }
 
   .alterarsenha button {
@@ -623,14 +678,13 @@ fieldset p b a {
     font-size: 1.1rem;
     cursor: pointer;
     border-radius: 5px;
-    margin-left: 620px;
+    margin-left: 596px;
   }
-
 
   .alterarsenha #cpf-erro {
     margin-top: 5px;
     color: red;
-    margin-left: 620px;
+    margin-left: 500px;
   }
 
 .redefinir-senha {

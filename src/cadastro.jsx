@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
-import { formatarCPF, validarCPF } from './script';
+import { useNavigate } from 'react-router-dom';
+import { formatarCPF, validarCPF, validarRequisitosSenha } from './scripts/validacaoCpfSenha';
+import Mensagem from './mensagem';
 import './style.css';
 
 export default function Cadastro() {
+  const navigate = useNavigate();
   const [senha, setSenha] = useState('');
   const [cpf, setCpf] = useState('');
   const [cpfValido, setCpfValido] = useState(null);
@@ -15,20 +18,20 @@ export default function Cadastro() {
   });
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
+  const [mensagem, setMensagem] = useState('');
+  const [tipoMensagem, setTipoMensagem] = useState('');
+
   useEffect(() => {
-    const tem8 = senha.length >= 8;
-    const temMaiMin = /[a-z]/.test(senha) && /[A-Z]/.test(senha);
-    const temNumero = /\d/.test(senha);
-    const temEspecial = /[!@#$%^&*(),.?":{}|<>]/.test(senha);
+    const resultado = validarRequisitosSenha(senha);
 
     setRequisitos({
-      min: tem8,
-      letras: temMaiMin,
-      numero: temNumero,
-      especial: temEspecial,
+      min: resultado.min,
+      letras: resultado.letras,
+      numero: resultado.numero,
+      especial: resultado.especial,
     });
 
-    setValido(tem8 && temMaiMin && temNumero && temEspecial && cpfValido === true);
+    setValido(resultado.valido && cpfValido === true);
   }, [senha, cpfValido]);
 
   const handleCPFChange = (e) => {
@@ -44,18 +47,53 @@ export default function Cadastro() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Conta criada com sucesso!');
+    const nome = document.getElementById('nome').value;
+    const email = document.getElementById('email').value;
+    const formData = new URLSearchParams();
+    formData.append('nome', nome);
+    formData.append('cpf', cpf);
+    formData.append('email', email);
+    formData.append('senha', senha);
+
+    try {
+      const response = await fetch('http://localhost/php/cadastro.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
+      });
+
+      if (response.ok) {
+        setMensagem('Conta criada com sucesso!');
+        setTipoMensagem('sucesso');
+        setTimeout(() => {
+          setMensagem('');
+          navigate('/');
+        }, 3000);
+      } else {
+        const erro = await response.text();
+        setMensagem('Erro ao criar conta: ' + erro);
+        setTipoMensagem('erro');
+        setTimeout(() => setMensagem(''), 5000);
+      }
+    } catch (err) {
+      setMensagem('Erro na conexão com o servidor: ' + err.message);
+      setTipoMensagem('erro');
+      setTimeout(() => setMensagem(''), 5000);
+    }
   };
 
   return (
     <>
+    <div className="logo-cadastro">      
       <div className="topo">
         <div className="logo-senai">
           <img src="/img/logoSenai.png" alt="Senai" width="200" height="100" />
         </div>
       </div>
+    </div>
+
 
       <form onSubmit={handleSubmit}>
         <div className="tela-cadastro">
@@ -138,6 +176,8 @@ export default function Cadastro() {
           </p>
         </fieldset>
       </form>
+
+      <Mensagem texto={mensagem} tipo={tipoMensagem} onClose={() => setMensagem('')} />
     </>
   );
 }
