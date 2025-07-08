@@ -9,7 +9,13 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "php": "xcopy php \"C:\\xampp\\htdocs\\php\" /E /Y /I",
-    "alterar": "chokidar \"php/**/*\" -c \"npm run php\""
+    "img": "xcopy public\\img \"C:\\xampp\\htdocs\\php\\img\" /E /Y /I",
+    "css": "xcopy src\\style.css \"C:\\xampp\\htdocs\\php\\css\\\" /Y",
+    "todos": "npm run php && npm run img && npm run css",
+    "alterar-php": "chokidar \"php/**/*\" -c \"npm run php\"",
+    "alterar-css": "chokidar \"src/style.css\" -c \"npm run css\"",
+    "alterar-img": "chokidar \"public/img/**/*\" -c \"npm run img\"",
+    "alterar-todos": "concurrently \"npm run alterar-php\" \"npm run alterar-css\" \"npm run alterar-img\""
   },
   "dependencies": {
     "react": "^19.1.0",
@@ -22,6 +28,7 @@
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.5.2",
     "chokidar-cli": "^3.0.0",
+    "concurrently": "^9.2.0",
     "eslint": "^9.29.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",

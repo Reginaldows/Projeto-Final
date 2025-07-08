@@ -1,9 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Router } from 'react-router-dom';
 import {useEffect} from 'react'
 import './style.css'
 import Login from './Login'
 import Cadastro from './cadastro';
 import RecuperarSenha from './esquecisenha';
+import AlterarSenha from './alterarsenha';
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import { iniciarScript } from './script'
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/esquecisenha" element={<RecuperarSenha />} />
+        <Route path="/alterarsenha" element={<AlterarSenha/>} />
       </Routes>
     </BrowserRouter>
   );

@@ -9,7 +9,7 @@ export default function RedefinirSenha() {
   const [cpfValido, setCpfValido] = useState(null);
   const [valido, setValido] = useState(false);
   const [mensagem, setMensagem] = useState('');
-  const [tipoMensagem, setTipoMensagem] = useState('');
+  const [tipoMensagem, setTipoMensagem] = useState(''); 
   const [carregando, setCarregando] = useState(false);
 
   useEffect(() => {
@@ -36,30 +36,43 @@ export default function RedefinirSenha() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!valido) return;
 
     setCarregando(true);
-    setMensagem('');
-    setTipoMensagem('');
+    setMensagem('Enviando...');
+    setTipoMensagem('info');
 
     try {
-      const response = await fetch('http://localhost/ProjetoFinal/enviar.php', {
+      console.log('Enviando CPF:', cpf);
+
+      const response = await fetch('http://localhost/php/enviar.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
-          cpf: cpf
-        })
+          cpf: cpf.replace(/\D/g, ''),
+        }),
       });
 
-      const data = await response.json();
+      const contentType = response.headers.get('Content-Type');
+
+      let data;
+
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const textResponse = await response.text();
+        console.error('Resposta não-JSON:', textResponse);
+        throw new Error('Servidor retornou formato inválido');
+      }
 
       if (response.ok) {
-        setMensagem('Link de redefinição enviado para o e-mail cadastrado!');
+        setMensagem(data.sucesso || 'Link de redefinição enviado para o e-mail cadastrado!');
         setTipoMensagem('sucesso');
-        
+
         setTimeout(() => {
           setCpf('');
           setCpfValido(null);
@@ -71,8 +84,16 @@ export default function RedefinirSenha() {
         setTipoMensagem('erro');
       }
     } catch (error) {
-      console.error('Erro:', error);
-      setMensagem('Erro de conexão. Tente novamente.');
+      console.error('Erro completo:', error);
+
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        setMensagem('Erro de conexão. Verifique se o servidor está rodando.');
+      } else if (error.message.includes('JSON')) {
+        setMensagem('Erro na comunicação com o servidor. Tente novamente.');
+      } else {
+        setMensagem('Erro de conexão. Tente novamente.');
+      }
+
       setTipoMensagem('erro');
     } finally {
       setCarregando(false);
@@ -81,7 +102,13 @@ export default function RedefinirSenha() {
 
   return (
     <>
-      <div className="topo-senha">
+      {mensagem && (
+        <div className={`mensagem-email ${tipoMensagem}`}>
+          {mensagem}
+        </div>
+      )}
+
+      <div className="topo-senha" style={{ paddingTop: mensagem ? '50px' : 0 }}>
         <div className="topo">
           <div className="logo-senai">
             <img src="img/logoSenai.png" alt="Senai" />
@@ -99,7 +126,9 @@ export default function RedefinirSenha() {
         <p>Digite seu CPF para enviarmos um link de redefinição de senha para seu e-mail cadastrado.</p>
 
         <div className="campos">
-          <label htmlFor="cpf" className="campos-obrig">CPF</label>
+          <label htmlFor="cpf" className="campos-obrig">
+            CPF
+          </label>
           <input
             type="text"
             name="cpf"
@@ -120,19 +149,9 @@ export default function RedefinirSenha() {
         </div>
 
         <button type="submit" disabled={!valido || carregando}>
-          {carregando ? 'Enviando...' : 'Receber link de redefinição'}
+          Receber link de redefinição
         </button>
       </form>
-
-      {mensagem && (
-        <p style={{ 
-          color: tipoMensagem === 'sucesso' ? 'green' : 'red', 
-          marginTop: '1rem', 
-          fontWeight: 'bold' 
-        }}>
-          {mensagem}
-        </p>
-      )}
     </>
   );
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default function Mensagem({ texto, tipo, onClose }) {
-  if (!texto) return null; // Não mostra nada se texto vazio
+  if (!texto) return null; 
 
   const estilosBase = {
     position: 'fixed',
