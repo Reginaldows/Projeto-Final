@@ -186,3 +186,135 @@ export function validarCPF(cpf) {
   return dig2 === +cpf[10];
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+  const botaoTema = document.getElementById('darkmode');
+  if (botaoTema) {
+    botaoTema.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+  }
+
+  const iconeMenu = document.getElementById('iconeMenu');
+  const menuLateral = document.getElementById('menuLateral');
+  const fecharMenu = document.getElementById('fecharMenu');
+
+  if (iconeMenu && menuLateral) {
+    iconeMenu.addEventListener('click', () => {
+      menuLateral.classList.add('ativo');
+    });
+  }
+
+  if (fecharMenu && menuLateral) {
+    fecharMenu.addEventListener('click', () => {
+      menuLateral.classList.remove('ativo');
+    });
+  }
+
+  let tamanhoFonteAtual = 16;
+
+  window.alterarFonte = function (delta) {
+    tamanhoFonteAtual += delta;
+    if (tamanhoFonteAtual < 10) tamanhoFonteAtual = 10;
+    if (tamanhoFonteAtual > 20) tamanhoFonteAtual = 20;
+    document.body.style.fontSize = tamanhoFonteAtual + "px";
+  };
+
+  window.resetarFonte = function () {
+    tamanhoFonteAtual = 16;
+    document.body.style.fontSize = tamanhoFonteAtual + "px";
+  };
+
+  window.toggleControles = function () {
+    const controles = document.getElementById("mnr-fonte");
+    if (!controles) return;
+    if (controles.style.display === "none" || controles.style.display === "") {
+      controles.style.display = "block";
+    } else {
+      controles.style.display = "none";
+    }
+  };
+
+  if (!("speechSynthesis" in window)) {
+    console.warn("API de fala não suportada neste navegador.");
+    return;
+  }
+
+  let leituraAtiva = false;
+
+  const botaoLeitura = document.getElementById("toggleLeitura");
+  if (botaoLeitura) {
+    botaoLeitura.addEventListener("click", () => {
+      leituraAtiva = !leituraAtiva;
+      botaoLeitura.innerHTML = leituraAtiva
+        ? '<img src="img/som.png" class="search-nav" alt="Leitura ativa" /> Desativar leitura'
+        : '<img src="img/som.png" class="search-nav" alt="Leitura desativada" /> Ler texto';
+    });
+  }
+
+  function falar(texto) {
+    if (leituraAtiva && texto.trim() !== "") {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(texto);
+      utterance.lang = "pt-BR";
+      window.speechSynthesis.speak(utterance);
+    }
+  }
+
+  const elementosFrase = document.querySelectorAll("p, label, li, h1, h2, h3, span, button");
+
+  elementosFrase.forEach(el => {
+    el.addEventListener("mouseenter", () => {
+      falar(el.textContent);
+    });
+  });
+
+  document.querySelectorAll("img[alt]").forEach(img => {
+    img.addEventListener("mouseenter", () => {
+      falar(img.alt);
+    });
+  });
+
+  document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach(input => {
+    input.addEventListener("mouseenter", () => {
+      falar(input.placeholder);
+    });
+  });
+});
+
+export function buscarEnderecoPorCEP(cep, setRua, setBairro, setCidade) {
+  const cepLimpo = cep.replace(/\D/g, '');
+  if (cepLimpo.length !== 8) return;
+
+  fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`)
+    .then(response => response.json())
+    .then(data => {
+      if (!data.erro) {
+        setRua(data.logradouro || '');
+        setBairro(data.bairro || '');
+        setCidade(data.localidade || '');
+      } else {
+        setRua('');
+        setBairro('');
+        setCidade('');
+      }
+    })
+    .catch(() => {
+      setRua('');
+      setBairro('');
+      setCidade('');
+    });
+}
+
+export function formatarTelefone(valor) {
+  let tel = valor.replace(/\D/g, '');
+
+  if (tel.length > 11) tel = tel.slice(0, 11);
+
+  if (tel.length <= 10) {
+    tel = tel.replace(/^(\d{2})(\d{4})(\d{0,4})$/, '($1) $2-$3');
+  } else {
+    tel = tel.replace(/^(\d{2})(\d{5})(\d{0,4})$/, '($1) $2-$3');
+  }
+
+  return tel;
+}

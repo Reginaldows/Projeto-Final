@@ -78,7 +78,7 @@ export default function RedefinirSenha() {
           setCpfValido(null);
           setMensagem('');
           setTipoMensagem('');
-        }, 5000);
+        }, 2500);
       } else {
         setMensagem(data.erro || 'Erro ao enviar email');
         setTipoMensagem('erro');

@@ -89,7 +89,7 @@ try {
     $stmt->bind_param('iss', $usuario['id'], $token, $expira_em);
     $stmt->execute();
 
-    $link = "http://localhost/php/redefinirsenha.php?token=" . $token;
+   $link = "http://localhost:5173/alterarsenha?token=" . $token;
 
     try {
         $mail = new PHPMailer(true);
@@ -117,12 +117,12 @@ try {
         <body style='font-family: Arial, sans-serif; line-height: 1.6;'>
             <div style='max-width: 600px; margin: 0 auto; padding: 20px;'>
                 <div style='background-color: #0066cc; color: white; padding: 20px; text-align: center;'>
-                    <h2>Sistema SENAI</h2>
+                    <h2>Biblioteca SENAI</h2>
                     <p>Redefinição de senha</p>
                 </div>
                 <div style='padding: 20px; background-color: #f9f9f9;'>
                     <p>Olá, <strong>" . htmlspecialchars($usuario['nome']) . "</strong>!</p>
-                    <p>Você solicitou a redefinição de sua senha no sistema SENAI.</p>
+                    <p>Você solicitou a redefinição de sua senha na Biblioteca SENAI.</p>
                     <p>Para criar uma nova senha, clique no botão abaixo:</p>
                     <p style='text-align: center; margin: 30px 0;'>
                         <a href='$link' style='display: inline-block; background-color: #0066cc; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Redefinir minha senha</a>

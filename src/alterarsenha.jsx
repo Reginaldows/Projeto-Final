@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { validarRequisitosSenha } from './scripts/validacaoCpfSenha';
 import './style.css';
 
 export default function AlterarSenha() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
+  const navigate = useNavigate(); 
 
   const [senha, setSenha] = useState('');
   const [confirmSenha, setConfirmSenha] = useState('');
@@ -70,6 +71,10 @@ export default function AlterarSenha() {
         setTipoMensagem('sucesso');
         setSenha('');
         setConfirmSenha('');
+
+        setTimeout(() => {
+          navigate('/');
+        }, 2500);
       } else {
         setMensagem(data.erro || 'Erro ao atualizar senha');
         setTipoMensagem('erro');
@@ -84,6 +89,12 @@ export default function AlterarSenha() {
 
   return (
     <div className="alterar-senha">
+      {mensagem && (
+        <div className={`mensagem-email ${tipoMensagem}`}>
+          {mensagem}
+        </div>
+      )}
+
       <div className="topo">
         <div className="logo-senai">
           <img src="/img/logoSenai.png" alt="Senai" width="200" height="100" />
@@ -96,11 +107,7 @@ export default function AlterarSenha() {
 
       <img src="/img/redefinirsenha.png" alt="Recuperar senha" className="redefinir-senha" />
 
-      <form
-        className="redefinir"
-        id="form-redefinir"
-        onSubmit={handleSubmit}
-      >
+      <form className="redefinir" id="form-redefinir" onSubmit={handleSubmit}>
         <input type="hidden" name="token" value={token || ''} />
 
         <div className="input-senha">
@@ -166,21 +173,10 @@ export default function AlterarSenha() {
         <button type="submit" id="btn-criar" disabled={!requisitos.valido || carregando}>
           {carregando ? 'Enviando...' : 'Criar nova senha'}
         </button>
+         <p>
+            <b><a href="/">Cancelar</a></b>
+          </p>
       </form>
-
-      {mensagem && (
-        <div
-          id="mensagem"
-          style={{
-            marginTop: '20px',
-            padding: '10px',
-            borderRadius: '5px',
-            color: tipoMensagem === 'sucesso' ? 'green' : 'red',
-          }}
-        >
-          {mensagem}
-        </div>
-      )}
     </div>
   );
 }

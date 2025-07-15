@@ -20,6 +20,7 @@ export function validarCPF(cpf) {
   for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
   resto = (soma * 10) % 11;
   if (resto === 10 || resto === 11) resto = 0;
+
   return resto === parseInt(cpf.charAt(10));
 }
 
@@ -36,4 +37,49 @@ export function validarRequisitosSenha(senha) {
     especial: temEspecial,
     valido: tem8 && temMaiMin && temNumero && temEspecial,
   };
+}
+
+export function formatarCEP(valor) {
+  valor = valor.replace(/\D/g, '');
+  valor = valor.substring(0, 8);
+  if (valor.length > 5) {
+    valor = valor.replace(/^(\d{5})(\d{1,3})$/, '$1-$2');
+  }
+  return valor;
+}
+
+export async function buscarEnderecoPorCEP(cep, setRua, setBairro, setCidade, setEstado) {
+  const cepLimpo = cep.replace(/\D/g, '');
+  if (cepLimpo.length !== 8) return;
+
+  try {
+    const response = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+    if (!response.ok) throw new Error('CEP não encontrado');
+
+    const data = await response.json();
+    if (data.erro) throw new Error('CEP inválido');
+
+    setRua(data.logradouro || '');
+    setBairro(data.bairro || '');
+    setCidade(data.localidade || '');
+    setEstado(data.uf || '');
+  } catch (error) {
+    console.error('Erro ao buscar CEP:', error.message);
+    setRua('');
+    setBairro('');
+    setCidade('');
+    setEstado('');
+  }
+}
+
+export function formatarTelefone(valor) {
+  valor = valor.replace(/\D/g, '');
+  if (valor.length > 11) valor = valor.substring(0, 11);
+
+  if (valor.length <= 10) {
+    valor = valor.replace(/^(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+  } else {
+    valor = valor.replace(/^(\d{2})(\d{5})(\d{0,4})/, '($1) $2-$3');
+  }
+  return valor.trim().replace(/-$/, '');
 }
