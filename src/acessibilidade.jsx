@@ -10,7 +10,7 @@ export default function Acessibilidade({ leituraAtiva: leituraPai, setLeituraAti
   const isMobile = () => window.innerWidth <= 768;
 
   useEffect(() => {
-    const conteudo = document.querySelector('.conteudo-principal');
+    const conteudo = document.body;
     if (conteudo) {
       const elementos = conteudo.querySelectorAll("[data-leitura], p, label, li, h1, h2, h3, span, button, strong, b, a");
       elementos.forEach(el => {

@@ -79,7 +79,7 @@ body.dark-mode .btn-leitura:hover {
   background: #ffffff;
   border: none;
   border-radius: 50%;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 16px rgba(240, 237, 237, 0.2);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -89,7 +89,7 @@ body.dark-mode .btn-leitura:hover {
 
 .icone-acessibilidade:hover {
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 20px rgba(240, 235, 235, 0.3);
 }
 
 .icone-acessibilidade:active {
@@ -104,8 +104,9 @@ body.dark-mode .btn-leitura:hover {
 }
 
 body.dark-mode .icone-acessibilidade {
-  background: #324650;
+  background: #ffffff;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  content: url(/img/acessibilidade-modoescuro.png);
 }
 
 body.dark-mode .icone-acessibilidade img {
@@ -204,7 +205,6 @@ body.dark-mode p,
 body.dark-mode h1,
 body.dark-mode h2,
 body.dark-mode h3,
-body.dark-mode span,
 body.dark-mode label,
 body.dark-mode a,
 body.dark-mode li,
@@ -212,6 +212,17 @@ body.dark-mode b,
 body.dark-mode strong,
 body.dark-mode em {
   color: #fff !important;
+}
+
+body.dark-mode .visual p,
+body.dark-mode .visual b {
+  color: black !important;
+}
+
+body.dark-mode .verificacao {
+  background-color: #222 !important;
+  border-radius: 10px;
+  padding: 16px;
 }
 
 body.contraste-rosa {
@@ -225,6 +236,7 @@ body.contraste-verde {
 }
 
 body.contraste-rosa p,
+body.contraste-rosa b,
 body.contraste-rosa h1,
 body.contraste-rosa h2,
 body.contraste-rosa h3,
@@ -239,6 +251,7 @@ body.contraste-rosa em {
 }
 
 body.contraste-verde p,
+body.contraste-verde b,
 body.contraste-verde h1,
 body.contraste-verde h2,
 body.contraste-verde h3,
@@ -785,7 +798,7 @@ body.dark-mode .mensagem-erro {
 
 .alterar-senha .redefinir-senha {
   display: block;
-  margin: 0 auto 20px;
+  margin: 0 auto -50px;
   width: 100%;
   max-width: 250px;
   height: auto;
@@ -883,6 +896,8 @@ body.dark-mode .mensagem-erro {
   font-weight: 600;
   margin: 0;
 }
+
+
 
 @media screen and (min-width: 768px) {
   .logo-senai img {
@@ -1140,7 +1155,7 @@ body.dark-mode .mensagem-erro {
  form fieldset {
   margin-right: auto;
   margin-left: 90px;
-  margin-top: -370px;
+  margin-top: -440px;
  }
 
  .verificacao {
@@ -1219,7 +1234,7 @@ fieldset p b a {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    margin-left: 150px;
+    margin-left: 160px;
   }
 
   .campos input {
@@ -1251,7 +1266,7 @@ fieldset p b a {
     font-size: 20px;
   }
 
-.alterar-senha .redefinir-senha {
+ .alterar-senha .redefinir-senha {
   max-width: none;
   width: 470px;
   height: 350px;
@@ -1285,9 +1300,17 @@ fieldset p b a {
   user-select: none;
 }
 
+.campos-obrig {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: bold;
+  white-space: nowrap; 
+}
+
 .redefinir {
-  margin-top: -140px;
-  margin-left: 60px;
+  margin-top: -180px;
+  margin-left: 50px;
 }
 
 .redefinir .verificacao {
@@ -1311,7 +1334,7 @@ fieldset p b a {
 .area-senha {
   display: block;
   margin-left: 50px;
-  margin-top: 30px;
+  margin-top: -20px;
   color: #000000;
   font-size: 20px;
 }

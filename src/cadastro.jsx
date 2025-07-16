@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatarCPF, validarCPF, validarRequisitosSenha } from './scripts/validacaoCpfSenha';
 import Mensagem from './mensagem';
+import Acessibilidade from './acessibilidade';
 import './style.css';
 
 export default function Cadastro() {
@@ -17,6 +18,7 @@ export default function Cadastro() {
     especial: false,
   });
   const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
   const [mensagem, setMensagem] = useState('');
   const [tipoMensagem, setTipoMensagem] = useState('');
@@ -86,6 +88,8 @@ export default function Cadastro() {
 
   return (
     <>
+
+    <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     <div className="logo-cadastro">      
       <div className="topo">
         <div className="logo-senai">
@@ -147,7 +151,7 @@ export default function Cadastro() {
           </div>
 
           <div className="verificacao">
-            <p>A <b>senha</b> deve conter:</p>
+            <p>A <em>senha</em> deve conter:</p>
             <ul className="lista">
               <li id="min-caracteres" className={requisitos.min ? 'validado' : ''}>
                 <i className="fa-solid fa-circle"></i>

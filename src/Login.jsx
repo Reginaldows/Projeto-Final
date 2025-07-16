@@ -11,7 +11,7 @@ export default function Login() {
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
 
-  const [leituraAtiva, setLeituraAtiva] = useState(false); // estado da leitura
+  const [leituraAtiva, setLeituraAtiva] = useState(false); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,7 +43,6 @@ export default function Login() {
 
   return (
     <>
-      {/* Componente de Acessibilidade com leitura ativável */}
       <Acessibilidade
         leituraAtiva={leituraAtiva}
         setLeituraAtiva={setLeituraAtiva}

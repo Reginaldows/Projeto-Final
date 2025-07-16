@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { formatarCPF, validarCPF } from './scripts/validacaoCpfSenha';
+import Acessibilidade from './acessibilidade';
 import './style.css';
 
 export default function RedefinirSenha() {
@@ -11,6 +12,7 @@ export default function RedefinirSenha() {
   const [mensagem, setMensagem] = useState('');
   const [tipoMensagem, setTipoMensagem] = useState(''); 
   const [carregando, setCarregando] = useState(false);
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
   useEffect(() => {
     setValido(cpfValido === true);
@@ -102,6 +104,7 @@ export default function RedefinirSenha() {
 
   return (
     <>
+    <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
       {mensagem && (
         <div className={`mensagem-email ${tipoMensagem}`}>
           {mensagem}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { validarRequisitosSenha } from './scripts/validacaoCpfSenha';
+import Acessibilidade from './acessibilidade';
 import './style.css';
 
 export default function AlterarSenha() {
@@ -12,6 +13,7 @@ export default function AlterarSenha() {
   const [confirmSenha, setConfirmSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
   const [requisitos, setRequisitos] = useState({
     min: false,
     letras: false,
@@ -88,6 +90,8 @@ export default function AlterarSenha() {
   };
 
   return (
+    <>
+    <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     <div className="alterar-senha">
       {mensagem && (
         <div className={`mensagem-email ${tipoMensagem}`}>
@@ -178,5 +182,6 @@ export default function AlterarSenha() {
           </p>
       </form>
     </div>
+    </>
   );
 }
