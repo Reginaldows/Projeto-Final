@@ -47,8 +47,6 @@ export default function Login() {
         leituraAtiva={leituraAtiva}
         setLeituraAtiva={setLeituraAtiva}
       />
-
-      {/* Conteúdo da página */}
       <div className="conteudo-principal">
         <div className="topo">
           <div
