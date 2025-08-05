@@ -96,7 +96,7 @@ export default function Login() {
                   data-leitura="E-mail ou CPF, apenas números"
                 >
                   E-mail ou CPF (Apenas números)
-                  <span style={{ color: 'red' }} aria-label="Campo obrigatório">*</span>
+                  <span aria-label="Campo obrigatório">*</span>
                 </label>
               </div>
               <input
@@ -109,6 +109,7 @@ export default function Login() {
                 onChange={(e) => setLogin(e.target.value)}
                 aria-describedby="login-help"
                 data-leitura="Digite seu e-mail ou CPF"
+                autoComplete="username"
               />
             </div>
 
@@ -121,7 +122,7 @@ export default function Login() {
                   data-leitura="Senha"
                 >
                   Senha
-                  <span style={{ color: 'red' }} aria-label="Campo obrigatório">*</span>
+                  <span aria-label="Campo obrigatório">*</span>
                 </label>
               </div>
               <input
@@ -134,6 +135,7 @@ export default function Login() {
                 onChange={(e) => setSenha(e.target.value)}
                 aria-describedby="senha-help"
                 data-leitura="Digite sua senha"
+                autoComplete="current-password"
               />
               <i
                 className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} visibilidade`}
