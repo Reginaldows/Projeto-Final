@@ -184,7 +184,6 @@ export default function Acessibilidade({ leituraAtiva: leituraPai, setLeituraAti
               A
             </button>
           </div>
-          <p className="tamanho-atual">Tamanho atual: {fonte}px</p>
         </div>
 
         <div className="leitura-voz">

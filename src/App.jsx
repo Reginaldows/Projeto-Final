@@ -17,6 +17,7 @@ function App() {
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/esquecisenha" element={<RecuperarSenha />} />
         <Route path="/alterarsenha" element={<AlterarSenha/>} />
+  
       </Routes>
     </BrowserRouter>
   );
