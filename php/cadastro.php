@@ -13,8 +13,14 @@ $nome = $_POST['nome'] ?? null;
 $cpf = $_POST['cpf'] ?? null;
 $email = $_POST['email'] ?? null;
 $senha = $_POST['senha'] ?? null;
+$dataNascimento = $_POST['dataNascimento'] ?? null;
+$cep = $_POST['cep'] ?? null;
+$rua = $_POST['rua'] ?? null;
+$bairro = $_POST['bairro'] ?? null;
+$estado = $_POST['estado'] ?? null;
+$telefone = $_POST['telefone'] ?? null;
 
-if (!$nome || !$cpf || !$email || !$senha) {
+if (!$nome || !$cpf || !$email || !$senha || !$dataNascimento || !$cep || !$rua || !$bairro || !$estado || !$telefone) {
     http_response_code(400);
     echo "Dados incompletos.";
     exit;
@@ -22,8 +28,8 @@ if (!$nome || !$cpf || !$email || !$senha) {
 
 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-$stmt = mysqli_prepare($conexao, "INSERT INTO dados (nome, cpf, email, senha) VALUES (?, ?, ?, ?)");
-mysqli_stmt_bind_param($stmt, "ssss", $nome, $cpf, $email, $senha_hash);
+$stmt = mysqli_prepare($conexao, "INSERT INTO dados (nome, cpf, email, senha, data_nascimento, cep, rua, bairro, estado, telefone) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+mysqli_stmt_bind_param($stmt, "ssssssssss", $nome, $cpf, $email, $senha_hash, $dataNascimento, $cep, $rua, $bairro, $estado, $telefone);
 
 if (mysqli_stmt_execute($stmt)) {
     echo "Cadastrado com sucesso!";

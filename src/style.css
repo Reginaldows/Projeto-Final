@@ -609,7 +609,8 @@ form fieldset {
   width: 55%;
   margin: 0 auto;
   margin-top: 15px;
-  height: 460px;
+  height: auto;
+  min-height: 600px;
   border: none;
 }
 
@@ -663,6 +664,56 @@ form p {
 fieldset .visibilidade {
   position: absolute;
   padding-bottom: 5px;
+}
+
+/* Estilos para layout em duas colunas */
+.linha-campos {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.campo-metade {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.campo-completo {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.campo-metade label,
+.campo-completo label {
+  margin-bottom: 5px;
+}
+
+.campo-metade input,
+.campo-metade select,
+.campo-completo input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.campo-metade select {
+  background-color: rgb(235, 235, 245);
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 768px) {
+  .linha-campos {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .campo-metade {
+    width: 100%;
+  }
 }
 
 .tela-cadastro p {
