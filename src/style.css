@@ -605,14 +605,7 @@ label.campos-obrig::after {
   color: red;
 }
 
-form fieldset {
-  width: 55%;
-  margin: 0 auto;
-  margin-top: 15px;
-  height: auto;
-  min-height: 600px;
-  border: none;
-}
+/* Estilo movido para baixo com melhor layout */
 
 fieldset label {
   padding-left: 5px;
@@ -628,13 +621,19 @@ fieldset input {
   position: relative;
 }
 
+.campo-senha input {
+  padding-right: 45px !important;
+}
+
 .campo-senha i {
   position: absolute;
-  right: 2px;
-  top: 132%;
+  right: 15px;
+  top: 50%;
   transform: translateY(-50%); 
   cursor: pointer;
-  color: #000000;
+  color: #666;
+  font-size: 18px;
+  z-index: 10;
 }
 
 fieldset button {
@@ -704,6 +703,58 @@ fieldset .visibilidade {
   background-color: rgb(235, 235, 245);
 }
 
+/* Layout principal do cadastro */
+.logo-cadastro {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  margin-bottom: 20px;
+}
+
+.tela-cadastro {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 0 20px;
+}
+
+.tela-cadastro p {
+  color: #000000;
+  font-size: 18px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+body.dark-mode .tela-cadastro p {
+  color: #fff;
+}
+
+body.dark-mode form fieldset {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body.dark-mode .verificacao {
+  background: rgba(0, 0, 0, 0.4);
+  border-left-color: #f78c2f;
+}
+
+body.dark-mode fieldset .verificacao p {
+  color: #fff;
+}
+
+form fieldset {
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 30px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
 /* Responsividade para telas menores */
 @media (max-width: 768px) {
   .linha-campos {
@@ -714,10 +765,20 @@ fieldset .visibilidade {
   .campo-metade {
     width: 100%;
   }
-}
-
-.tela-cadastro p {
-  color: #000000;
+  
+  form fieldset {
+    width: 95%;
+    padding: 20px;
+  }
+  
+  .logo-cadastro {
+    padding: 10px 0;
+    margin-bottom: 10px;
+  }
+  
+  .tela-cadastro p {
+    font-size: 16px;
+  }
 }
 
 .verificacao {
@@ -996,9 +1057,7 @@ body.dark-mode .mensagem-erro {
     margin-left: 48px;
   }
 
-  .logo-cadastro {
-    margin-left: -64px;
-  }
+  /* Logo cadastro estilizado acima */
 
   .campo input {
     margin-left: -45px;
@@ -1184,50 +1243,66 @@ body.dark-mode .mensagem-erro {
   height: 350px;
  }
 
- .tela-cadastro {
-  margin-left: 45px;
-  width: 500px;
-  border: 1px solid;
-  border-radius: 10%;
-  border: none;
-  margin-left: 980px;
-  color: #000000;
-  margin-top: -5px;
- }
-
-
- .tela-cadastro .cadastro {
-  margin-left: 65px;
-  margin-top: -20px;
-  
- }
-
- form fieldset {
-  margin-right: auto;
-  margin-left: 90px;
-  margin-top: -440px;
- }
+/* Estilos removidos - usando novos estilos acima */
 
  .verificacao {
-  margin-left: 7px;
-  margin-top: 2px;
+  margin: 15px 0;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 8px;
+  border-left: 4px solid #f78c2f;
  }
 
  fieldset .verificacao p {
-  color: #000000;
+  color: #333;
+  margin-bottom: 10px;
+  font-weight: bold;
  }
 
  fieldset .visibilidade {
-  margin-right: 390px;
-  padding-top: 18px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0;
  }
 
 fieldset button{
-  margin-left: 5px;
+  display: block;
+  margin: 20px auto 0;
+  padding: 12px 40px;
+  background: #f78c2f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+fieldset button:hover {
+  background: #e67c1f;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(247, 140, 47, 0.3);
+}
+
+fieldset button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+fieldset p {
+  text-align: center;
+  margin-top: 15px;
 }
 
 fieldset p b a {
-  margin-right: 410px;
+  color: #f78c2f;
+  text-decoration: none;
+  transition: color 0.3s ease;
 }
 
 .lista {
