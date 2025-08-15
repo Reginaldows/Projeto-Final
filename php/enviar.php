@@ -2,17 +2,14 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Habilitar exibição de erros para debug (apenas desenvolvimento)
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Configurar CORS
-header("Access-Control-Allow-Origin: http://localhost:5175"); // ajuste para a porta correta do seu frontend
+header("Access-Control-Allow-Origin: http://localhost:5175");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-// Responder requisição OPTIONS para CORS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
@@ -21,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require 'vendor/autoload.php';
 require 'conexao.php';
 
-// Função para enviar resposta JSON e terminar script
 function enviarResposta($codigo, $dados) {
     http_response_code($codigo);
     header('Content-Type: application/json; charset=utf-8');
@@ -34,7 +30,6 @@ try {
         enviarResposta(405, ['erro' => 'Método não permitido']);
     }
 
-    // Lê o conteúdo JSON ou POST tradicional
     $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
     $input = null;
 
@@ -49,7 +44,6 @@ try {
         $cpf = $_POST['cpf'] ?? '';
     }
 
-    // Limpa o CPF, só números
     $cpf = preg_replace('/\D/', '', $cpf);
 
     if (empty($cpf)) {
@@ -59,7 +53,6 @@ try {
         enviarResposta(400, ['erro' => 'CPF deve conter 11 dígitos']);
     }
 
-    // Busca usuário no banco
     $stmt = $conexao->prepare("SELECT id, nome, email FROM dados WHERE REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = ?");
     if (!$stmt) {
         enviarResposta(500, ['erro' => 'Erro interno do servidor']);
@@ -76,14 +69,12 @@ try {
         enviarResposta(400, ['erro' => 'Usuário não possui email cadastrado']);
     }
 
-    // Marca tokens antigos como usados
     $stmt = $conexao->prepare("UPDATE tokens SET usado = 1 WHERE dados_id = ? AND usado = 0");
     if ($stmt) {
         $stmt->bind_param('i', $usuario['id']);
         $stmt->execute();
     }
 
-    // Cria token novo
     $token = bin2hex(random_bytes(32));
     $expira_em = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
@@ -96,18 +87,17 @@ try {
 
     $link = "http://localhost:5173/alterarsenha?token=" . $token;
 
-    // Envio do email
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'juniorfb98@gmail.com'; // CORRIGIDO
-    $mail->Password = 'neqs uetc knsm hrtd'; // Use senha de app do Gmail
+    $mail->Username = 'juniorfb98@gmail.com';
+    $mail->Password = 'neqs uetc knsm hrtd';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port = 465;
     $mail->CharSet = 'UTF-8';
 
-    $mail->setFrom('juniorfb98@gmail.com', 'Sistema SENAI'); // Email válido e nome
+    $mail->setFrom('juniorfb98@gmail.com', 'Sistema SENAI');
     $mail->addAddress($usuario['email'], $usuario['nome']);
 
     $mail->isHTML(true);
@@ -146,7 +136,6 @@ try {
 
     $mail->send();
 
-    // Email mascarado para resposta
     $emailMascarado = substr($usuario['email'], 0, 3) . '***@' . substr(strrchr($usuario['email'], '@'), 1);
 
     enviarResposta(200, [
