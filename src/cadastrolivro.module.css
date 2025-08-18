@@ -6,6 +6,21 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Importação de fontes */
+@import url("https://fonts.googleapis.com/css2?family=Ancizar+Sans:ital,wght@0,100..1000;1,100..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+/* Variáveis de cores */
+:root {
+  --cor-fundo-claro: #ffffff;
+  --cor-letra-claro: #333333;
+  --cor-fundo-escuro: #222831;
+  --cor-letra-escuro: #eeeeee;
+  --cor-menu-fundo: #81c6e4;
+  --cor-menu-fundo-escuro: #324650;
+  --cor-fundo-padrao: linear-gradient(134deg,rgba(78, 193, 242, 1) 92%, rgba(228, 238, 240, 1) 98%);
+  --cor-fundo-padrao-escuro: linear-gradient(134deg,rgba(34, 40, 49, 1) 88%, rgba(50, 70, 80, 1) 95%);
+}
+
 .container *,
 .container *::before,
 .container *::after {
@@ -35,6 +50,13 @@ html, body {
   left: 0;
   overflow-y: auto;
   box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Modo escuro para o container */
+:global(body.dark-mode) .container {
+  background: #1a1a1a;
+  color: #f0f0f0;
 }
 
 /* ===== COMPONENTES PRINCIPAIS ===== */
@@ -95,6 +117,12 @@ html, body {
   background: #ffffff;
   padding: 20px 40px;
   border-bottom: 1px solid #e5e7eb;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+:global(body.dark-mode) .header {
+  background: #222;
+  border-bottom: 1px solid #444;
 }
 
 .logoContainer {
@@ -122,6 +150,11 @@ html, body {
   font-weight: 700;
   color: #1f2937;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+:global(body.dark-mode) .tituloPrincipal {
+  color: #f0f0f0;
 }
 
 .iconeTitulo {
@@ -134,6 +167,11 @@ html, body {
   font-size: 1.2rem;
   color: #6b7280;
   font-weight: 400;
+  transition: color 0.3s ease;
+}
+
+:global(body.dark-mode) .subtitulo {
+  color: #a0aec0;
 }
 
 /* Formulário */
@@ -141,6 +179,11 @@ html, body {
   background: #ffffff;
   padding: 40px;
   width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+:global(body.dark-mode) .form {
+  background: #222;
 }
 
 .formGrid {
@@ -217,6 +260,11 @@ html, body {
   overflow: hidden;
 }
 
+:global(body.dark-mode) .uploadArea {
+  border-color: #4a5568;
+  background: #2d3748;
+}
+
 @media (max-width: 992px) {
   .uploadArea {
     height: 300px;
@@ -236,6 +284,12 @@ html, body {
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
 }
 
+:global(body.dark-mode) .uploadArea:hover {
+  border-color: #667eea;
+  background: #2d3748;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
 .uploadPlaceholder {
   display: flex;
   flex-direction: column;
@@ -244,6 +298,11 @@ html, body {
   height: 100%;
   text-align: center;
   color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+:global(body.dark-mode) .uploadPlaceholder {
+  color: #a0aec0;
 }
 
 .uploadIcon {
@@ -318,6 +377,11 @@ html, body {
   font-weight: 600;
   color: #374151;
   font-size: 0.95rem;
+  transition: color 0.3s ease;
+}
+
+:global(body.dark-mode) .campoLabel {
+  color: #e2e8f0;
 }
 
 .campoIcone {
@@ -336,11 +400,23 @@ html, body {
   color: #1f2937;
 }
 
+:global(body.dark-mode) .campoInput {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #f7fafc;
+}
+
 .campoInput:focus {
   outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
   background: #fefeff;
+}
+
+:global(body.dark-mode) .campoInput:focus {
+  border-color: #667eea;
+  background: #3a4a63;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
 .campoInput::placeholder {
@@ -389,6 +465,12 @@ html, body {
   white-space: nowrap;
 }
 
+:global(body.dark-mode) .generoChip {
+  background: #2d3748;
+  border-color: #4a5568;
+  color: #a0aec0;
+}
+
 .generoChip:hover {
   border-color: #667eea;
   color: #667eea;
@@ -432,6 +514,13 @@ html, body {
   background-color: #f3f4f6;
   color: #4b5563;
   border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+}
+
+:global(body.dark-mode) .btnCancelar {
+  background-color: #4a5568;
+  color: #e2e8f0;
+  border-color: #2d3748;
 }
 
 .btnCancelar:hover {
@@ -448,6 +537,382 @@ html, body {
   background-color: #d1d5db;
   color: #6b7280;
   border: 2px solid #d1d5db;
+  transition: all 0.3s ease;
+}
+
+:global(body.dark-mode) .btnCadastrar {
+  background-color: #4a5568;
+  color: #a0aec0;
+  border-color: #4a5568;
+}
+
+/* ===== ESTILOS DE ACESSIBILIDADE ===== */
+
+/* Ícone de acessibilidade */
+:global(.icone-acessibilidade) {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  width: 60px;
+  height: 60px;
+  background: #ffffff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 4px 16px rgba(240, 237, 237, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+:global(.icone-acessibilidade:hover) {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(240, 235, 235, 0.3);
+}
+
+:global(.icone-acessibilidade:active) {
+  transform: scale(0.95);
+}
+
+:global(.icone-acessibilidade img) {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  display: block;
+}
+
+:global(body.dark-mode .icone-acessibilidade) {
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  content: url(/img/acessibilidade-modoescuro.png);
+}
+
+:global(body.dark-mode .icone-acessibilidade img) {
+  filter: invert(1);
+}
+
+/* Overlay e menu lateral */
+:global(.overlay-menu) {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+:global(.overlay-menu.ativo) {
+  opacity: 1;
+  visibility: visible;
+}
+
+:global(.menu-lateral) {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 100%;
+  background-color: var(--cor-menu-fundo);
+  color: #0f0f0f;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.15);
+}
+
+:global(.menu-lateral.ativo) {
+  width: 320px;
+  padding: 24px;
+}
+
+:global(body.dark-mode .menu-lateral) {
+  background-color: var(--cor-menu-fundo-escuro);
+  color: #eee;
+}
+
+:global(.menu-lateral h2) {
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: rgb(14, 14, 14);
+  font-weight: 600;
+  padding-top: 20px;
+  text-align: center;
+}
+
+:global(body.dark-mode .menu-lateral h2) {
+  color: #eee;
+}
+
+:global(.fechar-menu) {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  color: rgb(12, 12, 12);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  z-index: 1001;
+}
+
+:global(.fechar-menu:hover) {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* Controles de acessibilidade */
+:global(.modo-escuro),
+:global(.controles-fonte),
+:global(.leitura-voz) {
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+:global(.btn-modo-escuro),
+:global(.btn-fonte),
+:global(.btn-leitura) {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: rgb(19, 18, 18);
+  cursor: pointer;
+  padding: 14px 16px;
+  border-radius: 8px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 12px;
+  margin-left: 2px;
+}
+
+:global(body.dark-mode .btn-modo-escuro),
+:global(body.dark-mode .btn-fonte),
+:global(body.dark-mode .btn-leitura) {
+  background-color: #f78c2f !important;
+  color: #000 !important;
+  box-shadow: 0 4px 12px rgba(247, 140, 47, 0.4);
+  border: 1px solid #000;
+}
+
+:global(.btn-modo-escuro:hover),
+:global(.btn-fonte:hover),
+:global(.btn-leitura:hover) {
+  background-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+:global(body.dark-mode .btn-modo-escuro:hover),
+:global(body.dark-mode .btn-fonte:hover),
+:global(body.dark-mode .btn-leitura:hover) {
+  background-color: #ffa94d !important;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(247, 140, 47, 0.6);
+}
+
+:global(.btn-modo-escuro.ativo),
+:global(.btn-leitura.ativo) {
+  background-color: rgba(247, 140, 47, 0.8);
+  box-shadow: 0 4px 12px rgba(247, 140, 47, 0.3);
+}
+
+:global(.btn-modo-escuro .icone),
+:global(.btn-leitura .icone) {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+:global(.btn-modo-escuro img),
+:global(.btn-leitura img) {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: invert(100%);
+}
+
+:global(.controles-fonte p) {
+  color: rgb(12, 12, 12);
+  margin-bottom: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+:global(body.dark-mode .controles-fonte p) {
+  color: #eee;
+}
+
+:global(.botoes-fonte) {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+:global(.btn-fonte) {
+  flex: 1;
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: -2px;
+}
+
+:global(.tamanho-atual) {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+:global(body.dark-mode .tamanho-atual) {
+  color: rgba(238, 238, 238, 0.8);
+}
+
+:global(.instrucao-leitura) {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  font-style: italic;
+  margin-top: 12px;
+  line-height: 1.4;
+}
+
+:global(body.dark-mode .instrucao-leitura) {
+  color: rgba(238, 238, 238, 0.8);
+}
+
+/* Contraste para daltonismo */
+:global(.btn-contraste) {
+  background-color: #eee;
+  border: 2px solid #888;
+  color: #333;
+  font-weight: bold;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+:global(.btn-contraste:hover) {
+  background-color: #ddd;
+  border-color: #555;
+}
+
+:global(.btn-contraste.ativo) {
+  background-color: #004d99;
+  border-color: #003366;
+  color: #fff;
+  box-shadow: 0 0 8px #004d99;
+}
+
+:global(.btn-contraste.rosa) {
+  background-color: #FFB6C1 !important;
+  border-color: #000000 !important;
+  color: #000000 !important;
+  box-shadow: 0 0 10px rgba(255, 20, 147, 0.5) !important;
+}
+
+:global(.btn-contraste.verde) {
+  background-color: #90EE90 !important;
+  border-color: #000000 !important;
+  color: #000000 !important;
+  box-shadow: 0 0 10px rgba(0, 128, 0, 0.5) !important;
+}
+
+:global(.btn-contraste:focus) {
+  outline: 3px solid #007acc;
+  outline-offset: 2px;
+}
+
+/* Estilos para modo de contraste */
+:global(body.contraste-rosa) {
+  background-color: rgba(255, 192, 203, 0.3) !important;
+  filter: hue-rotate(300deg) saturate(1.2);
+}
+
+:global(body.contraste-verde) {
+  background-color: rgba(144, 238, 144, 0.3) !important;
+  filter: hue-rotate(120deg) saturate(1.1);
+}
+
+:global(body.contraste-rosa p),
+:global(body.contraste-rosa b),
+:global(body.contraste-rosa h1),
+:global(body.contraste-rosa h2),
+:global(body.contraste-rosa h3),
+:global(body.contraste-rosa span),
+:global(body.contraste-rosa label),
+:global(body.contraste-rosa a),
+:global(body.contraste-rosa li),
+:global(body.contraste-rosa strong),
+:global(body.contraste-rosa em) {
+  color: #000000 !important;
+  font-weight: bold !important;
+}
+
+:global(body.contraste-verde p),
+:global(body.contraste-verde b),
+:global(body.contraste-verde h1),
+:global(body.contraste-verde h2),
+:global(body.contraste-verde h3),
+:global(body.contraste-verde span),
+:global(body.contraste-verde label),
+:global(body.contraste-verde a),
+:global(body.contraste-verde li),
+:global(body.contraste-verde strong),
+:global(body.contraste-verde em) {
+  color: #000000 !important;
+  font-weight: bold !important;
+}
+
+:global(body.contraste-rosa button),
+:global(body.contraste-rosa select),
+:global(body.contraste-rosa textarea) {
+  color: #000000 !important;
+  background-color: rgba(255, 192, 203, 0.3) !important;
+  border: 2px solid #000000 !important;
+  font-weight: bold !important;
+}
+
+:global(body.contraste-verde input),
+:global(body.contraste-verde button),
+:global(body.contraste-verde select),
+:global(body.contraste-verde textarea) {
+  color: #000000 !important;
+  background-color: rgba(144, 238, 144, 0.3) !important;
+  border: 2px solid #000000 !important;
+  font-weight: bold !important;
+}
+
+:global(body.contraste-rosa img),
+:global(body.contraste-verde img) {
+  filter: none !important;
 }
 
 .btnCadastrar.ativo {
