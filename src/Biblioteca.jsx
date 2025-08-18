@@ -13,17 +13,13 @@ const PaginaIsolada = () => {
   const [userName, setUserName] = useState('');
   const [showLoginStatus, setShowLoginStatus] = useState(false);
   
-  // Carregar o nome do usuário do localStorage quando o componente for montado
   useEffect(() => {
-    // Verificar se o usuário está realmente logado
     const storedUserName = localStorage.getItem('userName');
     const isLoggedIn = localStorage.getItem('isLoggedIn');
     
-    // Só considera o usuário como logado se ambos existirem
     if (storedUserName && isLoggedIn === 'true') {
       setUserName(storedUserName);
     } else {
-      // Limpa o userName se não estiver logado corretamente
       localStorage.removeItem('userName');
       localStorage.removeItem('isLoggedIn');
       setUserName('');
@@ -37,7 +33,6 @@ const PaginaIsolada = () => {
       author,
       keywords
     });
-    // Aqui seria implementada a lógica de busca real
   };
   
   const addKeyword = () => {
@@ -59,7 +54,6 @@ const PaginaIsolada = () => {
   return (
     <div className={styles.pageWrapper}>
       <div className={styles.travessa}>
-        {/* Header */}
         <header className={styles.header}>
           <div className={styles.logo}>
             <h1 className={styles.logoTitle}>
@@ -200,7 +194,6 @@ const PaginaIsolada = () => {
           </div>
         </header>
 
-        {/* Carrossel */}
         <section className={styles.carousel}>
           <div className={styles.carouselSlide}>
             <div className={styles.carouselContent}>
@@ -210,14 +203,12 @@ const PaginaIsolada = () => {
           </div>
         </section>
 
-        {/* Seções de Livros */}
         <section className={styles.bookSection}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Lançamentos</h2>
             <a href="#" className={styles.sectionLink}>Ver Mais</a>
           </div>
           <div className={styles.booksGrid}>
-            {/* Livro 1 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -226,7 +217,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 89,90</p>
               </div>
             </div>
-            {/* Livro 2 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -235,7 +225,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 105,50</p>
               </div>
             </div>
-            {/* Livro 3 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -244,7 +233,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 129,90</p>
               </div>
             </div>
-            {/* Livro 4 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -253,7 +241,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 75,00</p>
               </div>
             </div>
-            {/* Livro 5 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -262,7 +249,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 95,00</p>
               </div>
             </div>
-            {/* Livro 6 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -271,7 +257,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 110,00</p>
               </div>
             </div>
-            {/* Livro 7 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -280,7 +265,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 120,00</p>
               </div>
             </div>
-            {/* Livro 8 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -289,7 +273,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 145,90</p>
               </div>
             </div>
-            {/* Livro 9 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -298,7 +281,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 89,90</p>
               </div>
             </div>
-            {/* Livro 10 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -307,7 +289,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 110,00</p>
               </div>
             </div>
-            {/* Livro 11 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -316,7 +297,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 95,50</p>
               </div>
             </div>
-            {/* Livro 12 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -328,14 +308,12 @@ const PaginaIsolada = () => {
           </div>
         </section>
 
-        {/* Livros mais procurados */}
         <section className={styles.bookSection}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Livros mais procurados</h2>
             <a href="#" className={styles.sectionLink}>Ver Mais</a>
           </div>
           <div className={styles.booksGrid}>
-            {/* Livro 1 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -344,7 +322,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 69,90</p>
               </div>
             </div>
-            {/* Livro 2 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -353,7 +330,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 85,00</p>
               </div>
             </div>
-            {/* Livro 3 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -362,7 +338,6 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 79,90</p>
               </div>
             </div>
-            {/* Livro 4 */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -374,7 +349,6 @@ const PaginaIsolada = () => {
           </div>
         </section>
 
-        {/* Footer */}
         <footer className={styles.footer}>
           <div className={styles.footerContent}>
             <div className={styles.footerInfo}>

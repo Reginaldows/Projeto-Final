@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Book, User, Calendar, Globe, DollarSign, Hash, Building, Tag, FileText } from 'lucide-react';
 import Acessibilidade from './acessibilidade';
-import styles from './cadastro.module.css';
+import styles from './cadastrolivro.module.css';
 
 export default function CadastroLivro() {
   const navigate = useNavigate();
@@ -135,7 +135,6 @@ export default function CadastroLivro() {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     
-    // Formatação específica para alguns campos
     let valorFormatado = value;
     
     if (name === 'isbn') {
@@ -209,7 +208,6 @@ export default function CadastroLivro() {
     setLoading(true);
 
     try {
-      // Simular envio para API
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setMensagem('Livro cadastrado com sucesso!');
@@ -253,7 +251,6 @@ export default function CadastroLivro() {
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGrid}>
-            {/* Upload da Capa */}
             <div className={styles.campoUpload}>
               <label className={styles.uploadLabel}>
                 <input
@@ -282,9 +279,7 @@ export default function CadastroLivro() {
               </label>
             </div>
 
-            {/* Campos do formulário */}
             <div className={styles.camposContainer}>
-              {/* Título */}
               <div className={styles.campoGrupo}>
                 <label htmlFor="titulo" className={styles.campoLabel}>
                   <Book className={styles.campoIcone} />
@@ -305,7 +300,6 @@ export default function CadastroLivro() {
                 )}
               </div>
 
-              {/* Autores */}
               <div className={styles.campoGrupo}>
                 <label htmlFor="autores" className={styles.campoLabel}>
                   <User className={styles.campoIcone} />
@@ -326,7 +320,6 @@ export default function CadastroLivro() {
                 )}
               </div>
 
-              {/* ISBN */}
               <div className={styles.campoGrupo}>
                 <label htmlFor="isbn" className={styles.campoLabel}>
                   <Hash className={styles.campoIcone} />
@@ -347,7 +340,6 @@ export default function CadastroLivro() {
                 )}
               </div>
 
-              {/* Editora */}
               <div className={styles.campoGrupo}>
                 <label htmlFor="editora" className={styles.campoLabel}>
                   <Building className={styles.campoIcone} />
@@ -368,7 +360,6 @@ export default function CadastroLivro() {
                 )}
               </div>
 
-              {/* Ano de Publicação */}
               <div className={styles.campoGrupo}>
                 <label htmlFor="anoPublicacao" className={styles.campoLabel}>
                   <Calendar className={styles.campoIcone} />
@@ -391,7 +382,6 @@ export default function CadastroLivro() {
                 )}
               </div>
 
-              {/* Número de Páginas */}
               <div className={styles.campoGrupo}>
                 <label htmlFor="numeroPaginas" className={styles.campoLabel}>
                   <FileText className={styles.campoIcone} />
@@ -414,7 +404,6 @@ export default function CadastroLivro() {
                 )}
               </div>
 
-              {/* Idioma */}
               <div className={styles.campoGrupo}>
                 <label htmlFor="idioma" className={styles.campoLabel}>
                   <Globe className={styles.campoIcone} />
@@ -438,7 +427,6 @@ export default function CadastroLivro() {
                 )}
               </div>
 
-              {/* Preço */}
               <div className={styles.campoGrupo}>
                 <label htmlFor="preco" className={styles.campoLabel}>
                   <DollarSign className={styles.campoIcone} />
@@ -461,7 +449,6 @@ export default function CadastroLivro() {
             </div>
           </div>
 
-          {/* Seleção de Gêneros */}
           <div className={styles.generosSection}>
             <label className={styles.campoLabel}>
               <Tag className={styles.campoIcone} />
@@ -484,7 +471,6 @@ export default function CadastroLivro() {
             )}
           </div>
 
-          {/* Botões de Ação */}
           <div className={styles.acoesContainer}>
             <button
               type="button"
