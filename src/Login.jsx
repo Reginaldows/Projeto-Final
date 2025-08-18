@@ -14,32 +14,35 @@ export default function Login() {
   const [leituraAtiva, setLeituraAtiva] = useState(false); 
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErro('');
+  e.preventDefault();
+  setErro('');
 
-    const formData = new URLSearchParams();
-    formData.append('login', login);
-    formData.append('senha', senha);
+  const formData = new URLSearchParams();
+  formData.append('login', login);
+  formData.append('senha', senha);
 
-    try {
-      const response = await fetch('http://localhost/php/login.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: formData.toString(),
-      });
+  try {
+    const response = await fetch('http://localhost/php/login.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formData.toString(),
+    });
 
-      const text = await response.text();
+    const responseData = await response.json(); // <- Aqui pegamos JSON direto
 
-      if (response.ok) {
-        navigate('/dashboard');
-      } else {
-        setErro(text);
-      }
-    } catch (error) {
-      console.error('Erro na conexão:', error);
-      setErro('Erro na conexão com o servidor.');
+    if (response.ok && responseData.success) {
+      const userName = responseData.nome || "Usuário";
+      localStorage.setItem('userName', userName);
+      navigate('/'); // Redireciona para a página principal (Biblioteca)
+    } else {
+      setErro(responseData.message || "Erro no login");
     }
-  };
+  } catch (error) {
+    console.error('Erro na conexão:', error);
+    setErro('Erro na conexão com o servidor.');
+  }
+};
+
 
   return (
     <>

@@ -1,13 +1,25 @@
 
-import React, { useState } from 'react';
-import styles from './PaginaIsolada.module.css';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './biblioteca.module.css';
 
 const PaginaIsolada = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [category, setCategory] = useState('');
   const [author, setAuthor] = useState('');
   const [keyword, setKeyword] = useState('');
   const [keywords, setKeywords] = useState([]);
+  const [userName, setUserName] = useState('');
+  const [showLoginStatus, setShowLoginStatus] = useState(false);
+  
+  // Carregar o nome do usuário do localStorage quando o componente for montado
+  useEffect(() => {
+    const storedUserName = localStorage.getItem('userName');
+    if (storedUserName) {
+      setUserName(storedUserName);
+    }
+  }, []);
   
   const handleSearch = () => {
     console.log('Buscando com os filtros:', {
@@ -47,6 +59,47 @@ const PaginaIsolada = () => {
                 <img src="/img/logoSenai.png" alt="Logo SENAI" className={styles.logoImage} />
               </div>
             </h1>
+            <div className={styles.userGreeting} onClick={() => setShowLoginStatus(!showLoginStatus)}>
+              <i className="fas fa-user"></i>
+              {userName ? (
+                <span>Olá, {userName}!</span>
+              ) : (
+                <span className={styles.loginPrompt}>Fazer login</span>
+              )}
+              {showLoginStatus && (
+                <div className={styles.loginStatus}>
+                  {userName ? (
+                    <div>
+                      <p>Logado como: {userName}</p>
+                      <button 
+                        className={styles.logoutButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          localStorage.removeItem('userName');
+                          setUserName('');
+                          setShowLoginStatus(false);
+                        }}
+                      >
+                        Sair
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <p>Você não está logado</p>
+                      <button 
+                        className={styles.loginButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate('/login');
+                        }}
+                      >
+                        Entrar
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
           <nav className={styles.nav}>
             <ul className={styles.navList}>
@@ -203,17 +256,7 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 110,00</p>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Pré-Venda */}
-        <section className={styles.bookSection}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Pré-Venda</h2>
-            <a href="#" className={styles.sectionLink}>Ver Mais</a>
-          </div>
-          <div className={styles.booksGrid}>
-            {/* Livro 1 */}
+            {/* Livro 7 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -222,7 +265,7 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 120,00</p>
               </div>
             </div>
-            {/* Livro 2 */}
+            {/* Livro 8 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -231,7 +274,7 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 145,90</p>
               </div>
             </div>
-            {/* Livro 3 */}
+            {/* Livro 9 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -240,7 +283,7 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 89,90</p>
               </div>
             </div>
-            {/* Livro 4 */}
+            {/* Livro 10 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -249,7 +292,7 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 110,00</p>
               </div>
             </div>
-            {/* Livro 5 */}
+            {/* Livro 11 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -258,7 +301,7 @@ const PaginaIsolada = () => {
                 <p className={styles.bookPrice}>R$ 95,50</p>
               </div>
             </div>
-            {/* Livro 6 */}
+            {/* Livro 12 (Antigo Pré-Venda) */}
             <div className={styles.bookCard}>
               <div className={styles.bookCover}></div>
               <div className={styles.bookInfo}>
@@ -270,10 +313,10 @@ const PaginaIsolada = () => {
           </div>
         </section>
 
-        {/* Sugestões */}
+        {/* Livros mais procurados */}
         <section className={styles.bookSection}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Sugestões</h2>
+            <h2 className={styles.sectionTitle}>Livros mais procurados</h2>
             <a href="#" className={styles.sectionLink}>Ver Mais</a>
           </div>
           <div className={styles.booksGrid}>

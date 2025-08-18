@@ -77,6 +77,75 @@
   object-fit: contain;
 }
 
+.userGreeting {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #0066b3;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.userGreeting i {
+  font-size: 1.3rem;
+  color: #0066b3;
+}
+
+.loginPrompt {
+  color: #0066b3;
+  font-weight: 500;
+}
+
+.loginStatus {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 200px;
+  margin-top: 0.5rem;
+}
+
+.loginStatus p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.loginButton, .logoutButton {
+  background-color: #0066b3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.loginButton:hover {
+  background-color: #0055a5;
+}
+
+.logoutButton {
+  background-color: #f44336;
+}
+
+.logoutButton:hover {
+  background-color: #d32f2f;
+}
+
 .nav {
   all: unset;
   display: block;
