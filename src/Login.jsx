@@ -33,6 +33,7 @@ export default function Login() {
     if (response.ok && responseData.success) {
       const userName = responseData.nome || "Usuário";
       localStorage.setItem('userName', userName);
+      localStorage.setItem('isLoggedIn', 'true');
       navigate('/'); // Redireciona para a página principal (Biblioteca)
     } else {
       setErro(responseData.message || "Erro no login");

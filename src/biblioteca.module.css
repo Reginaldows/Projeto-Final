@@ -77,24 +77,47 @@
   object-fit: contain;
 }
 
+.headerIcons {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.cartIcon {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: #0066b3;
+  cursor: pointer;
+}
+
 .userGreeting {
   all: unset;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
   font-size: 1.2rem;
   font-weight: 500;
   color: #0066b3;
   text-align: center;
   cursor: pointer;
   position: relative;
+  white-space: nowrap;
 }
 
 .userGreeting i {
   font-size: 1.3rem;
   color: #0066b3;
+}
+
+.userGreeting span {
+  white-space: nowrap;
 }
 
 .loginPrompt {
@@ -114,12 +137,14 @@
   z-index: 1000;
   min-width: 200px;
   margin-top: 0.5rem;
+  text-align: center;
 }
 
 .loginStatus p {
   margin: 0 0 0.5rem 0;
   font-size: 0.9rem;
   color: #333;
+  text-align: center;
 }
 
 .loginButton, .logoutButton {
@@ -132,6 +157,9 @@
   cursor: pointer;
   width: 100%;
   transition: background-color 0.3s;
+  display: block;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .loginButton:hover {
@@ -554,7 +582,40 @@
 }
 
 /* Responsividade */
-@media (min-width: 768px) {
+@media (min-width: 769px) and (max-width: 1024px) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 1rem 2rem;
+  }
+
+  .logo {
+    margin-bottom: 0;
+  }
+
+  .navList {
+    margin: 0;
+  }
+
+  .searchBar {
+    width: auto;
+    margin: 0;
+  }
+
+  .carouselTitle {
+    font-size: 2.2rem;
+  }
+
+  .carouselText {
+    font-size: 1.3rem;
+  }
+  
+  .booksGrid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+@media (min-width: 1025px) {
   .header {
     flex-direction: row;
     justify-content: space-between;
@@ -583,25 +644,201 @@
   }
 }
 
-@media (max-width: 767px) {
+@media (min-width: 481px) and (max-width: 768px) {
   .booksGrid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.2rem;
   }
 
   .bookCover {
-    height: 160px;
+    height: 180px;
   }
 
   .bookTitle {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
   }
 
   .bookAuthor {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
   }
 
   .bookPrice {
+    font-size: 0.95rem;
+  }
+  
+  .header {
+    padding: 0.8rem 1rem;
+  }
+  
+  .logoTitle {
+    font-size: 1.6rem;
+  }
+  
+  .logoImage {
+    height: 5.5rem;
+  }
+  
+  .headerIcons {
+    gap: 1.5rem;
+  }
+  
+  .userGreeting {
+    font-size: 1.1rem;
+  }
+  
+  .userGreeting i, .cartIcon {
+    font-size: 1.3rem;
+  }
+  
+  .navList {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    justify-content: flex-start;
+    padding-left: 1rem;
+  }
+  
+  .navItem {
+    margin: 0 1rem 0 0;
+    white-space: nowrap;
+  }
+  
+  .navLink {
     font-size: 0.9rem;
+  }
+  
+  .searchContainer {
+    padding: 0 1rem;
+  }
+  
+  .searchFilters {
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  
+  .filterSelect {
+    min-width: 150px;
+    flex: 1;
+  }
+  
+  .keywordFilter {
+    width: 100%;
+  }
+  
+  .carousel {
+    height: 220px;
+  }
+  
+  .carouselTitle {
+    font-size: 2rem;
+  }
+  
+  .carouselText {
+    font-size: 1.2rem;
+  }
+  
+  .bookSection {
+    padding: 0 1.2rem;
+  }
+  
+  .sectionHeader {
+    margin-bottom: 1.2rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .booksGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.8rem;
+  }
+  
+  .bookCover {
+    height: 140px;
+  }
+  
+  .bookTitle {
+    font-size: 0.8rem;
+    height: 2.2em;
+  }
+  
+  .bookAuthor {
+    font-size: 0.7rem;
+  }
+  
+  .bookPrice {
+    font-size: 0.85rem;
+  }
+  
+  .header {
+    padding: 0.5rem 0;
+  }
+  
+  .headerIcons {
+    gap: 1rem;
+  }
+  
+  .logoTitle {
+    font-size: 1.3rem;
+  }
+  
+  .logoImage {
+    height: 4rem;
+  }
+  
+  .userGreeting {
+    font-size: 1rem;
+  }
+  
+  .userGreeting i, .cartIcon {
+    font-size: 1.1rem;
+  }
+  
+  .navList {
+    margin-bottom: 0.5rem;
+  }
+  
+  .navLink {
+    font-size: 0.8rem;
+    padding: 0.3rem 0;
+  }
+  
+  .searchBar {
+    margin-bottom: 0.5rem;
+  }
+  
+  .searchInput, .searchButton {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
+  
+  .carousel {
+    height: 150px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .carouselTitle {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .carouselText {
+    font-size: 0.9rem;
+  }
+  
+  .bookSection {
+    margin-bottom: 2rem;
+    padding: 0 0.8rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.2rem;
+  }
+  
+  .footerInfo p, .footerCopyright p {
+    font-size: 0.7rem;
   }
 }

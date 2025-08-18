@@ -15,9 +15,18 @@ const PaginaIsolada = () => {
   
   // Carregar o nome do usuário do localStorage quando o componente for montado
   useEffect(() => {
+    // Verificar se o usuário está realmente logado
     const storedUserName = localStorage.getItem('userName');
-    if (storedUserName) {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    
+    // Só considera o usuário como logado se ambos existirem
+    if (storedUserName && isLoggedIn === 'true') {
       setUserName(storedUserName);
+    } else {
+      // Limpa o userName se não estiver logado corretamente
+      localStorage.removeItem('userName');
+      localStorage.removeItem('isLoggedIn');
+      setUserName('');
     }
   }, []);
   
@@ -59,46 +68,52 @@ const PaginaIsolada = () => {
                 <img src="/img/logoSenai.png" alt="Logo SENAI" className={styles.logoImage} />
               </div>
             </h1>
-            <div className={styles.userGreeting} onClick={() => setShowLoginStatus(!showLoginStatus)}>
-              <i className="fas fa-user"></i>
-              {userName ? (
-                <span>Olá, {userName}!</span>
-              ) : (
-                <span className={styles.loginPrompt}>Fazer login</span>
-              )}
-              {showLoginStatus && (
-                <div className={styles.loginStatus}>
-                  {userName ? (
-                    <div>
-                      <p>Logado como: {userName}</p>
-                      <button 
-                        className={styles.logoutButton}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          localStorage.removeItem('userName');
-                          setUserName('');
-                          setShowLoginStatus(false);
-                        }}
-                      >
-                        Sair
-                      </button>
-                    </div>
-                  ) : (
-                    <div>
-                      <p>Você não está logado</p>
-                      <button 
-                        className={styles.loginButton}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate('/login');
-                        }}
-                      >
-                        Entrar
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+            <div className={styles.headerIcons}>
+              <div className={styles.cartIcon}>
+                <i className="fas fa-shopping-cart"></i>
+              </div>
+              <div className={styles.userGreeting} onClick={() => setShowLoginStatus(!showLoginStatus)}>
+                <i className="fas fa-user"></i>
+                {userName ? (
+                  <span>Olá, {userName}!</span>
+                ) : (
+                  <span className={styles.loginPrompt}>Fazer login</span>
+                )}
+                {showLoginStatus && (
+                  <div className={styles.loginStatus}>
+                    {userName ? (
+                      <div>
+                        <p>Logado como: {userName}</p>
+                        <button 
+                          className={styles.logoutButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            localStorage.removeItem('userName');
+                            localStorage.removeItem('isLoggedIn');
+                            setUserName('');
+                            setShowLoginStatus(false);
+                          }}
+                        >
+                          Sair
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <p>Você não está logado</p>
+                        <button 
+                          className={styles.loginButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/login');
+                          }}
+                        >
+                          Entrar
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <nav className={styles.nav}>

@@ -1,9 +1,8 @@
-CadastroLivro.jsx 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Book, User, Calendar, Globe, DollarSign, Hash, Building, Tag, FileText } from 'lucide-react';
 import Acessibilidade from './acessibilidade';
-import './style.css';
+import styles from './cadastro.module.css';
 
 export default function CadastroLivro() {
   const navigate = useNavigate();
@@ -231,49 +230,50 @@ export default function CadastroLivro() {
     <>
       <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
       
-      <div className="cadastro-livro-container">
+      <div className={styles.container}>
         {mensagem && (
-          <div className={`mensagem-feedback ${tipoMensagem}`}>
+          <div className={`${styles.mensagemFeedback} ${styles[tipoMensagem]}`}>
             {mensagem}
           </div>
         )}
 
-        <div className="cadastro-livro-header">
-          <div className="logo-container">
-            <img src="/img/logoSenai.png" alt="SENAI" className="logo-senai-cadastro" />
+        <div className={styles.header}>
+          <div className={styles.logoContainer}>
+            <span className={styles.logoBiblioteca}>Biblioteca</span>
+            <img src="/img/logoSenai.png" alt="SENAI" className={styles.logoSenai} />
           </div>
-          <div className="header-content">
-            <h1 className="titulo-principal">
-              <Book className="icone-titulo" />
+          <div className={styles.headerContent}>
+            <h1 className={styles.tituloPrincipal}>
+              <Book className={styles.iconeTitulo} />
               Cadastro de Livros
             </h1>
-            <p className="subtitulo">Adicione um novo livro ao acervo da biblioteca</p>
+            <p className={styles.subtitulo}>Adicione um novo livro ao acervo da biblioteca</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="form-cadastro-livro">
-          <div className="form-grid">
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formGrid}>
             {/* Upload da Capa */}
-            <div className="campo-upload">
-              <label className="upload-label">
+            <div className={styles.campoUpload}>
+              <label className={styles.uploadLabel}>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleFileUpload}
-                  className="upload-input"
+                  className={styles.uploadInput}
                 />
-                <div className="upload-area">
+                <div className={styles.uploadArea}>
                   {previewCapa ? (
-                    <div className="preview-container">
-                      <img src={previewCapa} alt="Preview da capa" className="preview-image" />
-                      <div className="upload-overlay">
-                        <Upload className="upload-icon" />
+                    <div className={styles.previewContainer}>
+                      <img src={previewCapa} alt="Preview da capa" className={styles.previewImage} />
+                      <div className={styles.uploadOverlay}>
+                        <Upload className={styles.uploadIcon} />
                         <span>Alterar capa</span>
                       </div>
                     </div>
                   ) : (
-                    <div className="upload-placeholder">
-                      <Upload className="upload-icon" />
+                    <div className={styles.uploadPlaceholder}>
+                      <Upload className={styles.uploadIcon} />
                       <span>Clique para adicionar a capa</span>
                       <small>PNG, JPG até 5MB</small>
                     </div>
@@ -283,11 +283,11 @@ export default function CadastroLivro() {
             </div>
 
             {/* Campos do formulário */}
-            <div className="campos-container">
+            <div className={styles.camposContainer}>
               {/* Título */}
-              <div className="campo-grupo">
-                <label htmlFor="titulo" className="campo-label">
-                  <Book className="campo-icone" />
+              <div className={styles.campoGrupo}>
+                <label htmlFor="titulo" className={styles.campoLabel}>
+                  <Book className={styles.campoIcone} />
                   Título do Livro *
                 </label>
                 <input
@@ -296,19 +296,19 @@ export default function CadastroLivro() {
                   name="titulo"
                   value={formData.titulo}
                   onChange={handleInputChange}
-                  className={`campo-input ${validacao.titulo.valido ? 'valido' : formData.titulo ? 'invalido' : ''}`}
+                  className={`${styles.campoInput} ${validacao.titulo.valido ? styles.valido : formData.titulo ? styles.invalido : ''}`}
                   placeholder="Digite o título do livro"
                   required
                 />
                 {validacao.titulo.mensagem && (
-                  <span className="campo-erro">{validacao.titulo.mensagem}</span>
+                  <span className={styles.campoErro}>{validacao.titulo.mensagem}</span>
                 )}
               </div>
 
               {/* Autores */}
-              <div className="campo-grupo">
-                <label htmlFor="autores" className="campo-label">
-                  <User className="campo-icone" />
+              <div className={styles.campoGrupo}>
+                <label htmlFor="autores" className={styles.campoLabel}>
+                  <User className={styles.campoIcone} />
                   Autor(es) *
                 </label>
                 <input
@@ -317,19 +317,19 @@ export default function CadastroLivro() {
                   name="autores"
                   value={formData.autores}
                   onChange={handleInputChange}
-                  className={`campo-input ${validacao.autores.valido ? 'valido' : formData.autores ? 'invalido' : ''}`}
+                  className={`${styles.campoInput} ${validacao.autores.valido ? styles.valido : formData.autores ? styles.invalido : ''}`}
                   placeholder="Nome do(s) autor(es)"
                   required
                 />
                 {validacao.autores.mensagem && (
-                  <span className="campo-erro">{validacao.autores.mensagem}</span>
+                  <span className={styles.campoErro}>{validacao.autores.mensagem}</span>
                 )}
               </div>
 
               {/* ISBN */}
-              <div className="campo-grupo">
-                <label htmlFor="isbn" className="campo-label">
-                  <Hash className="campo-icone" />
+              <div className={styles.campoGrupo}>
+                <label htmlFor="isbn" className={styles.campoLabel}>
+                  <Hash className={styles.campoIcone} />
                   ISBN *
                 </label>
                 <input
@@ -338,19 +338,19 @@ export default function CadastroLivro() {
                   name="isbn"
                   value={formData.isbn}
                   onChange={handleInputChange}
-                  className={`campo-input ${validacao.isbn.valido ? 'valido' : formData.isbn ? 'invalido' : ''}`}
+                  className={`${styles.campoInput} ${validacao.isbn.valido ? styles.valido : formData.isbn ? styles.invalido : ''}`}
                   placeholder="978-85-123-4567-8"
                   required
                 />
                 {validacao.isbn.mensagem && (
-                  <span className="campo-erro">{validacao.isbn.mensagem}</span>
+                  <span className={styles.campoErro}>{validacao.isbn.mensagem}</span>
                 )}
               </div>
 
               {/* Editora */}
-              <div className="campo-grupo">
-                <label htmlFor="editora" className="campo-label">
-                  <Building className="campo-icone" />
+              <div className={styles.campoGrupo}>
+                <label htmlFor="editora" className={styles.campoLabel}>
+                  <Building className={styles.campoIcone} />
                   Editora *
                 </label>
                 <input
@@ -359,19 +359,19 @@ export default function CadastroLivro() {
                   name="editora"
                   value={formData.editora}
                   onChange={handleInputChange}
-                  className={`campo-input ${validacao.editora.valido ? 'valido' : formData.editora ? 'invalido' : ''}`}
+                  className={`${styles.campoInput} ${validacao.editora.valido ? styles.valido : formData.editora ? styles.invalido : ''}`}
                   placeholder="Nome da editora"
                   required
                 />
                 {validacao.editora.mensagem && (
-                  <span className="campo-erro">{validacao.editora.mensagem}</span>
+                  <span className={styles.campoErro}>{validacao.editora.mensagem}</span>
                 )}
               </div>
 
               {/* Ano de Publicação */}
-              <div className="campo-grupo">
-                <label htmlFor="anoPublicacao" className="campo-label">
-                  <Calendar className="campo-icone" />
+              <div className={styles.campoGrupo}>
+                <label htmlFor="anoPublicacao" className={styles.campoLabel}>
+                  <Calendar className={styles.campoIcone} />
                   Ano de Publicação *
                 </label>
                 <input
@@ -380,21 +380,21 @@ export default function CadastroLivro() {
                   name="anoPublicacao"
                   value={formData.anoPublicacao}
                   onChange={handleInputChange}
-                  className={`campo-input ${validacao.anoPublicacao.valido ? 'valido' : formData.anoPublicacao ? 'invalido' : ''}`}
+                  className={`${styles.campoInput} ${validacao.anoPublicacao.valido ? styles.valido : formData.anoPublicacao ? styles.invalido : ''}`}
                   placeholder="2024"
                   min="1000"
                   max={new Date().getFullYear()}
                   required
                 />
                 {validacao.anoPublicacao.mensagem && (
-                  <span className="campo-erro">{validacao.anoPublicacao.mensagem}</span>
+                  <span className={styles.campoErro}>{validacao.anoPublicacao.mensagem}</span>
                 )}
               </div>
 
               {/* Número de Páginas */}
-              <div className="campo-grupo">
-                <label htmlFor="numeroPaginas" className="campo-label">
-                  <FileText className="campo-icone" />
+              <div className={styles.campoGrupo}>
+                <label htmlFor="numeroPaginas" className={styles.campoLabel}>
+                  <FileText className={styles.campoIcone} />
                   Número de Páginas *
                 </label>
                 <input
@@ -403,21 +403,21 @@ export default function CadastroLivro() {
                   name="numeroPaginas"
                   value={formData.numeroPaginas}
                   onChange={handleInputChange}
-                  className={`campo-input ${validacao.numeroPaginas.valido ? 'valido' : formData.numeroPaginas ? 'invalido' : ''}`}
+                  className={`${styles.campoInput} ${validacao.numeroPaginas.valido ? styles.valido : formData.numeroPaginas ? styles.invalido : ''}`}
                   placeholder="300"
                   min="1"
                   max="10000"
                   required
                 />
                 {validacao.numeroPaginas.mensagem && (
-                  <span className="campo-erro">{validacao.numeroPaginas.mensagem}</span>
+                  <span className={styles.campoErro}>{validacao.numeroPaginas.mensagem}</span>
                 )}
               </div>
 
               {/* Idioma */}
-              <div className="campo-grupo">
-                <label htmlFor="idioma" className="campo-label">
-                  <Globe className="campo-icone" />
+              <div className={styles.campoGrupo}>
+                <label htmlFor="idioma" className={styles.campoLabel}>
+                  <Globe className={styles.campoIcone} />
                   Idioma *
                 </label>
                 <select
@@ -425,7 +425,7 @@ export default function CadastroLivro() {
                   name="idioma"
                   value={formData.idioma}
                   onChange={handleInputChange}
-                  className={`campo-input ${validacao.idioma.valido ? 'valido' : formData.idioma ? 'invalido' : ''}`}
+                  className={`${styles.campoInput} ${validacao.idioma.valido ? styles.valido : formData.idioma ? styles.invalido : ''}`}
                   required
                 >
                   <option value="">Selecione o idioma</option>
@@ -434,14 +434,14 @@ export default function CadastroLivro() {
                   ))}
                 </select>
                 {validacao.idioma.mensagem && (
-                  <span className="campo-erro">{validacao.idioma.mensagem}</span>
+                  <span className={styles.campoErro}>{validacao.idioma.mensagem}</span>
                 )}
               </div>
 
               {/* Preço */}
-              <div className="campo-grupo">
-                <label htmlFor="preco" className="campo-label">
-                  <DollarSign className="campo-icone" />
+              <div className={styles.campoGrupo}>
+                <label htmlFor="preco" className={styles.campoLabel}>
+                  <DollarSign className={styles.campoIcone} />
                   Preço *
                 </label>
                 <input
@@ -450,58 +450,58 @@ export default function CadastroLivro() {
                   name="preco"
                   value={formData.preco}
                   onChange={handleInputChange}
-                  className={`campo-input ${validacao.preco.valido ? 'valido' : formData.preco ? 'invalido' : ''}`}
+                  className={`${styles.campoInput} ${validacao.preco.valido ? styles.valido : formData.preco ? styles.invalido : ''}`}
                   placeholder="29.90"
                   required
                 />
                 {validacao.preco.mensagem && (
-                  <span className="campo-erro">{validacao.preco.mensagem}</span>
+                  <span className={styles.campoErro}>{validacao.preco.mensagem}</span>
                 )}
               </div>
             </div>
           </div>
 
           {/* Seleção de Gêneros */}
-          <div className="generos-section">
-            <label className="campo-label">
-              <Tag className="campo-icone" />
+          <div className={styles.generosSection}>
+            <label className={styles.campoLabel}>
+              <Tag className={styles.campoIcone} />
               Gênero/Categoria *
             </label>
-            <div className="generos-grid">
+            <div className={styles.generosGrid}>
               {generosDisponiveis.map(genero => (
                 <button
                   key={genero}
                   type="button"
                   onClick={() => toggleGenero(genero)}
-                  className={`genero-chip ${generosSelecionados.includes(genero) ? 'selecionado' : ''}`}
+                  className={`${styles.generoChip} ${generosSelecionados.includes(genero) ? styles.selecionado : ''}`}
                 >
                   {genero}
                 </button>
               ))}
             </div>
             {generosSelecionados.length === 0 && (
-              <span className="campo-erro">Selecione pelo menos um gênero</span>
+              <span className={styles.campoErro}>Selecione pelo menos um gênero</span>
             )}
           </div>
 
           {/* Botões de Ação */}
-          <div className="acoes-container">
+          <div className={styles.acoesContainer}>
             <button
               type="button"
               onClick={() => navigate('/livros')}
-              className="btn-cancelar"
+              className={styles.btnCancelar}
               disabled={loading}
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className={`btn-cadastrar ${formularioValido() ? 'ativo' : ''}`}
+              className={`${styles.btnCadastrar} ${formularioValido() ? styles.ativo : ''}`}
               disabled={!formularioValido() || loading}
             >
               {loading ? (
                 <>
-                  <div className="spinner"></div>
+                  <div className={styles.spinner}></div>
                   Cadastrando...
                 </>
               ) : (
