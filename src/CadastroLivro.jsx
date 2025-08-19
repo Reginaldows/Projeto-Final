@@ -216,95 +216,92 @@ export default function CadastroLivro() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!formularioValido()) {
-      setMensagem('Por favor, preencha todos os campos corretamente.');
-      setTipoMensagem('erro');
-      // Configurar um timer para limpar a mensagem de erro após 3 segundos
-      setTimeout(() => {
-        setMensagem('');
-        setTipoMensagem('');
-      }, 3000);
-      return;
-    }
+  e.preventDefault();
 
-    setLoading(true);
+  if (!formularioValido()) {
+    setMensagem('Por favor, preencha todos os campos corretamente.');
+    setTipoMensagem('erro');
+    setTimeout(() => { setMensagem(''); setTipoMensagem(''); }, 3000);
+    return;
+  }
 
-    try {
-      // Criar FormData para enviar ao PHP (suporta upload de arquivos)
-      const formDataToSend = new FormData();
-      formDataToSend.append('titulo', formData.titulo);
-      formDataToSend.append('autor', formData.autores);
-      formDataToSend.append('isbn', formData.isbn);
-      formDataToSend.append('editora', formData.editora);
-      formDataToSend.append('ano', formData.anoPublicacao);
-      formDataToSend.append('categoria', generosSelecionados.join(', '));
-      formDataToSend.append('paginas', formData.numeroPaginas);
-      formDataToSend.append('idioma', formData.idioma);
-      formDataToSend.append('descricao', formData.descricao);
-      formDataToSend.append('preco', formData.preco);
-      
-      // Adicionar arquivo de capa se existir
-      if (formData.capa) {
-        formDataToSend.append('capa', formData.capa);
-      }
-      
-      // Enviar dados para o PHP
-      const response = await fetch('php/cadastrolivro.php', {
-        method: 'POST',
-        body: formDataToSend,
+  setLoading(true);
+
+  try {
+    // Usar FormData se houver capa, senão URLSearchParams
+    let body;
+    let headers = {};
+
+    if (formData.capa) {
+      body = new FormData();
+      body.append('titulo', formData.titulo);
+      body.append('autor', formData.autores);
+      body.append('isbn', formData.isbn);
+      body.append('editora', formData.editora);
+      body.append('ano', formData.anoPublicacao);
+      body.append('genero', generosSelecionados.join(', '));
+      body.append('paginas', formData.numeroPaginas);
+      body.append('idioma', formData.idioma);
+      body.append('descricao', formData.descricao);
+      body.append('preco', formData.preco);
+      body.append('capa', formData.capa, formData.capa.name);
+    } else {
+      const dados = new URLSearchParams({
+        titulo: formData.titulo,
+        autor: formData.autores,
+        isbn: formData.isbn,
+        editora: formData.editora,
+        ano: formData.anoPublicacao,
+        genero: generosSelecionados.join(', '),
+        paginas: formData.numeroPaginas,
+        idioma: formData.idioma,
+        descricao: formData.descricao,
+        preco: formData.preco
       });
-      
-      const resultado = await response.text();
-      
-      if (resultado.includes('sucesso')) {
-        setMensagem('Livro cadastrado com sucesso!');
-        setTipoMensagem('sucesso');
-        
-        // Disparar um evento para notificar outras partes da aplicação
-        window.dispatchEvent(new Event('livrosAtualizados'));
-        
-        // Limpar todos os campos do formulário
-        setFormData({
-          titulo: '',
-          autores: '',
-          isbn: '',
-          editora: '',
-          anoPublicacao: '',
-          genero: '',
-          numeroPaginas: '',
-          idioma: '',
-          descricao: '',
-          preco: '',
-          capa: null
-        });
-        setGenerosSelecionados([]);
-        setPreviewCapa(null);
-      } else {
-        throw new Error('Erro na resposta do servidor');
-      }
-      
-      // Configurar um timer para limpar a mensagem após 3 segundos
-      setTimeout(() => {
-        setMensagem('');
-        setTipoMensagem('');
-      }, 3000);
-    } catch (error) {
-      console.error('Erro ao cadastrar livro:', error);
-      setMensagem('Erro ao cadastrar livro. Tente novamente.');
+      body = dados.toString();
+      headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    }
+
+    const response = await fetch('http://localhost/php/cadastrolivro.php', {
+      method: 'POST',
+      headers,
+      body
+    });
+
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+    const resultado = await response.json();
+
+    if (resultado.success) {
+      setMensagem(resultado.message);
+      setTipoMensagem('sucesso');
+      window.dispatchEvent(new Event('livrosAtualizados'));
+
+      // Limpar formulário
+      setFormData({
+        titulo: '', autores: '', isbn: '', editora: '', anoPublicacao: '',
+        genero: '', numeroPaginas: '', idioma: '', descricao: '', preco: '', capa: null
+      });
+      setGenerosSelecionados([]);
+      setPreviewCapa(null);
+    } else {
+      setMensagem(resultado.message);
       setTipoMensagem('erro');
-      
-      // Limpar mensagem de erro após 3 segundos
-      setTimeout(() => {
-        setMensagem('');
-        setTipoMensagem('');
-      }, 3000);
-    } finally {
-      setLoading(false);
     }
-    }
-  };
+
+    setTimeout(() => { setMensagem(''); setTipoMensagem(''); }, 3000);
+
+  } catch (error) {
+    console.error(error);
+    setMensagem('Erro ao cadastrar livro.');
+    setTipoMensagem('erro');
+    setTimeout(() => { setMensagem(''); setTipoMensagem(''); }, 3000);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
   return (
     <>
@@ -596,4 +593,4 @@ export default function CadastroLivro() {
         </form>
       </div>
     </>
-  );
+  )};
