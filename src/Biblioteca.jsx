@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './biblioteca.module.css';
+import ChatFlutuante from './ChatFlutuante';
 
 const PaginaIsolada = () => {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ const PaginaIsolada = () => {
   const [livros, setLivros] = useState([]);
   const [livrosFiltrados, setLivrosFiltrados] = useState([]);
 
-  // Função para carregar livros do banco de dados via PHP
+
   const carregarLivros = async () => {
   try {
     console.log('Tentando carregar livros...');
@@ -129,6 +130,7 @@ const PaginaIsolada = () => {
             </h1>
             <div className={styles.headerIcons}>
               <div className={styles.cartIcon}><i className="fas fa-shopping-cart"></i></div>
+              <div className={styles.notificationIcon}><i className="fas fa-bell"></i></div>
               <div className={styles.userGreeting} onClick={() => setShowLoginStatus(!showLoginStatus)}>
                 <i className="fas fa-user"></i>
                 {userName ? <span>Olá, {userName}!</span> : <span className={styles.loginPrompt}>Fazer login</span>}
@@ -251,15 +253,16 @@ const PaginaIsolada = () => {
         <footer className={styles.footer}>
           <div className={styles.footerContent}>
             <div className={styles.footerInfo}>
-              <p>Os preços apresentados nesse site não são necessariamente iguais aos das lojas físicas.</p>
               <p>Todos os produtos estão sujeitos a alteração de preço sem prévia comunicação.</p>
-              <p>Biblioteca SENAI - www.bibliotecasenai.com.br | Rua Exemplo, n. 123, Centro - São Paulo</p>
+              <p>Biblioteca SENAI - www.bibliotecasenai.com.br |  Rua Residêncial 6 - Loteamento Nova Fronteira - Paraíso do Tocantins/TO</p>
             </div>
             <div className={styles.footerCopyright}>
               <p>© 2025 Biblioteca SENAI. Todos os direitos reservados.</p>
             </div>
           </div>
         </footer>
+        
+        <ChatFlutuante />
       </div>
     </div>
   );

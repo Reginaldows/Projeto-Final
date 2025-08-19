@@ -3,7 +3,7 @@
 // CONFIGURAÇÃO DE CORS
 // ===============================
 header('Content-Type: application/json; charset=utf-8');
-header("Access-Control-Allow-Origin: http://localhost:5176"); // Porta do seu React
+header("Access-Control-Allow-Origin: http://localhost:5174"); // Porta do seu React
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
 header("Access-Control-Allow-Headers: *");
 header("Access-Control-Max-Age: 3600");

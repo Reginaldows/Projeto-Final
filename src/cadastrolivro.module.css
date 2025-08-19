@@ -1,4 +1,3 @@
-/* ===== RESET CSS GLOBAL PARA ESTA PÁGINA ===== */
 html, body {
   margin: 0;
   padding: 0;
@@ -6,10 +5,10 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Importação de fontes */
+
 @import url("https://fonts.googleapis.com/css2?family=Ancizar+Sans:ital,wght@0,100..1000;1,100..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
-/* Variáveis de cores */
+
 :root {
   --cor-fundo-claro: #ffffff;
   --cor-letra-claro: #333333;
@@ -30,7 +29,7 @@ html, body {
 }
 
 .container {
-  /* Reset específico para esta página */
+  
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -39,7 +38,7 @@ html, body {
   line-height: 1.6;
   color: #333;
   
-  /* Layout da página */
+  
   min-height: 100vh;
   height: 100%;
   width: 100%;
@@ -53,15 +52,15 @@ html, body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Modo escuro para o container */
+
 :global(body.dark-mode) .container {
   background: #1a1a1a;
   color: #f0f0f0;
 }
 
-/* ===== COMPONENTES PRINCIPAIS ===== */
 
-/* Logo Biblioteca */
+
+
 .logoBiblioteca {
   font-size: 1.8rem;
   font-weight: bold;
@@ -71,7 +70,7 @@ html, body {
   text-align: center;
 }
 
-/* Mensagem de feedback */
+
 .mensagemFeedback {
   position: fixed;
   top: 50%;
@@ -111,7 +110,7 @@ html, body {
   }
 }
 
-/* Header */
+
 .header {
   display: flex;
   align-items: center;
@@ -177,7 +176,7 @@ html, body {
   color: #a0aec0;
 }
 
-/* Formulário */
+
 .form {
   background: #ffffff;
   padding: 40px;
@@ -236,7 +235,7 @@ html, body {
   }
 }
 
-/* Upload da capa */
+
 .campoUpload {
   display: flex;
   flex-direction: column;
@@ -360,7 +359,7 @@ html, body {
   opacity: 1;
 }
 
-/* Campos do formulário */
+
 .camposContainer {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -449,7 +448,7 @@ html, body {
   margin-top: 4px;
 }
 
-/* Seleção de gêneros */
+
 .generosSection {
   margin-bottom: 40px;
 }
@@ -499,7 +498,7 @@ html, body {
   border-color: #5a67d8;
 }
 
-/* Botões de ação */
+
 .acoesContainer {
   display: flex;
   justify-content: flex-end;
@@ -555,9 +554,9 @@ html, body {
   border-color: #4a5568;
 }
 
-/* ===== ESTILOS DE ACESSIBILIDADE ===== */
 
-/* Ícone de acessibilidade */
+
+
 :global(.icone-acessibilidade) {
   position: fixed;
   top: 20px;
@@ -602,7 +601,7 @@ html, body {
   filter: invert(1);
 }
 
-/* Overlay e menu lateral */
+
 :global(.overlay-menu) {
   position: fixed;
   top: 0;
@@ -685,7 +684,7 @@ html, body {
   transform: scale(1.1);
 }
 
-/* Controles de acessibilidade */
+
 :global(.modo-escuro),
 :global(.controles-fonte),
 :global(.leitura-voz) {
@@ -816,7 +815,7 @@ html, body {
   color: rgba(238, 238, 238, 0.8);
 }
 
-/* Contraste para daltonismo */
+
 :global(.btn-contraste) {
   background-color: #eee;
   border: 2px solid #888;
@@ -859,7 +858,7 @@ html, body {
   outline-offset: 2px;
 }
 
-/* Estilos para modo de contraste */
+
 :global(body.contraste-rosa) {
   background-color: rgba(255, 192, 203, 0.3) !important;
   filter: hue-rotate(300deg) saturate(1.2);
