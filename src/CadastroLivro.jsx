@@ -22,6 +22,7 @@ export default function CadastroLivro() {
     genero: '',
     numeroPaginas: '',
     idioma: '',
+    descricao: '',
     preco: '',
     capa: null
   });
@@ -34,6 +35,7 @@ export default function CadastroLivro() {
     anoPublicacao: { valido: false, mensagem: '' },
     numeroPaginas: { valido: false, mensagem: '' },
     idioma: { valido: false, mensagem: '' },
+    descricao: { valido: true, mensagem: '' },
     preco: { valido: false, mensagem: '' }
   });
 
@@ -79,6 +81,10 @@ export default function CadastroLivro() {
   }, [formData.idioma]);
 
   useEffect(() => {
+    validarCampo('descricao', formData.descricao);
+  }, [formData.descricao]);
+
+  useEffect(() => {
     validarCampo('preco', formData.preco);
   }, [formData.preco]);
 
@@ -116,10 +122,15 @@ export default function CadastroLivro() {
         mensagem = valido ? '' : 'Número de páginas deve ser entre 1 e 10000';
         break;
       case 'idioma':
-        valido = valor.length >= 2;
+        valido = valor.length > 0;
         mensagem = valido ? '' : 'Selecione um idioma';
         break;
+      case 'descricao':
+        // Descrição é opcional, então sempre é válida
+        valido = true;
+        break;
       case 'preco':
+        const precoRegex = /^\d+(\.\d{1,2})?$/;
         const preco = parseFloat(valor);
         valido = preco >= 0;
         mensagem = valido ? '' : 'Preço deve ser um valor positivo';
@@ -157,12 +168,20 @@ export default function CadastroLivro() {
       if (file.size > 5 * 1024 * 1024) { // 5MB
         setMensagem('Arquivo muito grande. Máximo 5MB.');
         setTipoMensagem('erro');
+        setTimeout(() => {
+          setMensagem('');
+          setTipoMensagem('');
+        }, 3000);
         return;
       }
 
       if (!file.type.startsWith('image/')) {
         setMensagem('Apenas arquivos de imagem são permitidos.');
         setTipoMensagem('erro');
+        setTimeout(() => {
+          setMensagem('');
+          setTipoMensagem('');
+        }, 3000);
         return;
       }
 
@@ -202,25 +221,88 @@ export default function CadastroLivro() {
     if (!formularioValido()) {
       setMensagem('Por favor, preencha todos os campos corretamente.');
       setTipoMensagem('erro');
+      // Configurar um timer para limpar a mensagem de erro após 3 segundos
+      setTimeout(() => {
+        setMensagem('');
+        setTipoMensagem('');
+      }, 3000);
       return;
     }
 
     setLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Criar FormData para enviar ao PHP (suporta upload de arquivos)
+      const formDataToSend = new FormData();
+      formDataToSend.append('titulo', formData.titulo);
+      formDataToSend.append('autor', formData.autores);
+      formDataToSend.append('isbn', formData.isbn);
+      formDataToSend.append('editora', formData.editora);
+      formDataToSend.append('ano', formData.anoPublicacao);
+      formDataToSend.append('categoria', generosSelecionados.join(', '));
+      formDataToSend.append('paginas', formData.numeroPaginas);
+      formDataToSend.append('idioma', formData.idioma);
+      formDataToSend.append('descricao', formData.descricao);
+      formDataToSend.append('preco', formData.preco);
       
-      setMensagem('Livro cadastrado com sucesso!');
-      setTipoMensagem('sucesso');
+      // Adicionar arquivo de capa se existir
+      if (formData.capa) {
+        formDataToSend.append('capa', formData.capa);
+      }
       
+      // Enviar dados para o PHP
+      const response = await fetch('php/cadastrolivro.php', {
+        method: 'POST',
+        body: formDataToSend,
+      });
+      
+      const resultado = await response.text();
+      
+      if (resultado.includes('sucesso')) {
+        setMensagem('Livro cadastrado com sucesso!');
+        setTipoMensagem('sucesso');
+        
+        // Disparar um evento para notificar outras partes da aplicação
+        window.dispatchEvent(new Event('livrosAtualizados'));
+        
+        // Limpar todos os campos do formulário
+        setFormData({
+          titulo: '',
+          autores: '',
+          isbn: '',
+          editora: '',
+          anoPublicacao: '',
+          genero: '',
+          numeroPaginas: '',
+          idioma: '',
+          descricao: '',
+          preco: '',
+          capa: null
+        });
+        setGenerosSelecionados([]);
+        setPreviewCapa(null);
+      } else {
+        throw new Error('Erro na resposta do servidor');
+      }
+      
+      // Configurar um timer para limpar a mensagem após 3 segundos
       setTimeout(() => {
-        navigate('/livros');
-      }, 2000);
+        setMensagem('');
+        setTipoMensagem('');
+      }, 3000);
     } catch (error) {
+      console.error('Erro ao cadastrar livro:', error);
       setMensagem('Erro ao cadastrar livro. Tente novamente.');
       setTipoMensagem('erro');
+      
+      // Limpar mensagem de erro após 3 segundos
+      setTimeout(() => {
+        setMensagem('');
+        setTipoMensagem('');
+      }, 3000);
     } finally {
       setLoading(false);
+    }
     }
   };
 
@@ -428,6 +510,22 @@ export default function CadastroLivro() {
               </div>
 
               <div className={styles.campoGrupo}>
+                <label htmlFor="descricao" className={styles.campoLabel}>
+                  <FileText className={styles.campoIcone} />
+                  Descrição
+                </label>
+                <textarea
+                  id="descricao"
+                  name="descricao"
+                  value={formData.descricao}
+                  onChange={handleInputChange}
+                  className={`${styles.campoInput} ${styles.campoTextarea}`}
+                  placeholder="Descrição do livro (opcional)"
+                  rows="3"
+                />
+              </div>
+
+              <div className={styles.campoGrupo}>
                 <label htmlFor="preco" className={styles.campoLabel}>
                   <DollarSign className={styles.campoIcone} />
                   Preço *
@@ -474,7 +572,7 @@ export default function CadastroLivro() {
           <div className={styles.acoesContainer}>
             <button
               type="button"
-              onClick={() => navigate('/livros')}
+              onClick={() => navigate('/')}
               className={styles.btnCancelar}
               disabled={loading}
             >
@@ -499,4 +597,3 @@ export default function CadastroLivro() {
       </div>
     </>
   );
-}

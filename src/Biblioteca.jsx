@@ -12,7 +12,27 @@ const PaginaIsolada = () => {
   const [keywords, setKeywords] = useState([]);
   const [userName, setUserName] = useState('');
   const [showLoginStatus, setShowLoginStatus] = useState(false);
+  const [livros, setLivros] = useState([]);
+  const [livrosFiltrados, setLivrosFiltrados] = useState([]);
   
+  // Função para carregar livros do banco de dados via PHP
+  const carregarLivros = async () => {
+    try {
+      const response = await fetch('php/listarlivro.php');
+      if (!response.ok) {
+        throw new Error('Erro ao buscar livros');
+      }
+      const livrosSalvos = await response.json();
+      console.log('Livros carregados do banco de dados:', livrosSalvos);
+      setLivros(livrosSalvos);
+      setLivrosFiltrados(livrosSalvos);
+    } catch (error) {
+      console.error('Erro ao carregar livros:', error);
+      setLivros([]);
+      setLivrosFiltrados([]);
+    }
+  };
+
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -24,15 +44,55 @@ const PaginaIsolada = () => {
       localStorage.removeItem('isLoggedIn');
       setUserName('');
     }
+    
+    // Carregar livros do localStorage
+    carregarLivros();
+
+    // Adicionar event listeners para os eventos storage e livrosAtualizados
+    window.addEventListener('storage', carregarLivros);
+    window.addEventListener('livrosAtualizados', carregarLivros);
+    
+    // Limpar os event listeners quando o componente for desmontado
+    return () => {
+      window.removeEventListener('storage', carregarLivros);
+      window.removeEventListener('livrosAtualizados', carregarLivros);
+    };
   }, []);
   
   const handleSearch = () => {
-    console.log('Buscando com os filtros:', {
-      searchTerm,
-      category,
-      author,
-      keywords
-    });
+    // Filtrar livros com base nos critérios de busca
+    let resultados = [...livros];
+    
+    if (searchTerm) {
+      resultados = resultados.filter(livro => 
+        livro.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        livro.autor.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    if (category) {
+      resultados = resultados.filter(livro => 
+        livro.genero && livro.genero.toLowerCase().includes(category.toLowerCase())
+      );
+    }
+    
+    if (author) {
+      resultados = resultados.filter(livro => 
+        livro.autor.toLowerCase().includes(author.toLowerCase())
+      );
+    }
+    
+    if (keywords.length > 0) {
+      resultados = resultados.filter(livro => 
+        keywords.some(kw => 
+          livro.titulo.toLowerCase().includes(kw.toLowerCase()) ||
+          livro.autor.toLowerCase().includes(kw.toLowerCase()) ||
+          (livro.genero && livro.genero.toLowerCase().includes(kw.toLowerCase()))
+        )
+      );
+    }
+    
+    setLivrosFiltrados(resultados);
   };
   
   const addKeyword = () => {
@@ -117,6 +177,15 @@ const PaginaIsolada = () => {
               <li className={styles.navItem}><a className={styles.navLink} href="#">Categorias</a></li>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Autores</a></li>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Contato</a></li>
+              <li className={styles.navItem}>
+                <button 
+                  className={styles.navLink} 
+                  onClick={() => navigate('/cadastro-livro')}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  Cadastrar Livro
+                </button>
+              </li>
             </ul>
           </nav>
           <div className={styles.searchContainer}>
@@ -205,149 +274,42 @@ const PaginaIsolada = () => {
 
         <section className={styles.bookSection}>
           <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Lançamentos</h2>
-            <a href="#" className={styles.sectionLink}>Ver Mais</a>
+            <h2 className={styles.sectionTitle}>Livros Disponíveis</h2>
+            <button 
+              onClick={() => navigate('/cadastro-livro')} 
+              className={styles.sectionLink}
+            >
+              Cadastrar Novo Livro
+            </button>
           </div>
           <div className={styles.booksGrid}>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Programação em Python</h3>
-                <p className={styles.bookAuthor}>João Silva</p>
-                <p className={styles.bookPrice}>R$ 89,90</p>
+            {livrosFiltrados.length > 0 ? (
+              livrosFiltrados.map(livro => (
+                <div key={livro.id} className={styles.bookCard}>
+                  <div 
+                    className={styles.bookCover} 
+                    style={{
+                      backgroundImage: `url(${livro.capa || '/img/Biblioteca.png'})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}
+                  ></div>
+                  <div className={styles.bookInfo}>
+                    <h3 className={styles.bookTitle}>{livro.titulo}</h3>
+                    <p className={styles.bookAuthor}>{livro.autor}</p>
+                    <p className={styles.bookPrice}>R$ {livro.preco}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className={styles.emptyMessage}>
+                <p>Nenhum livro encontrado. Cadastre um novo livro ou ajuste os filtros de busca.</p>
               </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Redes de Computadores</h3>
-                <p className={styles.bookAuthor}>Maria Santos</p>
-                <p className={styles.bookPrice}>R$ 105,50</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Inteligência Artificial</h3>
-                <p className={styles.bookAuthor}>Carlos Oliveira</p>
-                <p className={styles.bookPrice}>R$ 129,90</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Banco de Dados</h3>
-                <p className={styles.bookAuthor}>Ana Pereira</p>
-                <p className={styles.bookPrice}>R$ 75,00</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Desenvolvimento Web</h3>
-                <p className={styles.bookAuthor}>Pedro Costa</p>
-                <p className={styles.bookPrice}>R$ 95,00</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Segurança da Informação</h3>
-                <p className={styles.bookAuthor}>Lucia Mendes</p>
-                <p className={styles.bookPrice}>R$ 110,00</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Cloud Computing</h3>
-                <p className={styles.bookAuthor}>Roberto Alves</p>
-                <p className={styles.bookPrice}>R$ 120,00</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Machine Learning</h3>
-                <p className={styles.bookAuthor}>Carla Souza</p>
-                <p className={styles.bookPrice}>R$ 145,90</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>DevOps na Prática</h3>
-                <p className={styles.bookAuthor}>Marcos Lima</p>
-                <p className={styles.bookPrice}>R$ 89,90</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Blockchain</h3>
-                <p className={styles.bookAuthor}>Fernanda Dias</p>
-                <p className={styles.bookPrice}>R$ 110,00</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Cibersegurança</h3>
-                <p className={styles.bookAuthor}>Rafael Gomes</p>
-                <p className={styles.bookPrice}>R$ 95,50</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Análise de Dados</h3>
-                <p className={styles.bookAuthor}>Juliana Castro</p>
-                <p className={styles.bookPrice}>R$ 78,90</p>
-              </div>
-            </div>
+            )}
           </div>
         </section>
 
-        <section className={styles.bookSection}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Livros mais procurados</h2>
-            <a href="#" className={styles.sectionLink}>Ver Mais</a>
-          </div>
-          <div className={styles.booksGrid}>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Algoritmos</h3>
-                <p className={styles.bookAuthor}>Paulo Silveira</p>
-                <p className={styles.bookPrice}>R$ 69,90</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>UX Design</h3>
-                <p className={styles.bookAuthor}>Mariana Costa</p>
-                <p className={styles.bookPrice}>R$ 85,00</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Gestão de Projetos</h3>
-                <p className={styles.bookAuthor}>Ricardo Martins</p>
-                <p className={styles.bookPrice}>R$ 79,90</p>
-              </div>
-            </div>
-            <div className={styles.bookCard}>
-              <div className={styles.bookCover}></div>
-              <div className={styles.bookInfo}>
-                <h3 className={styles.bookTitle}>Arquitetura de Software</h3>
-                <p className={styles.bookAuthor}>Daniela Rocha</p>
-                <p className={styles.bookPrice}>R$ 115,00</p>
-              </div>
-            </div>
-          </div>
-        </section>
+
 
         <footer className={styles.footer}>
           <div className={styles.footerContent}>

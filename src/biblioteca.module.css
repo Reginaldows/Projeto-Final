@@ -451,10 +451,25 @@
   font-size: 0.9rem;
   text-decoration: none;
   cursor: pointer;
+  background: none;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
 .sectionLink:hover {
-  text-decoration: underline;
+  background-color: #e6f0ff;
+}
+
+.emptyMessage {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  color: #6c757d;
+  font-size: 1.1rem;
 }
 
 .booksGrid {
@@ -488,6 +503,7 @@
   background-image: linear-gradient(#e0e0e0, #c0c0c0);
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
 .bookInfo {
