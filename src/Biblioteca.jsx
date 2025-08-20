@@ -14,12 +14,14 @@ const PaginaIsolada = () => {
   const [showLoginStatus, setShowLoginStatus] = useState(false);
   const [livros, setLivros] = useState([]);
   const [livrosFiltrados, setLivrosFiltrados] = useState([]);
+  const [autores, setAutores] = useState([]);
+  const [categorias, setCategorias] = useState([]);
 
 
   const carregarLivros = async () => {
   try {
     console.log('Tentando carregar livros...');
-    const response = await fetch('http://localhost/php/listarlivro.php');
+    const response = await fetch('http://localhost:80/php/listarlivro.php');
     
     console.log('Response status:', response.status);
     
@@ -45,6 +47,42 @@ const PaginaIsolada = () => {
   }
 };
 
+  const carregarAutores = async () => {
+    try {
+      console.log('Carregando autores...');
+      const response = await fetch('http://localhost:80/php/listarautores.php');
+      
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+      }
+      
+      const autoresData = await response.json();
+      console.log('Autores carregados:', autoresData);
+      setAutores(autoresData);
+    } catch (error) {
+      console.error('Erro ao carregar autores:', error);
+      setAutores([]);
+    }
+  };
+
+  const carregarCategorias = async () => {
+    try {
+      console.log('Carregando categorias...');
+      const response = await fetch('http://localhost:80/php/listarcategorias.php');
+      
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+      }
+      
+      const categoriasData = await response.json();
+      console.log('Categorias carregadas:', categoriasData);
+      setCategorias(categoriasData);
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error);
+      setCategorias([]);
+    }
+  };
+
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -58,6 +96,8 @@ const PaginaIsolada = () => {
     }
 
     carregarLivros();
+    carregarAutores();
+    carregarCategorias();
     window.addEventListener('storage', carregarLivros);
     window.addEventListener('livrosAtualizados', carregarLivros);
 
@@ -67,39 +107,40 @@ const PaginaIsolada = () => {
     };
   }, []);
 
-  const handleSearch = () => {
-    let resultados = [...livros];
-
-    if (searchTerm) {
-      resultados = resultados.filter(livro =>
-        livro.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        livro.autor.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+  const handleSearch = async () => {
+    try {
+      
+      // Construir a URL com os parâmetros de filtro
+      let url = new URL('http://localhost:80/php/filtrarlivros.php');
+      
+      // Adicionar parâmetros de busca se existirem
+      if (searchTerm) url.searchParams.append('searchTerm', searchTerm);
+      if (category) url.searchParams.append('category', category);
+      if (author) url.searchParams.append('author', author);
+      if (keywords.length > 0) url.searchParams.append('keywords', JSON.stringify(keywords));
+      
+      console.log('Buscando com filtros:', url.toString());
+      
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Resposta não é JSON:', text);
+        throw new Error('Resposta do servidor não é JSON válido');
+      }
+      
+      const resultados = await response.json();
+      console.log('Resultados filtrados:', resultados);
+      setLivrosFiltrados(resultados);
+    } catch (error) {
+      console.error('Erro ao filtrar livros:', error);
+      setLivrosFiltrados([]);
     }
-
-    if (category) {
-      resultados = resultados.filter(livro =>
-        livro.genero && livro.genero.toLowerCase().includes(category.toLowerCase())
-      );
-    }
-
-    if (author) {
-      resultados = resultados.filter(livro =>
-        livro.autor.toLowerCase().includes(author.toLowerCase())
-      );
-    }
-
-    if (keywords.length > 0) {
-      resultados = resultados.filter(livro =>
-        keywords.some(kw =>
-          livro.titulo.toLowerCase().includes(kw.toLowerCase()) ||
-          livro.autor.toLowerCase().includes(kw.toLowerCase()) ||
-          (livro.genero && livro.genero.toLowerCase().includes(kw.toLowerCase()))
-        )
-      );
-    }
-
-    setLivrosFiltrados(resultados);
   };
 
   const addKeyword = () => {
@@ -185,19 +226,16 @@ const PaginaIsolada = () => {
             <div className={styles.searchFilters}>
               <select className={styles.filterSelect} value={category} onChange={(e) => setCategory(e.target.value)}>
                 <option value="">Filtrar por categoria</option>
-                <option value="tecnologia">Tecnologia</option>
-                <option value="programacao">Programação</option>
-                <option value="redes">Redes</option>
-                <option value="dados">Banco de Dados</option>
-                <option value="ia">Inteligência Artificial</option>
+                {categorias.map((categoria, index) => (
+                  <option key={index} value={categoria}>{categoria}</option>
+                ))}
               </select>
 
               <select className={styles.filterSelect} value={author} onChange={(e) => setAuthor(e.target.value)}>
                 <option value="">Filtrar por autor</option>
-                <option value="joao">João Silva</option>
-                <option value="maria">Maria Santos</option>
-                <option value="carlos">Carlos Oliveira</option>
-                <option value="ana">Ana Pereira</option>
+                {autores.map((autor, index) => (
+                  <option key={index} value={autor}>{autor}</option>
+                ))}
               </select>
 
               <div className={styles.keywordFilter}>
