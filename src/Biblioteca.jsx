@@ -90,12 +90,19 @@ const PaginaIsolada = () => {
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
     const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
 
     if (storedUserName && isLoggedIn === 'true') {
       setUserName(storedUserName);
+      // Verificar se o usuário é bibliotecário e redirecionar se for
+      if (tipoUsuario === 'bibliotecario') {
+        navigate('/bibliotecario');
+        return;
+      }
     } else {
       localStorage.removeItem('userName');
       localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('tipoUsuario');
       setUserName('');
     }
 
@@ -186,7 +193,15 @@ const PaginaIsolada = () => {
                         <p>Logado como: {userName}</p>
                         <button 
                           className={styles.logoutButton}
-                          onClick={(e) => { e.stopPropagation(); localStorage.removeItem('userName'); localStorage.removeItem('isLoggedIn'); setUserName(''); setShowLoginStatus(false); }}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            localStorage.removeItem('userName'); 
+                            localStorage.removeItem('isLoggedIn'); 
+                            localStorage.removeItem('tipoUsuario');
+                            setUserName(''); 
+                            setShowLoginStatus(false); 
+                            navigate('/login');
+                          }}
                         >
                           Sair
                         </button>
@@ -215,9 +230,6 @@ const PaginaIsolada = () => {
               <li className={styles.navItem}><a className={styles.navLink} href="#">Categorias</a></li>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Autores</a></li>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Contato</a></li>
-              <li className={styles.navItem}>
-                <button className={styles.navLink} onClick={() => navigate('/cadastro-livro')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Cadastrar Livro</button>
-              </li>
             </ul>
           </nav>
 
@@ -264,7 +276,6 @@ const PaginaIsolada = () => {
         <section className={styles.bookSection}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Livros Disponíveis</h2>
-            <button onClick={() => navigate('/cadastro-livro')} className={styles.sectionLink}>Cadastrar Novo Livro</button>
           </div>
           
           <div className={styles.categoryLegend}>
