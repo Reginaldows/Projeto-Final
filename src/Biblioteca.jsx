@@ -262,11 +262,89 @@ const PaginaIsolada = () => {
             <h2 className={styles.sectionTitle}>Livros Disponíveis</h2>
             <button onClick={() => navigate('/cadastro-livro')} className={styles.sectionLink}>Cadastrar Novo Livro</button>
           </div>
+          
+          <div className={styles.categoryLegend}>
+            <h3 className={styles.legendTitle}>Categorias:</h3>
+            <div className={styles.legendItems}>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#000000' }}></span>
+                <span>Ficção</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#006400' }}></span>
+                <span>Romance</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#8B0000' }}></span>
+                <span>Mistério</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#FF1493' }}></span>
+                <span>Fantasia</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#4B0082' }}></span>
+                <span>Ficção Científica</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#FF8C00' }}></span>
+                <span>Biografia</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#4682B4' }}></span>
+                <span>História</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#8B4513' }}></span>
+                <span>Ciência</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#9ACD32' }}></span>
+                <span>Tecnologia</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#0066b3' }}></span>
+                <span>Autoajuda</span>
+              </div>
+              <div className={styles.legendItem}>
+                <span className={styles.colorBox} style={{ backgroundColor: '#800080' }}></span>
+                <span>Outras</span>
+              </div>
+            </div>
+          </div>
 
           <div className={styles.booksGrid}>
             {livrosFiltrados.length > 0 ? (
               livrosFiltrados.map(livro => (
-                <div key={livro.id} className={styles.bookCard}>
+                <div 
+                  key={livro.id} 
+                  className={`${styles.bookCard} ${
+                    livro.categoria === 'Ficção' ? styles.categorieFiccao : 
+                    livro.categoria === 'Romance' ? styles.categorieRomance : 
+                    livro.categoria === 'Mistério' ? styles.categorieMisterio : 
+                    livro.categoria === 'Fantasia' ? styles.categorieFantasia :
+                    livro.categoria === 'Ficção Científica' ? styles.categorieFiccaoCientifica :
+                    livro.categoria === 'Biografia' ? styles.categorieBiografia :
+                    livro.categoria === 'História' ? styles.categorieHistoria :
+                    livro.categoria === 'Ciência' ? styles.categorieCiencia :
+                    livro.categoria === 'Tecnologia' ? styles.categorieTecnologia :
+                    livro.categoria === 'Autoajuda' ? styles.categorieAutoajuda :
+                    styles.categorieOutras
+                  }`}
+                  style={{ borderColor: 
+                    livro.categoria === 'Ficção' ? '#000000' : 
+                    livro.categoria === 'Romance' ? '#006400' : 
+                    livro.categoria === 'Mistério' ? '#8B0000' : 
+                    livro.categoria === 'Fantasia' ? '#FF1493' :
+                    livro.categoria === 'Ficção Científica' ? '#4B0082' :
+                    livro.categoria === 'Biografia' ? '#FF8C00' :
+                    livro.categoria === 'História' ? '#4682B4' :
+                    livro.categoria === 'Ciência' ? '#8B4513' :
+                    livro.categoria === 'Tecnologia' ? '#9ACD32' :
+                    livro.categoria === 'Autoajuda' ? '#0066b3' :
+                    '#800080'
+                  }}
+                >
                   <div
                     className={styles.bookCover}
                     style={{

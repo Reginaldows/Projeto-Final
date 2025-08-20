@@ -14,22 +14,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 // Inclui a conexão com o banco
 require 'conexao.php';
 
-$sql = "SELECT id, titulo, autor, ano, editora, genero, preco, isbn, paginas, descricao, capa 
-        FROM livros ORDER BY id DESC";
+// Consulta para obter categorias (gêneros) únicas da tabela de livros
+$sql = "SELECT DISTINCT genero FROM livros ORDER BY genero ASC";
 
 $result = $conexao->query($sql);
 
-$livros = [];
+$categorias = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        $row['capa'] = $row['capa'] 
-            ? "http://localhost/php/uploads/" . basename($row['capa']) 
-            : "http://localhost/php/img/Biblioteca.png"; // imagem padrão
-        $livros[] = $row;
+        $categorias[] = $row['genero'];
     }
 }
 
-echo json_encode($livros);
+echo json_encode($categorias);
 
 $conexao->close();
 ?>

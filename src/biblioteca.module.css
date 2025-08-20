@@ -482,6 +482,63 @@
   font-size: 1.1rem;
 }
 
+.categoryLegend {
+  all: unset;
+  display: block;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+/* Cores das categorias */
+.categorieFiccao { border-color: #000000 !important; }
+.categorieRomance { border-color: #006400 !important; }
+.categorieMisterio { border-color: #8B0000 !important; }
+.categorieFantasia { border-color: #FF1493 !important; }
+.categorieFiccaoCientifica { border-color: #4B0082 !important; }
+.categorieBiografia { border-color: #FF8C00 !important; }
+.categorieHistoria { border-color: #4682B4 !important; }
+.categorieCiencia { border-color: #8B4513 !important; }
+.categorieTecnologia { border-color: #9ACD32 !important; }
+.categorieAutoajuda { border-color: #0066b3 !important; }
+.categorieOutras { border-color: #800080 !important; }
+
+.legendTitle {
+  all: unset;
+  display: block;
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.8rem;
+  color: #333;
+}
+
+.legendItems {
+  all: unset;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.legendItem {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #333;
+}
+
+.colorBox {
+  all: unset;
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .booksGrid {
   all: unset;
   display: grid;
@@ -494,9 +551,12 @@
   display: flex;
   flex-direction: column;
   background-color: #fff;
-  border-radius: 4px;
+  border-radius: 8px;
   overflow: hidden;
   transition: transform 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  border-width: 4px;
+  border-style: solid;
 }
 
 .bookCard:hover {
@@ -514,8 +574,9 @@
   background-position: center;
   background-repeat: no-repeat;
   border-bottom: 1px solid #ddd;
-  border-radius: 4px 4px 0 0;
+  border-radius: 5px 5px 0 0;
   transition: transform 0.2s ease-in-out;
+  margin: 0;
 }
 
 .bookCard:hover .bookCover {
