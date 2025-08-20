@@ -1,12 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import styles from './chatflutuante.module.css';
 
-const ChatFlutuante = ({ categoria }) => {
+const ChatCategoria = ({ categoria }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [userName, setUserName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Lista de cores por categoria para manter consistência visual
+  const coresCategorias = {
+    'Ficção': '#000000',
+    'Romance': '#006400',
+    'Mistério': '#8B0000',
+    'Fantasia': '#FF1493',
+    'Ficção Científica': '#4B0082',
+    'Biografia': '#FF8C00',
+    'História': '#4682B4',
+    'Ciência': '#8B4513',
+    'Tecnologia': '#9ACD32',
+    'Autoajuda': '#0066b3',
+    'Outras': '#800080'
+  };
 
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
@@ -26,14 +41,14 @@ const ChatFlutuante = ({ categoria }) => {
       setMessages(JSON.parse(savedMessages));
     } else {
       setMessages([
-      {
-        id: 1,
-        sender: 'Sistema',
-        text: `Bem-vindo ao chat da categoria ${categoria}! Converse com outros usuários sobre livros desta categoria.`,
-        timestamp: new Date().toISOString()
-      }
-    ]);
-
+        {
+          id: 1,
+          sender: 'Sistema',
+          text: `Bem-vindo ao chat da categoria ${categoria}! Converse com outros usuários sobre livros desta categoria.`,
+          timestamp: new Date().toISOString()
+        }
+      ]);
+    }
 
     const handleStorageChange = () => {
       const currentLoginStatus = localStorage.getItem('isLoggedIn');
@@ -48,7 +63,7 @@ const ChatFlutuante = ({ categoria }) => {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [categoria]);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -71,8 +86,6 @@ const ChatFlutuante = ({ categoria }) => {
     
     // Salvar mensagens no localStorage para persistência
     localStorage.setItem(`chatMessages_${categoria}`, JSON.stringify(updatedMessages));
-
-
   };
 
   const formatTime = (timestamp) => {
@@ -82,19 +95,18 @@ const ChatFlutuante = ({ categoria }) => {
 
   return (
     <div className={styles.chatContainer}>
-
       <button 
         className={styles.chatButton} 
         onClick={toggleChat}
-        aria-label="Abrir chat"
+        style={{ backgroundColor: coresCategorias[categoria] || '#0066b3' }}
+        aria-label={`Abrir chat de ${categoria}`}
       >
         💬
       </button>
 
-
       {isOpen && (
         <div className={styles.chatWindow}>
-          <div className={styles.chatHeader}>
+          <div className={styles.chatHeader} style={{ backgroundColor: coresCategorias[categoria] || '#0066b3' }}>
             <h3>Chat: {categoria}</h3>
             <button 
               className={styles.closeButton} 
@@ -144,4 +156,4 @@ const ChatFlutuante = ({ categoria }) => {
   );
 };
 
-export default ChatFlutuante;
+export default ChatCategoria;

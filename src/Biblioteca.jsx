@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './biblioteca.module.css';
-import ChatFlutuante from './ChatFlutuante';
+import chatStyles from './chatflutuante.module.css';
+import ChatCategoria from './ChatCategoria';
+import { X } from 'lucide-react';
 
 const PaginaIsolada = () => {
   const navigate = useNavigate();
@@ -16,12 +18,14 @@ const PaginaIsolada = () => {
   const [livrosFiltrados, setLivrosFiltrados] = useState([]);
   const [autores, setAutores] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [mostrarDetalhes, setMostrarDetalhes] = useState(false);
+  const [livroSelecionado, setLivroSelecionado] = useState(null);
 
 
   const carregarLivros = async () => {
   try {
     console.log('Tentando carregar livros...');
-    const response = await fetch('http://localhost:80/php/listarlivro.php');
+    const response = await fetch('/php/listarlivro.php');
     
     console.log('Response status:', response.status);
     
@@ -50,7 +54,7 @@ const PaginaIsolada = () => {
   const carregarAutores = async () => {
     try {
       console.log('Carregando autores...');
-      const response = await fetch('http://localhost:80/php/listarautores.php');
+      const response = await fetch('/php/listarautores.php');
       
       if (!response.ok) {
         throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
@@ -68,7 +72,7 @@ const PaginaIsolada = () => {
   const carregarCategorias = async () => {
     try {
       console.log('Carregando categorias...');
-      const response = await fetch('http://localhost:80/php/listarcategorias.php');
+      const response = await fetch('/php/listarcategorias.php');
       
       if (!response.ok) {
         throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
@@ -111,7 +115,7 @@ const PaginaIsolada = () => {
     try {
       
       // Construir a URL com os parâmetros de filtro
-      let url = new URL('http://localhost:80/php/filtrarlivros.php');
+      let url = new URL('/php/filtrarlivros.php', window.location.origin);
       
       // Adicionar parâmetros de busca se existirem
       if (searchTerm) url.searchParams.append('searchTerm', searchTerm);
@@ -348,13 +352,26 @@ const PaginaIsolada = () => {
                   <div
                     className={styles.bookCover}
                     style={{
-                      backgroundImage: `url(${livro.capa || 'http://localhost/php/img/Biblioteca.png'})`
+                      backgroundImage: `url(${livro.capa || '/public/img/Biblioteca.png'})`
+                    }}
+                    onClick={() => {
+                      setLivroSelecionado(livro);
+                      setMostrarDetalhes(true);
                     }}
                   />
-                                    <div className={styles.bookInfo}>
+                  <div className={styles.bookInfo}>
                     <h3 className={styles.bookTitle}>{livro.titulo}</h3>
                     <p className={styles.bookAuthor}>{livro.autor}</p>
                     <p className={styles.bookPrice}>R$ {livro.preco}</p>
+                    <button 
+                      className={styles.detailsButton}
+                      onClick={() => {
+                        setLivroSelecionado(livro);
+                        setMostrarDetalhes(true);
+                      }}
+                    >
+                      Ver Detalhes
+                    </button>
                   </div>
                 </div>
               ))
@@ -377,8 +394,40 @@ const PaginaIsolada = () => {
             </div>
           </div>
         </footer>
+
+        {mostrarDetalhes && livroSelecionado && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
+              <button className={styles.closeButton} onClick={() => setMostrarDetalhes(false)}>
+                <X size={16} />
+              </button>
+              <div className={styles.livroDetalhes}>
+                <div className={styles.livroImagemContainer}>
+                  <img 
+                    src={livroSelecionado.capa || '/public/img/Biblioteca.png'} 
+                    alt={livroSelecionado.titulo} 
+                    className={styles.livroImagem} 
+                  />
+                </div>
+                <div className={styles.livroInfo}>
+                  <h2 className={styles.livroTitulo}>{livroSelecionado.titulo}</h2>
+                  <p className={styles.livroAutor}><strong>Autor:</strong> {livroSelecionado.autor}</p>
+                  <p className={styles.livroEditora}><strong>Editora:</strong> {livroSelecionado.editora}</p>
+                  <p className={styles.livroCategoria}><strong>Categoria:</strong> {livroSelecionado.categoria}</p>
+                  <p className={styles.livroPreco}><strong>Preço:</strong> R$ {livroSelecionado.preco}</p>
+                  <div className={styles.livroDescricao}>
+                    <h3>Descrição:</h3>
+                    <p>{livroSelecionado.descricao || 'Nenhuma descrição disponível para este livro.'}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
-        <ChatFlutuante />
+        <div className={chatStyles.chatCategoriaWrapper}>
+          <ChatCategoria categoria={category || (categorias.length > 0 ? categorias[0] : 'Geral')} />
+        </div>
       </div>
     </div>
   );

@@ -6,6 +6,24 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  margin-bottom: 10px;
+}
+
+.chatCategoriaContainer {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.chatCategoriaWrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 
 .chatButton {
@@ -24,8 +42,39 @@
   transition: all 0.3s ease;
 }
 
+.chatCategoriaButton {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #0066b3;
+  color: white;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.categoriaIndicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #fff;
+}
+
 .chatButton:hover {
   background-color: #0055a5;
+  transform: scale(1.05);
+}
+
+.chatCategoriaButton:hover {
   transform: scale(1.05);
 }
 
@@ -42,6 +91,59 @@
   flex-direction: column;
   overflow: hidden;
   animation: slideIn 0.3s ease;
+}
+
+.categoriasMenu {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 280px;
+  max-height: 350px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideIn 0.3s ease;
+}
+
+.categoriasHeader {
+  background-color: #0066b3;
+  color: white;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.categoriasHeader h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.categoriasList {
+  padding: 10px;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.categoriaItem {
+  display: block;
+  width: 100%;
+  padding: 10px 15px;
+  margin-bottom: 5px;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.categoriaItem:hover {
+  background-color: #f5f5f5;
 }
 
 @keyframes slideIn {
@@ -75,6 +177,13 @@
   color: white;
   cursor: pointer;
   font-size: 16px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
 }
 
 .chatMessages {
@@ -108,11 +217,11 @@
 
 .messageSender {
   font-weight: bold;
-  color: #0066b3;
+  color: #333;
 }
 
 .messageTime {
-  color: #888;
+  color: #777;
 }
 
 .messageContent {
@@ -127,31 +236,30 @@
 
 .chatInput {
   flex: 1;
-  padding: 10px;
+  padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 20px;
-  outline: none;
   font-size: 14px;
+  outline: none;
 }
 
-.chatInput:disabled {
-  background-color: #f5f5f5;
-  color: #888;
-  cursor: not-allowed;
+.chatInput:focus {
+  border-color: #0066b3;
 }
 
 .sendButton {
+  width: 40px;
+  height: 40px;
+  margin-left: 8px;
+  border-radius: 50%;
   background-color: #0066b3;
   color: white;
   border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-left: 10px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .sendButton:hover {
@@ -159,26 +267,10 @@
 }
 
 .disabledButton {
-  background-color: #cccccc;
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
 .disabledButton:hover {
-  background-color: #cccccc;
-  transform: none;
-}
-
-
-@media (max-width: 768px) {
-  .chatWindow {
-    width: 280px;
-    height: 350px;
-    bottom: 70px;
-  }
-  
-  .chatButton {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
-  }
+  background-color: #ccc;
 }

@@ -5,6 +5,15 @@ import { resolve } from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      '/php': {
+        target: 'http://localhost:80',
+        changeOrigin: true,
+        secure: false
+      }
+    }
+  },
   build: {
     rollupOptions: {
       input: {
