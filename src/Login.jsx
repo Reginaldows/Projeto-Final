@@ -10,40 +10,62 @@ export default function Login() {
   const [login, setLogin] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-
   const [leituraAtiva, setLeituraAtiva] = useState(false); 
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setErro('');
+    e.preventDefault();
+    setErro('');
 
-  const formData = new URLSearchParams();
-  formData.append('login', login);
-  formData.append('senha', senha);
+    const formData = new URLSearchParams();
+    formData.append('login', login);
+    formData.append('senha', senha);
 
-  try {
-    const response = await fetch('http://localhost/php/login.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: formData.toString(),
-    });
+    try {
+      const response = await fetch('http://localhost/php/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString(),
+      });
 
-    const responseData = await response.json(); // <- Aqui pegamos JSON direto
+      // Verifica se o PHP retornou JSON
+      const text = await response.text();
+      let responseData;
+      try {
+        responseData = JSON.parse(text);
+      } catch {
+        console.error('Resposta do servidor não é JSON válido:', text);
+        setErro('Erro interno do servidor.');
+        return;
+      }
 
-    if (response.ok && responseData.success) {
-      const userName = responseData.nome || "Usuário";
-      localStorage.setItem('userName', userName);
-      localStorage.setItem('isLoggedIn', 'true');
-      navigate('/'); // Redireciona para a página principal (Biblioteca)
-    } else {
-      setErro(responseData.message || "Erro no login");
+      if (response.ok && responseData.success) {
+        const userName = responseData.nome || 'Usuário';
+        const tipoUsuario = responseData.tipo_usuario || 'aluno';
+
+        // Limpar localStorage antes de definir novos valores
+        localStorage.clear();
+        
+        // Salva no localStorage
+        localStorage.setItem('userName', userName);
+        localStorage.setItem('isLoggedIn', 'true');
+        localStorage.setItem('tipoUsuario', tipoUsuario);
+
+        console.log('Login bem-sucedido:', { userName, tipoUsuario });
+        
+        // Redireciona com base no tipo de usuário
+        if (tipoUsuario === 'bibliotecario') {
+          navigate('/bibliotecario');
+        } else {
+          navigate('/');
+        }
+      } else {
+        setErro(responseData.message || 'Erro no login');
+      }
+    } catch (error) {
+      console.error('Erro na conexão:', error);
+      setErro('Erro na conexão com o servidor.');
     }
-  } catch (error) {
-    console.error('Erro na conexão:', error);
-    setErro('Erro na conexão com o servidor.');
-  }
-};
-
+  };
 
   return (
     <>
@@ -94,11 +116,7 @@ export default function Login() {
             <div className="campo">
               <div className="base">
                 <i className="fas fa-envelope" aria-hidden="true"></i>
-                <label
-                  htmlFor="login"
-                  tabIndex={0}
-                  data-leitura="E-mail ou CPF, apenas números"
-                >
+                <label htmlFor="login" tabIndex={0} data-leitura="E-mail ou CPF, apenas números">
                   E-mail ou CPF (Apenas números)
                   <span aria-label="Campo obrigatório">*</span>
                 </label>
@@ -120,11 +138,7 @@ export default function Login() {
             <div className="campo">
               <div className="base">
                 <i className="fas fa-lock" aria-hidden="true"></i>
-                <label
-                  htmlFor="senha"
-                  tabIndex={0}
-                  data-leitura="Senha"
-                >
+                <label htmlFor="senha" tabIndex={0} data-leitura="Senha">
                   Senha
                   <span aria-label="Campo obrigatório">*</span>
                 </label>
@@ -157,32 +171,19 @@ export default function Login() {
               ></i>
 
               <div className="esqueceu">
-                <Link
-                  to="/esquecisenha"
-                  className="esqueceu-senha"
-                  data-leitura="Esqueci minha senha"
-                >
+                <Link to="/esquecisenha" className="esqueceu-senha" data-leitura="Esqueci minha senha">
                   <b>Esqueci minha senha</b>
                 </Link>
               </div>
             </div>
 
             {erro && (
-              <div
-                className="mensagem-erro"
-                role="alert"
-                aria-live="polite"
-                data-leitura={`Erro: ${erro}`}
-              >
+              <div className="mensagem-erro" role="alert" aria-live="polite" data-leitura={`Erro: ${erro}`}>
                 {erro}
               </div>
             )}
 
-            <button
-              type="submit"
-              aria-describedby="btn-entrar-help"
-              data-leitura="Botão Entrar"
-            >
+            <button type="submit" aria-describedby="btn-entrar-help" data-leitura="Botão Entrar">
               Entrar
             </button>
 

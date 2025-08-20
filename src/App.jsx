@@ -7,6 +7,7 @@ import RecuperarSenha from './esquecisenha';
 import AlterarSenha from './alterarsenha';
 import CadastroLivro from './CadastroLivro';
 import Biblioteca from './Biblioteca';
+import BibliotecaBibliotecario from './BibliotecaBibliotecario';
 import viteLogo from '/vite.svg';
 import { iniciarScript } from './script';
 function App() {
@@ -14,6 +15,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Biblioteca />} />
+        <Route path="/biblioteca" element={<Biblioteca />} />
+        <Route path="/bibliotecario" element={<BibliotecaBibliotecario />} />
         <Route path="/cadastro" element={<Cadastro />} />
         <Route path="/esquecisenha" element={<RecuperarSenha />} />
         <Route path="/alterarsenha" element={<AlterarSenha/>} />

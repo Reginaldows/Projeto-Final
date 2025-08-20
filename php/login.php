@@ -1,41 +1,57 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+header("Access-Control-Allow-Origin: *"); // ajuste conforme necessário
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
-header("Content-Type: application/json");
 
-session_start();
-include 'conexao.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-// Recebe dados do login
+require 'conexao.php';
+
+function responder($success, $mensagem, $nome = '', $tipo = '') {
+    echo json_encode([
+        'success' => $success,
+        'message' => $mensagem,
+        'nome' => $nome,
+        'tipo_usuario' => $tipo
+    ]);
+    exit;
+}
+
 $login = $_POST['login'] ?? '';
 $senha = $_POST['senha'] ?? '';
-$loginLimpo = preg_replace('/\D/', '', $login);
 
-// Consulta o usuário pelo e-mail ou CPF
-$sql = "SELECT * FROM dados WHERE email = ? OR REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = ?";
-$stmt = $conexao->prepare($sql);
-$stmt->bind_param("ss", $login, $loginLimpo);
-$stmt->execute();
-$resultado = $stmt->get_result();
-$usuario = $resultado->fetch_assoc();
-
-if ($usuario && password_verify($senha, $usuario['senha'])) {
-    $_SESSION['usuario'] = $usuario['nome'];
-
-    echo json_encode([
-        'success' => true,
-        'message' => 'Login realizado com sucesso',
-        'nome' => $usuario['nome']
-    ]);
-    exit();
-} else {
-    http_response_code(401);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Usuário ou senha inválidos.'
-    ]);
-    exit();
+if (!$login || !$senha) {
+    responder(false, "Login e senha são obrigatórios.");
 }
-?>
 
+// Normaliza o CPF removendo pontos e traços
+$login_normalizado = preg_replace('/[\.\-]/', '', $login);
+
+$stmt = $conexao->prepare("
+    SELECT nome, senha, tipo, cpf, email 
+    FROM dados 
+    WHERE REPLACE(REPLACE(cpf, '.', ''), '-', '') = ? OR email = ?
+");
+$stmt->bind_param("ss", $login_normalizado, $login);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    responder(false, "Usuário não encontrado.");
+}
+
+$usuario = $result->fetch_assoc();
+
+// Verifica a senha hash
+if (!password_verify($senha, $usuario['senha'])) {
+    responder(false, "Senha incorreta.");
+}
+
+// Login OK
+$resposta_nome = $usuario['nome'];
+$resposta_tipo = $usuario['tipo']; // bibliotecario ou aluno
+responder(true, "Login bem-sucedido", $resposta_nome, $resposta_tipo);
