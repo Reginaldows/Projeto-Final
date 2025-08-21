@@ -1,0 +1,331 @@
+/* Reset global para o componente */
+:global(html), :global(body) {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Isolando do tema escuro global */
+:global(body.dark-mode) .container {
+  background: #1a1a1a;
+  color: #f0f0f0;
+}
+
+/* Wrapper externo para isolar completamente os estilos */
+.cadastroEstanteWrapper {
+  all: initial;
+  display: block;
+  font-family: Arial, sans-serif;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+}
+
+/* Resetando todos os elementos dentro do wrapper */
+.cadastroEstanteWrapper * {
+  all: unset;
+  box-sizing: border-box;
+}
+
+/* Isolando estilos para evitar herança global */
+.container *,
+.container *::before,
+.container *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  line-height: normal;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Container principal */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  padding: 10px;
+  padding-top: 0;
+  background-color: #f5f5f5;
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Container da logo */
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+/* Estilo da logo */
+.logo {
+  max-width: 180px;
+  height: auto;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Formulário */
+.form {
+  width: 100%;
+  max-width: 600px;
+  padding: 30px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 auto;
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:global(body.dark-mode) .form {
+  background-color: #2d2d2d;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Grupos de formulário */
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+:global(body.dark-mode) .formGroup label {
+  color: #e0e0e0;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  display: block;
+  background-color: white;
+  color: #333;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+:global(body.dark-mode) .formGroup input {
+  background-color: #3d3d3d;
+  border-color: #555;
+  color: #e0e0e0;
+}
+
+.formGroup input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+/* Estilo para campos inválidos */
+.formGroup input.invalido {
+  border-color: #dc3545;
+  background-color: #fff8f8;
+}
+
+:global(body.dark-mode) .formGroup input.invalido {
+  border-color: #dc3545;
+  background-color: #3d2d2d;
+}
+
+.formGroup small {
+  display: block;
+  margin-top: 5px;
+  color: #666;
+  font-size: 14px;
+  font-style: normal;
+  text-align: left;
+  transition: color 0.3s ease;
+}
+
+/* Mensagem de erro */
+.formGroup small.erro {
+  color: #dc3545;
+  font-weight: 500;
+}
+
+:global(body.dark-mode) .formGroup small {
+  color: #aaa;
+}
+
+/* Campo de senha */
+.campoSenha {
+  position: relative;
+  width: 100%;
+}
+
+.visibilidade {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #333;
+  z-index: 1;
+  display: inline-block;
+  font-family: 'Font Awesome 6 Free';
+}
+
+:global(body.dark-mode) .visibilidade {
+  color: #e0e0e0;
+}
+
+/* Verificação de senha */
+.verificacao {
+  border: 1px solid #ddd;
+  padding: 16px 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin: 15px 0;
+  color: #333;
+  max-width: 100%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+:global(body.dark-mode) .verificacao {
+  background-color: #2d2d2d;
+  border-color: #444;
+  color: #e0e0e0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.verificacao p {
+  margin-bottom: 12px;
+  font-weight: 600;
+  font-size: 15px;
+  color: #444;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.lista li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #666;
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+:global(body.dark-mode) .lista li {
+  color: #bbb;
+}
+
+.lista li i {
+  margin-right: 8px;
+  font-size: 14px;
+  color: #dc3545;
+  display: inline-block;
+  width: 16px;
+  text-align: center;
+}
+
+.lista li.validado {
+  color: #007bff;
+}
+
+.lista li.validado i {
+  color: #28a745;
+  display: inline-block;
+}
+
+:global(body.dark-mode) .lista li.validado {
+  color: #5cdb95;
+}
+
+:global(body.dark-mode) .lista li.validado i {
+  color: #5cdb95;
+}
+
+/* Grupo de checkbox */
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.checkboxGroup input[type="checkbox"] {
+  width: auto;
+  -webkit-appearance: checkbox;
+  -moz-appearance: checkbox;
+  appearance: checkbox;
+  display: inline-block;
+  margin-right: 5px;
+}
+
+.checkboxGroup label {
+  font-size: 14px;
+  color: #333;
+  display: inline-block;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+:global(body.dark-mode) .checkboxGroup label {
+  color: #e0e0e0;
+}
+
+/* Botão de envio */
+.submitButton {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: block;
+  text-align: center;
+}
+
+:global(body.dark-mode) .submitButton {
+  background-color: #0056b3;
+}
+
+.submitButton:hover {
+  background-color: #0056b3;
+}
+
+/* Campos obrigatórios */
+.formGroup input:required + label::after {
+  content: '*';
+  color: #dc3545;
+  margin-left: 4px;
+}
