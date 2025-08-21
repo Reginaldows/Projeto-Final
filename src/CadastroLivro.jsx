@@ -51,7 +51,6 @@ export default function CadastroLivro() {
     'Italiano', 'Japonês', 'Chinês', 'Russo', 'Árabe'
   ];
 
-  // Validação em tempo real
   useEffect(() => {
     validarCampo('titulo', formData.titulo);
   }, [formData.titulo]);
@@ -126,7 +125,6 @@ export default function CadastroLivro() {
         mensagem = valido ? '' : 'Selecione um idioma';
         break;
       case 'descricao':
-        // Descrição é opcional, então sempre é válida
         valido = true;
         break;
       case 'preco':
@@ -165,7 +163,7 @@ export default function CadastroLivro() {
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB
+      if (file.size > 5 * 1024 * 1024) {
         setMensagem('Arquivo muito grande. Máximo 5MB.');
         setTipoMensagem('erro');
         setTimeout(() => {
@@ -228,7 +226,6 @@ export default function CadastroLivro() {
   setLoading(true);
 
   try {
-    // Usar FormData se houver capa, senão URLSearchParams
     let body;
     let headers = {};
 
@@ -277,7 +274,6 @@ export default function CadastroLivro() {
       setTipoMensagem('sucesso');
       window.dispatchEvent(new Event('livrosAtualizados'));
 
-      // Limpar formulário
       setFormData({
         titulo: '', autores: '', isbn: '', editora: '', anoPublicacao: '',
         genero: '', numeroPaginas: '', idioma: '', descricao: '', preco: '', capa: null

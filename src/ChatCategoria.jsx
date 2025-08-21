@@ -8,7 +8,6 @@ const ChatCategoria = ({ categoria }) => {
   const [userName, setUserName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Lista de cores por categoria para manter consistência visual
   const coresCategorias = {
     'Ficção': '#000000',
     'Romance': '#006400',
@@ -35,7 +34,6 @@ const ChatCategoria = ({ categoria }) => {
       setIsLoggedIn(true);
     }
 
-    // Carregar mensagens específicas da categoria do localStorage, se existirem
     const savedMessages = localStorage.getItem(`chatMessages_${categoria}`);
     if (savedMessages) {
       setMessages(JSON.parse(savedMessages));
@@ -84,7 +82,6 @@ const ChatCategoria = ({ categoria }) => {
     setMessages(updatedMessages);
     setNewMessage('');
     
-    // Salvar mensagens no localStorage para persistência
     localStorage.setItem(`chatMessages_${categoria}`, JSON.stringify(updatedMessages));
   };
 

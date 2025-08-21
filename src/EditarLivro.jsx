@@ -53,7 +53,6 @@ export default function EditarLivro() {
     'Italiano', 'Japonês', 'Chinês', 'Russo', 'Árabe'
   ];
 
-  // Carregar dados do livro
   useEffect(() => {
   const carregarLivro = async () => {
     try {
@@ -88,7 +87,6 @@ export default function EditarLivro() {
         setGenerosSelecionados(livro.genero.split(', '));
       }
 
-      // ✅ Aqui definimos o preview da capa corretamente
       if (livro.capa) {
         setPreviewCapa(`/php/${livro.capa}`);
       } else {
@@ -109,7 +107,6 @@ export default function EditarLivro() {
 
 
 
-  // Validação em tempo real
   useEffect(() => {
     validarCampo('titulo', formData.titulo);
   }, [formData.titulo]);
@@ -147,7 +144,7 @@ export default function EditarLivro() {
   }, [formData.preco]);
 
   const validarCampo = (campo, valor) => {
-  valor = valor || ''; // garante que seja string
+  valor = valor || '';
   let valido = false;
   let mensagem = '';
 
@@ -185,7 +182,7 @@ export default function EditarLivro() {
       mensagem = valido ? '' : 'Selecione um idioma';
       break;
     case 'descricao':
-      valido = true; // opcional
+      valido = true;
       break;
     case 'preco':
       const preco = parseFloat(valor) || 0;
@@ -223,7 +220,7 @@ export default function EditarLivro() {
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) { // 5MB
+      if (file.size > 5 * 1024 * 1024) {
         setMensagem('Arquivo muito grande. Máximo 5MB.');
         setTipoMensagem('erro');
         setTimeout(() => {
@@ -286,7 +283,6 @@ export default function EditarLivro() {
   setLoading(true);
 
   try {
-    // Usar FormData se houver capa, senão URLSearchParams
     let body;
     let headers = {};
 
@@ -337,7 +333,6 @@ export default function EditarLivro() {
       setTipoMensagem('sucesso');
       window.dispatchEvent(new Event('livrosAtualizados'));
 
-      // Redirecionar após atualização bem-sucedida
       setTimeout(() => {
         navigate('/bibliotecario');
       }, 2000);

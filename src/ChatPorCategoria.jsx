@@ -6,7 +6,6 @@ const ChatPorCategoria = ({ categorias }) => {
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('');
   const [menuAberto, setMenuAberto] = useState(false);
 
-  // Lista de cores por categoria para manter consistência visual
   const coresCategorias = {
     'Ficção': '#000000',
     'Romance': '#006400',

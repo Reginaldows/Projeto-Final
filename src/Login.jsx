@@ -27,7 +27,6 @@ export default function Login() {
         body: formData.toString(),
       });
 
-      // Verifica se o PHP retornou JSON
       const text = await response.text();
       let responseData;
       try {
@@ -42,17 +41,14 @@ export default function Login() {
         const userName = responseData.nome || 'Usuário';
         const tipoUsuario = responseData.tipo_usuario || 'aluno';
 
-        // Limpar localStorage antes de definir novos valores
         localStorage.clear();
         
-        // Salva no localStorage
         localStorage.setItem('userName', userName);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('tipoUsuario', tipoUsuario);
 
         console.log('Login bem-sucedido:', { userName, tipoUsuario });
         
-        // Redireciona com base no tipo de usuário
         if (tipoUsuario === 'bibliotecario') {
           navigate('/bibliotecario');
         } else {
@@ -189,7 +185,7 @@ export default function Login() {
 
             <div className="conta">
               <p>
-                Não tem uma conta? <Link to="/cadastro" data-leitura="Crie aqui">Crie aqui.</Link>
+                Não tem uma conta? <Link to="/cadastroUsuario" data-leitura="Crie aqui">Crie aqui.</Link>
               </p>
             </div>
           </div>

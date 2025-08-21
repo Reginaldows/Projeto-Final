@@ -207,6 +207,7 @@
   all: unset;
   display: block;
   margin: 0 1rem;
+  position: relative;
 }
 
 .navLink {
@@ -233,6 +234,41 @@
   width: 100%;
   height: 2px;
   background-color: #0066b3;
+}
+
+.dropdownContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdownContent {
+  display: none;
+  position: absolute;
+  background-color: #fff;
+  min-width: 200px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  border-radius: 4px;
+  top: 100%;
+  left: 0;
+}
+
+.dropdownItem {
+  color: #333;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+  transition: background-color 0.3s;
+}
+
+.dropdownItem:hover {
+  background-color: #f1f1f1;
+  color: #0066b3;
+}
+
+.dropdownContainer:hover .dropdownContent {
+  display: block;
 }
 
 .searchContainer {
@@ -493,7 +529,7 @@
   border: 1px solid #e9ecef;
 }
 
-/* Cores das categorias */
+
 .categorieFiccao { border-color: #000000 !important; }
 .categorieRomance { border-color: #006400 !important; }
 .categorieMisterio { border-color: #8B0000 !important; }
@@ -703,7 +739,7 @@
 }
 
 
-/* Estilos para o modal de detalhes do livro */
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -801,7 +837,7 @@
   margin-top: 15px;
 }
 
-/* Botões de ação para editar e excluir */
+
 .botoesAcao {
   display: flex;
   flex-direction: column;
@@ -842,7 +878,7 @@
   transform: translateY(-2px);
 }
 
-/* Estilos para mensagens de sucesso e erro */
+
 .mensagem {
   position: fixed;
   top: 20px;
@@ -877,7 +913,7 @@
   to { opacity: 0; transform: translate(-50%, -20px); }
 }
 
-/* Estilos responsivos para o modal de detalhes do livro */
+
 @media (max-width: 768px) {
   .modalContent {
     width: 95%;

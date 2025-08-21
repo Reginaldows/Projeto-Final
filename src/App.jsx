@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import './style.css';
 import Login from './Login';
 import Cadastro from './cadastro';
-import Cadastroestante from './cadastroestante';
+import CadastroUsuario from './cadastroUsuario';
 import RecuperarSenha from './esquecisenha';
 import AlterarSenha from './alterarsenha';
 import CadastroLivro from './CadastroLivro';
@@ -20,7 +20,7 @@ function App() {
         <Route path="/biblioteca" element={<Biblioteca />} />
         <Route path="/bibliotecario" element={<BibliotecaBibliotecario />} />
         <Route path="/cadastro" element={<Cadastro />} />
-        <Route path="/cadastroestante" element={<Cadastroestante />} />
+        <Route path="/cadastrousuario" element={<CadastroUsuario />} />
         <Route path="/esquecisenha" element={<RecuperarSenha />} />
         <Route path="/alterarsenha" element={<AlterarSenha/>} />
         <Route path="/cadastro-livro" element={<CadastroLivro />} />

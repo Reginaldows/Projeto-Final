@@ -94,7 +94,6 @@ const PaginaIsolada = () => {
 
     if (storedUserName && isLoggedIn === 'true') {
       setUserName(storedUserName);
-      // Redirecionar para a biblioteca do bibliotecário se for bibliotecário
       if (tipoUsuario === 'bibliotecario') {
         navigate('/bibliotecario');
       }
@@ -120,10 +119,8 @@ const PaginaIsolada = () => {
   const handleSearch = async () => {
     try {
       
-      // Construir a URL com os parâmetros de filtro
       let url = new URL('/php/filtrarlivros.php', window.location.origin);
       
-      // Adicionar parâmetros de busca se existirem
       if (searchTerm) url.searchParams.append('searchTerm', searchTerm);
       if (category) url.searchParams.append('category', category);
       if (author) url.searchParams.append('author', author);

@@ -494,7 +494,7 @@
   border: 1px solid #e9ecef;
 }
 
-/* Cores das categorias */
+
 .categorieFiccao { border-color: #000000 !important; }
 .categorieRomance { border-color: #006400 !important; }
 .categorieMisterio { border-color: #8B0000 !important; }
@@ -704,7 +704,7 @@
 }
 
 
-/* Estilos para o modal de detalhes do livro */
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -802,7 +802,7 @@
   margin-top: 15px;
 }
 
-/* Estilos responsivos para o modal de detalhes do livro */
+
 @media (max-width: 768px) {
   .modalContent {
     width: 95%;

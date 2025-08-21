@@ -93,16 +93,15 @@ const BibliotecaBibliotecario = () => {
 
     if (storedUserName && isLoggedIn === 'true') {
       setUserName(storedUserName);
-      // Verificar se o usuário é bibliotecário
       if (tipoUsuario !== 'bibliotecario') {
-        navigate('/biblioteca'); // Redirecionar para a biblioteca normal se não for bibliotecário
+        navigate('/biblioteca');
       }
     } else {
       localStorage.removeItem('userName');
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('tipoUsuario');
       setUserName('');
-      navigate('/login'); // Redirecionar para login se não estiver logado
+      navigate('/login');
     }
 
     carregarLivros();
@@ -119,10 +118,8 @@ const BibliotecaBibliotecario = () => {
 
   const handleSearch = async () => {
     try {
-      // Construir a URL com os parâmetros de filtro
       let url = new URL('/php/filtrarlivros.php', window.location.origin);
       
-      // Adicionar parâmetros de busca se existirem
       if (searchTerm) url.searchParams.append('searchTerm', searchTerm);
       if (category) url.searchParams.append('category', category);
       if (author) url.searchParams.append('author', author);
@@ -188,14 +185,12 @@ const BibliotecaBibliotecario = () => {
       const result = await response.json();
 
       if (result.success) {
-        // Atualizar a lista de livros após exclusão bem-sucedida
         setLivros(livros.filter(livro => livro.id !== id));
         setLivrosFiltrados(livrosFiltrados.filter(livro => livro.id !== id));
-        setMostrarDetalhes(false); // Fechar o modal de detalhes
+        setMostrarDetalhes(false);
         setMensagem('Livro excluído com sucesso!');
         setTipoMensagem('sucesso');
         
-        // Limpar a mensagem após 3 segundos
         setTimeout(() => {
           setMensagem('');
           setTipoMensagem('');
@@ -208,7 +203,6 @@ const BibliotecaBibliotecario = () => {
       setMensagem(`Erro ao excluir livro: ${error.message}`);
       setTipoMensagem('erro');
       
-      // Limpar a mensagem após 3 segundos
       setTimeout(() => {
         setMensagem('');
         setTipoMensagem('');
@@ -281,7 +275,15 @@ const BibliotecaBibliotecario = () => {
             <ul className={styles.navList}>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Início</a></li>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Gerenciar Livros</a></li>
-              <li className={styles.navItem}><a className={styles.navLink} href="#">Gerenciar Usuários</a></li>
+              <li className={styles.navItem}>
+                <div className={styles.dropdownContainer}>
+                  <a className={styles.navLink} href="#">Gerenciar Usuários</a>
+                  <div className={styles.dropdownContent}>
+                    <a href="/cadastrousuario" className={styles.dropdownItem}>Cadastro de Usuários</a>
+                    <a href="#" className={styles.dropdownItem}>Lista de Usuários</a>
+                  </div>
+                </div>
+              </li>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Relatórios</a></li>
               <li className={styles.navItem}>
                 <button className={styles.navLink} onClick={() => navigate('/cadastro-livro')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Cadastrar Livro</button>

@@ -20,7 +20,6 @@ const ChatFlutuante = ({ categoria }) => {
       setIsLoggedIn(true);
     }
 
-    // Carregar mensagens específicas da categoria do localStorage, se existirem
     const savedMessages = localStorage.getItem(`chatMessages_${categoria}`);
     if (savedMessages) {
       setMessages(JSON.parse(savedMessages));
@@ -33,7 +32,7 @@ const ChatFlutuante = ({ categoria }) => {
         timestamp: new Date().toISOString()
       }
     ]);
-
+    }
 
     const handleStorageChange = () => {
       const currentLoginStatus = localStorage.getItem('isLoggedIn');
@@ -48,7 +47,7 @@ const ChatFlutuante = ({ categoria }) => {
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, []);
+  }, [categoria]);
 
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -69,10 +68,7 @@ const ChatFlutuante = ({ categoria }) => {
     setMessages(updatedMessages);
     setNewMessage('');
     
-    // Salvar mensagens no localStorage para persistência
     localStorage.setItem(`chatMessages_${categoria}`, JSON.stringify(updatedMessages));
-
-
   };
 
   const formatTime = (timestamp) => {
