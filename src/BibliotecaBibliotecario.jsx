@@ -89,18 +89,18 @@ const BibliotecaBibliotecario = () => {
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
     const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const userType = localStorage.getItem('userType');
+    const tipoUsuario = localStorage.getItem('tipoUsuario');
 
     if (storedUserName && isLoggedIn === 'true') {
       setUserName(storedUserName);
       // Verificar se o usuário é bibliotecário
-      if (userType !== 'bibliotecario') {
+      if (tipoUsuario !== 'bibliotecario') {
         navigate('/biblioteca'); // Redirecionar para a biblioteca normal se não for bibliotecário
       }
     } else {
       localStorage.removeItem('userName');
       localStorage.removeItem('isLoggedIn');
-      localStorage.removeItem('userType');
+      localStorage.removeItem('tipoUsuario');
       setUserName('');
       navigate('/login'); // Redirecionar para login se não estiver logado
     }
@@ -234,6 +234,8 @@ const BibliotecaBibliotecario = () => {
               </div>
             </h1>
             <div className={styles.headerIcons}>
+              <div className={styles.cartIcon}><i className="fas fa-shopping-cart"></i></div>
+              <div className={styles.notificationIcon}><i className="fas fa-bell"></i></div>
               <div className={styles.userGreeting} onClick={() => setShowLoginStatus(!showLoginStatus)}>
                 <i className="fas fa-user"></i>
                 {userName ? <span>Olá, {userName}!</span> : <span className={styles.loginPrompt}>Fazer login</span>}
@@ -249,7 +251,7 @@ const BibliotecaBibliotecario = () => {
                             e.stopPropagation(); 
                             localStorage.removeItem('userName'); 
                             localStorage.removeItem('isLoggedIn'); 
-                            localStorage.removeItem('userType');
+                            localStorage.removeItem('tipoUsuario');
                             setUserName(''); 
                             setShowLoginStatus(false); 
                             navigate('/login');

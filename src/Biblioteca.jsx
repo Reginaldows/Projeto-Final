@@ -94,10 +94,9 @@ const PaginaIsolada = () => {
 
     if (storedUserName && isLoggedIn === 'true') {
       setUserName(storedUserName);
-      // Verificar se o usuário é bibliotecário e redirecionar se for
+      // Redirecionar para a biblioteca do bibliotecário se for bibliotecário
       if (tipoUsuario === 'bibliotecario') {
         navigate('/bibliotecario');
-        return;
       }
     } else {
       localStorage.removeItem('userName');
@@ -191,6 +190,7 @@ const PaginaIsolada = () => {
                     {userName ? (
                       <div>
                         <p>Logado como: {userName}</p>
+                        {localStorage.getItem('tipoUsuario') === 'bibliotecario' && <p>Tipo: Bibliotecário</p>}
                         <button 
                           className={styles.logoutButton}
                           onClick={(e) => { 
@@ -200,7 +200,6 @@ const PaginaIsolada = () => {
                             localStorage.removeItem('tipoUsuario');
                             setUserName(''); 
                             setShowLoginStatus(false); 
-                            navigate('/login');
                           }}
                         >
                           Sair
@@ -388,7 +387,7 @@ const PaginaIsolada = () => {
               ))
             ) : (
               <div className={styles.emptyMessage}>
-                <p>Nenhum livro encontrado. Cadastre um novo livro ou ajuste os filtros de busca.</p>
+                <p>Nenhum livro encontrado. Ajuste os filtros de busca para encontrar o que procura.</p>
               </div>
             )}
           </div>

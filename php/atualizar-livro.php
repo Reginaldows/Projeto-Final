@@ -1,121 +1,103 @@
 <?php
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Access-Control-Allow-Headers: Content-Type');
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
+header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
+header("Access-Control-Allow-Headers: *");
 
-require_once 'conexao.php';
-
-// Verificar se o ID foi fornecido
-if (!isset($_POST['id']) || empty($_POST['id'])) {
-    echo json_encode(['success' => false, 'message' => 'ID do livro não fornecido']);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit;
 }
 
-$id = $_POST['id'];
-$titulo = $_POST['titulo'] ?? '';
-$autor = $_POST['autor'] ?? '';
-$isbn = $_POST['isbn'] ?? '';
-$editora = $_POST['editora'] ?? '';
-$ano = $_POST['ano'] ?? '';
-$genero = $_POST['genero'] ?? '';
-$paginas = $_POST['paginas'] ?? '';
-$idioma = $_POST['idioma'] ?? '';
-$descricao = $_POST['descricao'] ?? '';
-$preco = $_POST['preco'] ?? '';
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-// Verificar se os campos obrigatórios foram preenchidos
-if (empty($titulo) || empty($autor) || empty($isbn) || empty($editora) || empty($ano) || 
-    empty($genero) || empty($paginas) || empty($idioma) || $preco === '') {
-    echo json_encode(['success' => false, 'message' => 'Todos os campos obrigatórios devem ser preenchidos']);
+// Conexão
+require 'conexao.php';
+
+// Receber dados (JSON ou FormData)
+$input = file_get_contents('php://input');
+$data = json_decode($input, true);
+if (!$data) {
+    // fallback para $_POST
+    $data = $_POST;
+}
+
+// Verificar ID
+if (empty($data['id'])) {
+    echo json_encode(["success" => false, "message" => "ID do livro não fornecido."]);
     exit;
 }
 
-try {
-    // Verificar se o livro existe
-    $stmt = $conexao->prepare("SELECT id FROM livros WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows === 0) {
-        echo json_encode(['success' => false, 'message' => 'Livro não encontrado']);
+// Campos obrigatórios
+$camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma', 'preco'];
+foreach ($camposObrigatorios as $campo) {
+    if (empty($data[$campo])) {
+        echo json_encode(["success" => false, "message" => "Campo obrigatório '$campo' não preenchido."]);
         exit;
     }
-    
-    $stmt->close();
-    
-    // Iniciar a consulta SQL de atualização
-    $sql = "UPDATE livros SET titulo = ?, autor = ?, isbn = ?, editora = ?, ano = ?, 
-            genero = ?, paginas = ?, idioma = ?, descricao = ?, preco = ?";
-    $params = [$titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $preco];
-    $types = "sssssssssd"; // string, string, ..., double (para o preço)
-    
-    // Verificar se há uma nova imagem de capa
-    if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
-        $target_dir = "uploads/";
-        
-        // Criar o diretório se não existir
-        if (!file_exists($target_dir)) {
-            mkdir($target_dir, 0777, true);
-        }
-        
-        // Gerar um nome único para o arquivo
-        $file_extension = pathinfo($_FILES["capa"]["name"], PATHINFO_EXTENSION);
-        $new_filename = uniqid() . '.' . $file_extension;
-        $target_file = $target_dir . $new_filename;
-        
-        // Verificar o tamanho do arquivo (máximo 5MB)
-        if ($_FILES["capa"]["size"] > 5000000) {
-            echo json_encode(['success' => false, 'message' => 'O arquivo é muito grande. Tamanho máximo: 5MB']);
-            exit;
-        }
-        
-        // Verificar se é uma imagem válida
-        $check = getimagesize($_FILES["capa"]["tmp_name"]);
-        if ($check === false) {
-            echo json_encode(['success' => false, 'message' => 'O arquivo não é uma imagem válida']);
-            exit;
-        }
-        
-        // Verificar extensão do arquivo
-        if ($file_extension != "jpg" && $file_extension != "png" && $file_extension != "jpeg" && $file_extension != "gif") {
-            echo json_encode(['success' => false, 'message' => 'Apenas arquivos JPG, JPEG, PNG e GIF são permitidos']);
-            exit;
-        }
-        
-        // Tentar fazer o upload do arquivo
-        if (move_uploaded_file($_FILES["capa"]["tmp_name"], $target_file)) {
-            // Adicionar a capa à consulta SQL
-            $sql .= ", capa = ?";
-            $params[] = $target_file;
-            $types .= "s";
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Erro ao fazer upload da imagem']);
-            exit;
-        }
-    }
-    
-    // Finalizar a consulta SQL
-    $sql .= " WHERE id = ?";
-    $params[] = $id;
-    $types .= "i";
-    
-    // Executar a consulta
-    $stmt = $conexao->prepare($sql);
-    $stmt->bind_param($types, ...$params);
-    $stmt->execute();
-    
-    if ($stmt->affected_rows > 0 || $stmt->errno === 0) {
-        echo json_encode(['success' => true, 'message' => 'Livro atualizado com sucesso']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Nenhuma alteração foi feita']);
-    }
-    
-    $stmt->close();
-} catch (Exception $e) {
-    echo json_encode(['success' => false, 'message' => 'Erro ao atualizar livro: ' . $e->getMessage()]);
 }
 
+// Receber dados
+$id = intval($data['id']);
+$titulo = trim($data['titulo']);
+$autor = trim($data['autor']);
+$isbn = trim($data['isbn']);
+$editora = trim($data['editora']);
+$ano = intval($data['ano']);
+$genero = trim($data['genero']);
+$paginas = intval($data['paginas']);
+$idioma = trim($data['idioma']);
+$descricao = trim($data['descricao'] ?? '');
+$preco = floatval($data['preco']);
+
+// Verificar se o livro existe
+$stmt = $conexao->prepare("SELECT capa FROM livros WHERE id = ?");
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows === 0) {
+    echo json_encode(["success" => false, "message" => "Livro não encontrado."]);
+    $stmt->close();
+    exit;
+}
+
+$livro = $result->fetch_assoc();
+$capaAtual = $livro['capa'];
+$stmt->close();
+
+// Upload da capa (se estiver usando FormData)
+$caminhoDestino = $capaAtual; // Mantém a capa atual por padrão
+if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
+    $uploadsDir = __DIR__ . '/uploads/';
+    if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
+    $ext = pathinfo($_FILES['capa']['name'], PATHINFO_EXTENSION);
+    $nomeArquivo = uniqid('capa_') . '.' . $ext;
+    $caminhoCompleto = $uploadsDir . $nomeArquivo;
+    $caminhoDestino = 'uploads/' . $nomeArquivo;
+    move_uploaded_file($_FILES['capa']['tmp_name'], $caminhoCompleto);
+    
+    // Remover capa antiga se existir e for diferente da padrão
+    if ($capaAtual && $capaAtual !== 'img/Biblioteca.png' && file_exists(__DIR__ . '/' . $capaAtual)) {
+        @unlink(__DIR__ . '/' . $capaAtual);
+    }
+}
+
+// Atualizar no banco
+$stmt = $conexao->prepare("UPDATE livros SET 
+    titulo = ?, autor = ?, isbn = ?, editora = ?, ano = ?, 
+    genero = ?, paginas = ?, idioma = ?, descricao = ?, preco = ?, capa = ? 
+    WHERE id = ?");
+$stmt->bind_param("ssssisssdssi",
+    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $preco, $caminhoDestino, $id);
+
+if ($stmt->execute()) {
+    echo json_encode(["success" => true, "message" => "Livro atualizado com sucesso!"]);
+} else {
+    echo json_encode(["success" => false, "message" => "Erro ao atualizar livro: " . $stmt->error]);
+}
+
+$stmt->close();
 $conexao->close();
 ?>

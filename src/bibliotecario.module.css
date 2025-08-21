@@ -594,17 +594,10 @@
   flex-direction: column;
 }
 
-.bookButtons {
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-  margin: 5px 0;
-  align-items: center;
-  justify-content: center;
-  padding: 0 5px;
-}
+
 
 .detailsButton {
+  margin-top: 10px;
   padding: 8px 12px;
   background-color: #0066b3;
   color: white;
@@ -614,49 +607,14 @@
   font-size: 0.8rem;
   transition: background-color 0.2s;
   display: block;
-  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
   text-align: center;
-  margin: 0 auto;
 }
 
 .detailsButton:hover {
   background-color: #004d8c;
-}
-
-.editButton {
-  padding: 6px 10px;
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.75rem;
-  transition: background-color 0.2s;
-  display: block;
-  width: 45%;
-  text-align: center;
-}
-
-.editButton:hover {
-  background-color: #218838;
-}
-
-.deleteButton {
-  padding: 6px 10px;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.75rem;
-  transition: background-color 0.2s;
-  display: block;
-  width: 45%;
-  text-align: center;
-}
-
-.deleteButton:hover {
-  background-color: #c82333;
 }
 
 .bookTitle {
@@ -849,17 +807,17 @@
   flex-direction: column;
   gap: 10px;
   margin-top: 20px;
+  width: 80px;
 }
 
 .editarButton, .excluirButton {
-  padding: 8px 15px;
+  padding: 10px 20px;
   border: none;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
-  width: 80px;
 }
 
 .editarButton {
@@ -955,7 +913,6 @@
     gap: 10px;
   }
 }
-
 
 @media (min-width: 769px) and (max-width: 1024px) {
   .header {

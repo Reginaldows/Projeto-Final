@@ -6,6 +6,7 @@ import Cadastro from './cadastro';
 import RecuperarSenha from './esquecisenha';
 import AlterarSenha from './alterarsenha';
 import CadastroLivro from './CadastroLivro';
+import EditarLivro from './EditarLivro';
 import Biblioteca from './Biblioteca';
 import BibliotecaBibliotecario from './BibliotecaBibliotecario';
 import viteLogo from '/vite.svg';
@@ -22,6 +23,7 @@ function App() {
         <Route path="/alterarsenha" element={<AlterarSenha/>} />
         <Route path="/cadastro-livro" element={<CadastroLivro />} />
         <Route path="/cadastrolivro" element={<CadastroLivro />} />
+        <Route path="/editar-livro/:id" element={<EditarLivro />} />
         <Route path="/login" element={<Login />} />
       </Routes>
     </BrowserRouter>

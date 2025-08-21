@@ -120,7 +120,7 @@ export default function Acessibilidade({ leituraAtiva: leituraPai, setLeituraAti
           data-leitura="Abrir menu de acessibilidade"
           title="Abrir menu de acessibilidade"
         >
-          <img src="img/acessibilidade.png" alt="Acessibilidade" />
+          <img src="/img/acessibilidade.png" alt="Acessibilidade" />
         </button>
       )}
 
@@ -147,7 +147,7 @@ export default function Acessibilidade({ leituraAtiva: leituraPai, setLeituraAti
             
           >
             <div className="icone">
-              <img src="img/imagenoite.png" alt="escuro" />
+              <img src="/img/imagenoite.png" alt="escuro" />
             </div>
             <span>{modoEscuro ? "Modo Claro" : "Modo Escuro"}</span>
           </button>
