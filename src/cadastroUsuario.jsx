@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './cadastroestante.module.css';
 import { formatarCPF, validarCPF, formatarCEP, buscarEnderecoPorCEP, formatarTelefone, validarRequisitosSenha } from './scripts/validacaoCpfSenha';
 
 const CadastroUsuario = () => {
+  const navigate = useNavigate();
   const [nome, setNome] = useState('');
   const [cpf, setCpf] = useState('');
   const [cpfValido, setCpfValido] = useState(null);
@@ -14,12 +16,13 @@ const CadastroUsuario = () => {
   const [bairro, setBairro] = useState('');
   const [cidade, setCidade] = useState('');
   const [estado, setEstado] = useState('');
-  const [datanasc, setDataNasc] = useState('');
+  const [dataNasc, setDataNasc] = useState(''); // CORREÇÃO: mudou de datanasc para dataNasc
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [valido, setValido] = useState(false);
   const [mensagem, setMensagem] = useState('');
+  const [cadastroSucesso, setCadastroSucesso] = useState(false);
 
   const [requisitos, setRequisitos] = useState({
     min: false,
@@ -33,7 +36,7 @@ const CadastroUsuario = () => {
 
     const formData = new FormData();
     formData.append('nome', nome);
-    formData.append('datanasc', datanasc);
+    formData.append('data_nasc', dataNasc); // CORREÇÃO: mudou de 'datanasc' para 'data_nasc'
     formData.append('cpf', cpf);
     formData.append('celular', celular);
     formData.append('cep', cep);
@@ -45,7 +48,7 @@ const CadastroUsuario = () => {
     formData.append('estado', estado);
     formData.append('email', email);
     formData.append('senha', senha);
-    formData.append('tipo', 'usuario');
+    formData.append('tipo_usuario', 'usuario');
 
     try {
       const response = await fetch('http://localhost/php/cadastrousuario.php', {
@@ -54,7 +57,19 @@ const CadastroUsuario = () => {
       });
 
       const data = await response.text();
-      setMensagem(data);
+      console.log('Resposta do servidor:', data); // Para debug
+      
+      if (data.includes('sucesso') || data.includes('Cadastrado')) {
+        setCadastroSucesso(true);
+        setMensagem('Usuário cadastrado com sucesso!');
+        
+        // Redirecionar após 2 segundos
+        setTimeout(() => {
+          navigate('/bibliotecario');
+        }, 2000);
+      } else {
+        setMensagem(data);
+      }
     } catch (error) {
       setMensagem('Erro ao cadastrar: ' + error.message);
     }
@@ -73,16 +88,16 @@ const CadastroUsuario = () => {
             <input type="text" id="nome" value={nome} onChange={e => setNome(e.target.value)} required />
           </div>
 
-         <div className={styles.formGroup}>
-        <label htmlFor="data_nasc">Data de nascimento</label>
-        <input
-          type="date"
-          id="data_nasc"
-          name="data_nasc"
-          value={datanasc}
-          onChange={e => setDataNasc(e.target.value)}
-        />
-        </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="data_nasc">Data de nascimento</label>
+            <input
+              type="date"
+              id="data_nasc"
+              name="data_nasc"
+              value={dataNasc} // CORREÇÃO: mudou de datanasc para dataNasc
+              onChange={e => setDataNasc(e.target.value)} // CORREÇÃO: mudou de setDataNasc para setDataNasc
+            />
+          </div>
 
           <div className={styles.formGroup}>
             <label htmlFor="cpf">CPF*</label>
@@ -192,7 +207,11 @@ const CadastroUsuario = () => {
           <button type="submit" className={styles.submitButton} disabled={!valido}>Cadastrar</button>
         </form>
 
-        {mensagem && <p>{mensagem}</p>}
+        {mensagem && (
+          <div className={`${styles.mensagem} ${cadastroSucesso ? styles.sucesso : styles.erro}`}>
+            <p>{mensagem}</p>
+          </div>
+        )}
       </div>
     </div>
   );

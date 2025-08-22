@@ -32,7 +32,7 @@ if (!$login || !$senha) {
 $login_normalizado = preg_replace('/[\.\-]/', '', $login);
 
 $stmt = $conexao->prepare("
-    SELECT nome, senha, tipo, cpf, email 
+    SELECT nome, senha, tipo_usuario, cpf, email 
     FROM dados 
     WHERE REPLACE(REPLACE(cpf, '.', ''), '-', '') = ? OR email = ?
 ");
@@ -53,5 +53,5 @@ if (!password_verify($senha, $usuario['senha'])) {
 
 // Login OK
 $resposta_nome = $usuario['nome'];
-$resposta_tipo = $usuario['tipo']; // bibliotecario ou aluno
+$resposta_tipo = $usuario['tipo_usuario']; // <-- correção aqui
 responder(true, "Login bem-sucedido", $resposta_nome, $resposta_tipo);

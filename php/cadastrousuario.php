@@ -44,7 +44,7 @@ $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 $stmt = mysqli_prepare(
     $conexao, 
     "INSERT INTO dados 
-    (nome, data_nasc, cpf, celular, cep, rua, numero, complemento, bairro, cidade, estado, email, senha, tipo) 
+    (nome, data_nasc, cpf, celular, cep, rua, numero, complemento, bairro, cidade, estado, email, senha, tipo_usuario) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 
