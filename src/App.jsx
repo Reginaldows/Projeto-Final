@@ -8,8 +8,10 @@ import RecuperarSenha from './esquecisenha';
 import AlterarSenha from './alterarsenha';
 import CadastroLivro from './CadastroLivro';
 import EditarLivro from './EditarLivro';
+import EditarUsuario from './EditarUsuario';
 import Biblioteca from './Biblioteca';
 import BibliotecaBibliotecario from './BibliotecaBibliotecario';
+import ListaUsuarios from './ListaUsuarios';
 import viteLogo from '/vite.svg';
 import { iniciarScript } from './script';
 function App() {
@@ -27,6 +29,8 @@ function App() {
         <Route path="/cadastrolivro" element={<CadastroLivro />} />
         <Route path="/editar-livro/:id" element={<EditarLivro />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/usuarios" element={<ListaUsuarios />} />
+        <Route path="/editarusuario/:id" element={<EditarUsuario />} />
       </Routes>
     </BrowserRouter>
   );
