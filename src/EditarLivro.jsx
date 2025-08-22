@@ -79,7 +79,6 @@ export default function EditarLivro() {
         numeroPaginas: livro.paginas || '',
         idioma: livro.idioma || '',
         descricao: livro.descricao || '',
-        preco: livro.preco || '',
         capa: null
       });
 
@@ -184,11 +183,6 @@ export default function EditarLivro() {
     case 'descricao':
       valido = true;
       break;
-    case 'preco':
-      const preco = parseFloat(valor) || 0;
-      valido = preco >= 0;
-      mensagem = valido ? '' : 'Preço deve ser um valor positivo';
-      break;
   }
 
   setValidacao(prev => ({
@@ -205,8 +199,6 @@ export default function EditarLivro() {
     
     if (name === 'isbn') {
       valorFormatado = value.replace(/[^\d-]/g, '');
-    } else if (name === 'preco') {
-      valorFormatado = value.replace(/[^\d.,]/g, '').replace(',', '.');
     } else if (name === 'numeroPaginas' || name === 'anoPublicacao') {
       valorFormatado = value.replace(/[^\d]/g, '');
     }
@@ -580,25 +572,7 @@ export default function EditarLivro() {
                   />
                 </div>
 
-                <div className={styles.campoGrupo}>
-                  <label htmlFor="preco" className={styles.campoLabel}>
-                    <DollarSign className={styles.campoIcone} />
-                    Preço *
-                  </label>
-                  <input
-                    type="text"
-                    id="preco"
-                    name="preco"
-                    value={formData.preco}
-                    onChange={handleInputChange}
-                    className={`${styles.campoInput} ${validacao.preco.valido ? styles.valido : formData.preco ? styles.invalido : ''}`}
-                    placeholder="29.90"
-                    required
-                  />
-                  {validacao.preco.mensagem && (
-                    <span className={styles.campoErro}>{validacao.preco.mensagem}</span>
-                  )}
-                </div>
+
               </div>
             </div>
 

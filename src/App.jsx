@@ -9,6 +9,7 @@ import AlterarSenha from './alterarsenha';
 import CadastroLivro from './CadastroLivro';
 import EditarLivro from './EditarLivro';
 import EditarUsuario from './EditarUsuario';
+import MeuPerfil from './MeuPerfil';
 import Biblioteca from './Biblioteca';
 import BibliotecaBibliotecario from './BibliotecaBibliotecario';
 import ListaUsuarios from './ListaUsuarios';
@@ -31,6 +32,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/usuarios" element={<ListaUsuarios />} />
         <Route path="/editarusuario/:id" element={<EditarUsuario />} />
+        <Route path="/meu-perfil" element={<MeuPerfil />} />
       </Routes>
     </BrowserRouter>
   );

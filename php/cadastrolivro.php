@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: http://localhost:5175");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
 header("Access-Control-Allow-Headers: *");
 
@@ -24,7 +24,7 @@ if (!$data) {
 }
 
 // Campos obrigatórios
-$camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma', 'preco'];
+$camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma'];
 foreach ($camposObrigatorios as $campo) {
     if (empty($data[$campo])) {
         echo json_encode(["success" => false, "message" => "Campo obrigatório '$campo' não preenchido."]);
@@ -42,7 +42,6 @@ $genero = trim($data['genero']);
 $paginas = intval($data['paginas']);
 $idioma = trim($data['idioma']);
 $descricao = trim($data['descricao'] ?? '');
-$preco = floatval($data['preco']);
 
 // Upload da capa (se estiver usando FormData)
 $caminhoDestino = null;
@@ -58,10 +57,10 @@ if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
 
 // Inserir no banco
 $stmt = $conexao->prepare("INSERT INTO livros 
-    (titulo, autor, isbn, editora, ano, genero, paginas, idioma, descricao, preco, capa) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("ssssissssds",
-    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $preco, $caminhoDestino);
+    (titulo, autor, isbn, editora, ano, genero, paginas, idioma, descricao, capa) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssssisssss",
+    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $caminhoDestino);
 
 if ($stmt->execute()) {
     echo json_encode(["success" => true, "message" => "Livro cadastrado com sucesso!", "id" => $conexao->insert_id]);

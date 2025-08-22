@@ -280,7 +280,7 @@ const BibliotecaBibliotecario = () => {
                   <a className={styles.navLink} href="#">Gerenciar Usuários</a>
                   <div className={styles.dropdownContent}>
                     <a href="/cadastrousuario" className={styles.dropdownItem}>Cadastro de Usuários</a>
-                    <a href="#" className={styles.dropdownItem}>Lista de Usuários</a>
+                    <a href="/usuarios" className={styles.dropdownItem}>Lista de Usuários</a>
                   </div>
                 </div>
               </li>
@@ -432,7 +432,7 @@ const BibliotecaBibliotecario = () => {
                   <div className={styles.bookInfo}>
                     <h3 className={styles.bookTitle}>{livro.titulo}</h3>
                     <p className={styles.bookAuthor}>{livro.autor}</p>
-                    <p className={styles.bookPrice}>R$ {livro.preco}</p>
+                    
                     <button 
                       className={styles.detailsButton}
                       onClick={() => {
@@ -484,7 +484,6 @@ const BibliotecaBibliotecario = () => {
                   <p className={styles.livroAutor}><strong>Autor:</strong> {livroSelecionado.autor}</p>
                   <p className={styles.livroEditora}><strong>Editora:</strong> {livroSelecionado.editora}</p>
                   <p className={styles.livroCategoria}><strong>Categoria:</strong> {livroSelecionado.categoria}</p>
-                  <p className={styles.livroPreco}><strong>Preço:</strong> R$ {livroSelecionado.preco}</p>
                   <div className={styles.livroDescricao}>
                     <h3>Descrição:</h3>
                     <p>{livroSelecionado.descricao || 'Nenhuma descrição disponível para este livro.'}</p>

@@ -159,7 +159,7 @@
   text-align: center;
 }
 
-.loginButton, .logoutButton {
+.loginButton, .logoutButton, .profileButton {
   background-color: #0066b3;
   color: white;
   border: none;
@@ -170,12 +170,20 @@
   width: 100%;
   transition: background-color 0.3s;
   display: block;
-  margin: 0 auto;
+  margin: 0 auto 0.5rem;
   text-align: center;
 }
 
 .loginButton:hover {
   background-color: #0055a5;
+}
+
+.profileButton {
+  background-color: #4CAF50;
+}
+
+.profileButton:hover {
+  background-color: #3e8e41;
 }
 
 .logoutButton {
@@ -1021,9 +1029,7 @@
     font-size: 0.7rem;
   }
   
-  .bookPrice {
-    font-size: 0.85rem;
-  }
+
   
   .header {
     padding: 0.5rem 0;

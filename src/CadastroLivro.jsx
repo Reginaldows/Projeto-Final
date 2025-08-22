@@ -23,7 +23,6 @@ export default function CadastroLivro() {
     numeroPaginas: '',
     idioma: '',
     descricao: '',
-    preco: '',
     capa: null
   });
 
@@ -35,8 +34,7 @@ export default function CadastroLivro() {
     anoPublicacao: { valido: false, mensagem: '' },
     numeroPaginas: { valido: false, mensagem: '' },
     idioma: { valido: false, mensagem: '' },
-    descricao: { valido: true, mensagem: '' },
-    preco: { valido: false, mensagem: '' }
+    descricao: { valido: true, mensagem: '' }
   });
 
   const generosDisponiveis = [
@@ -127,12 +125,6 @@ export default function CadastroLivro() {
       case 'descricao':
         valido = true;
         break;
-      case 'preco':
-        const precoRegex = /^\d+(\.\d{1,2})?$/;
-        const preco = parseFloat(valor);
-        valido = preco >= 0;
-        mensagem = valido ? '' : 'Preço deve ser um valor positivo';
-        break;
     }
 
     setValidacao(prev => ({
@@ -148,8 +140,6 @@ export default function CadastroLivro() {
     
     if (name === 'isbn') {
       valorFormatado = value.replace(/[^\d-]/g, '');
-    } else if (name === 'preco') {
-      valorFormatado = value.replace(/[^\d.,]/g, '').replace(',', '.');
     } else if (name === 'numeroPaginas' || name === 'anoPublicacao') {
       valorFormatado = value.replace(/[^\d]/g, '');
     }
@@ -519,23 +509,6 @@ export default function CadastroLivro() {
               </div>
 
               <div className={styles.campoGrupo}>
-                <label htmlFor="preco" className={styles.campoLabel}>
-                  <DollarSign className={styles.campoIcone} />
-                  Preço *
-                </label>
-                <input
-                  type="text"
-                  id="preco"
-                  name="preco"
-                  value={formData.preco}
-                  onChange={handleInputChange}
-                  className={`${styles.campoInput} ${validacao.preco.valido ? styles.valido : formData.preco ? styles.invalido : ''}`}
-                  placeholder="29.90"
-                  required
-                />
-                {validacao.preco.mensagem && (
-                  <span className={styles.campoErro}>{validacao.preco.mensagem}</span>
-                )}
               </div>
             </div>
           </div>

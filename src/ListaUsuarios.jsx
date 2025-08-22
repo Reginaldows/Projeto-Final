@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Container, Button } from 'react-bootstrap';
+import { Table, Container, Button, Form } from 'react-bootstrap';
 import styles from './listausuarios.module.css';
+import { formatarCPF } from './scripts/validacaoCpfSenha';
+import Mensagem from './mensagem';
 
 const ListaUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
+  const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [cpfBusca, setCpfBusca] = useState('');
+  const [mensagem, setMensagem] = useState('');
+  const [tipoMensagem, setTipoMensagem] = useState('');
 
 
   // Buscar usuários
@@ -17,6 +23,7 @@ const ListaUsuarios = () => {
       
       if (data.success) {
         setUsuarios(data.dados);
+        setUsuariosFiltrados(data.dados);
       } else {
         setError(data.message);
       }
@@ -31,6 +38,25 @@ const ListaUsuarios = () => {
   useEffect(() => {
     fetchUsuarios();
   }, []);
+  
+  // Função para buscar usuários por CPF
+  const buscarPorCPF = () => {
+    if (!cpfBusca.trim()) {
+      setUsuariosFiltrados(usuarios);
+      return;
+    }
+    
+    // Remove formatação para comparar apenas os números
+    const cpfBuscaLimpo = cpfBusca.replace(/\D/g, '');
+    
+    const resultados = usuarios.filter(usuario => {
+      if (!usuario.cpf) return false;
+      const cpfUsuarioLimpo = usuario.cpf.replace(/\D/g, '');
+      return cpfUsuarioLimpo.includes(cpfBuscaLimpo);
+    });
+    
+    setUsuariosFiltrados(resultados);
+  };
 
   // Redirecionar para a tela de edição
   const handleEdit = (id) => {
@@ -52,13 +78,28 @@ const ListaUsuarios = () => {
         const data = await response.json();
         
         if (data.success) {
-          alert(data.message);
+          setMensagem(data.message);
+          setTipoMensagem('sucesso');
           fetchUsuarios(); // Recarregar a lista
+          setTimeout(() => {
+            setMensagem('');
+            setTipoMensagem('');
+          }, 3000);
         } else {
-          alert(data.message);
+          setMensagem(data.message);
+          setTipoMensagem('erro');
+          setTimeout(() => {
+            setMensagem('');
+            setTipoMensagem('');
+          }, 3000);
         }
       } catch (err) {
-        alert('Erro ao excluir usuário: ' + err.message);
+        setMensagem('Erro ao excluir usuário: ' + err.message);
+        setTipoMensagem('erro');
+        setTimeout(() => {
+          setMensagem('');
+          setTipoMensagem('');
+        }, 3000);
       }
     }
   };
@@ -70,8 +111,50 @@ const ListaUsuarios = () => {
 
   return (
     <div className={styles.tableWrapper}>
+      {mensagem && (
+        <Mensagem 
+          texto={mensagem} 
+          tipo={tipoMensagem} 
+          onClose={() => {
+            setMensagem('');
+            setTipoMensagem('');
+          }}
+        />
+      )}
       <div className={styles.container}>
+        <div className={styles.logoContainer}>
+          <img src="/img/logoSenai.png" alt="Logo SENAI" className={styles.logo} />
+        </div>
+        
         <h1 className={styles.title}>Lista de Usuários</h1>
+        
+        <div className={styles.searchContainer}>
+          <Form.Control 
+            type="text" 
+            placeholder="Digite o CPF do usuário" 
+            value={cpfBusca} 
+            onChange={(e) => {
+              const formatado = formatarCPF(e.target.value);
+              setCpfBusca(formatado);
+            }} 
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarPorCPF();
+              }
+            }}
+            className={styles.searchInput}
+            maxLength="14"
+            style={{ marginRight: 0 }}
+          />
+          <Button 
+            onClick={buscarPorCPF} 
+            className={styles.searchButton}
+            style={{ marginLeft: 0 }}
+          >
+            Buscar
+          </Button>
+        </div>
       
       <div className={styles.tableContainer}>
         <Table responsive striped bordered hover>
@@ -94,8 +177,8 @@ const ListaUsuarios = () => {
             </tr>
           </thead>
           <tbody>
-            {usuarios.length > 0 ? (
-              usuarios.filter(usuario => usuario.tipo_usuario !== 'bibliotecario').map((usuario) => (
+            {usuariosFiltrados.length > 0 ? (
+              usuariosFiltrados.filter(usuario => usuario.tipo_usuario !== 'bibliotecario').map((usuario) => (
                 <tr key={usuario.id} className={styles.tableRow}>
                   <td>{usuario.nome}</td>
                   <td>{usuario.email}</td>

@@ -40,12 +40,14 @@ export default function Login() {
       if (response.ok && responseData.success) {
         const userName = responseData.nome || 'Usuário';
         const tipoUsuario = responseData.tipo_usuario || 'aluno';
+        const userId = responseData.id || '';
 
         localStorage.clear();
         
         localStorage.setItem('userName', userName);
         localStorage.setItem('isLoggedIn', 'true');
         localStorage.setItem('tipoUsuario', tipoUsuario);
+        localStorage.setItem('userId', userId);
 
         console.log('Login bem-sucedido:', { userName, tipoUsuario });
         

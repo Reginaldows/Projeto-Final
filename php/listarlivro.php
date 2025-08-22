@@ -1,6 +1,6 @@
 <?php
 // Permite requisições de qualquer origem (ajuste conforme sua porta)
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: http://localhost:5175");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 // Inclui a conexão com o banco
 require 'conexao.php';
 
-$sql = "SELECT id, titulo, autor, ano, editora, genero, preco, isbn, paginas, descricao, capa 
+$sql = "SELECT id, titulo, autor, ano, editora, genero, isbn, paginas, descricao, capa 
         FROM livros ORDER BY id DESC";
 
 $result = $conexao->query($sql);

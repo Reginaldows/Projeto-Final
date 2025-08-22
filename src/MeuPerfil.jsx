@@ -1,55 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import styles from './cadastroestante.module.css';
-import { formatarCPF, validarCPF, formatarCEP, buscarEnderecoPorCEP, formatarTelefone } from './scripts/validacaoCpfSenha';
+import { formatarCEP, buscarEnderecoPorCEP, formatarTelefone } from './scripts/validacaoCpfSenha';
+import Mensagem from './mensagem';
 
-const EditarUsuario = () => {
+const MeuPerfil = () => {
   const navigate = useNavigate();
-  const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  const [nome, setNome] = useState('');
-  const [cpf, setCpf] = useState('');
-  const [cpfValido, setCpfValido] = useState(null);
-  const [cep, setCep] = useState('');
+  // Campos editáveis
   const [celular, setCelular] = useState('');
   const [rua, setRua] = useState('');
   const [numero, setNumero] = useState('');
   const [complemento, setComplemento] = useState('');
   const [bairro, setBairro] = useState('');
+  const [email, setEmail] = useState('');
+  
+  // Campos não editáveis
+  const [nome, setNome] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [cep, setCep] = useState('');
   const [cidade, setCidade] = useState('');
   const [estado, setEstado] = useState('');
   const [dataNasc, setDataNasc] = useState('');
-  const [email, setEmail] = useState('');
   const [tipoUsuario, setTipoUsuario] = useState('');
+  
+  // Mensagem de feedback
   const [mensagem, setMensagem] = useState('');
-  const [atualizacaoSucesso, setAtualizacaoSucesso] = useState(false);
+  const [tipoMensagem, setTipoMensagem] = useState('');
 
-  // Buscar dados do usuário
+  // Buscar dados do usuário logado
   useEffect(() => {
     const fetchUsuario = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`http://localhost/php/editarusuario.php?id=${id}`);
+        
+        // Verificar se o usuário está logado
+        const userId = localStorage.getItem('userId');
+        const isLoggedIn = localStorage.getItem('isLoggedIn');
+        
+        if (!userId || isLoggedIn !== 'true') {
+          navigate('/login');
+          return;
+        }
+        
+        const response = await fetch(`http://localhost/php/editarusuario.php?id=${userId}`);
         const data = await response.json();
         
         if (data.success) {
           const usuario = data.dados;
+          // Preencher campos não editáveis
           setNome(usuario.nome || '');
           setCpf(usuario.cpf || '');
-          setCpfValido(usuario.cpf ? validarCPF(usuario.cpf.replace(/\D/g, '')) : null);
           setCep(usuario.cep || '');
+          setCidade(usuario.cidade || '');
+          setEstado(usuario.estado || '');
+          setDataNasc(usuario.data_nasc || '');
+          setTipoUsuario(usuario.tipo_usuario || '');
+          
+          // Preencher campos editáveis
           setCelular(usuario.celular || '');
           setRua(usuario.rua || '');
           setNumero(usuario.numero || '');
           setComplemento(usuario.complemento || '');
           setBairro(usuario.bairro || '');
-          setCidade(usuario.cidade || '');
-          setEstado(usuario.estado || '');
-          setDataNasc(usuario.data_nasc || '');
           setEmail(usuario.email || '');
-          setTipoUsuario(usuario.tipo_usuario || '');
         } else {
           setError(data.message);
         }
@@ -60,16 +76,20 @@ const EditarUsuario = () => {
       }
     };
 
-    if (id) {
-      fetchUsuario();
-    }
-  }, [id]);
+    fetchUsuario();
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      navigate('/login');
+      return;
+    }
+
     const formData = new FormData();
-    formData.append('id', id);
+    formData.append('id', userId);
     formData.append('nome', nome);
     formData.append('data_nasc', dataNasc);
     formData.append('cpf', cpf);
@@ -93,18 +113,33 @@ const EditarUsuario = () => {
       const data = await response.json();
       
       if (data.success) {
-        setAtualizacaoSucesso(true);
-        setMensagem('Usuário atualizado com sucesso!');
+        setMensagem('Perfil atualizado com sucesso!');
+        setTipoMensagem('sucesso');
         
-        // Redirecionar após 2 segundos
+        // Atualizar o nome do usuário no localStorage se foi alterado
+        if (nome !== localStorage.getItem('userName')) {
+          localStorage.setItem('userName', nome);
+        }
+        
         setTimeout(() => {
-          navigate('/usuarios');
-        }, 2000);
+          setMensagem('');
+          setTipoMensagem('');
+        }, 3000);
       } else {
         setMensagem(data.message);
+        setTipoMensagem('erro');
+        setTimeout(() => {
+          setMensagem('');
+          setTipoMensagem('');
+        }, 3000);
       }
     } catch (error) {
       setMensagem('Erro ao atualizar: ' + error.message);
+      setTipoMensagem('erro');
+      setTimeout(() => {
+        setMensagem('');
+        setTipoMensagem('');
+      }, 3000);
     }
   };
 
@@ -113,17 +148,29 @@ const EditarUsuario = () => {
 
   return (
     <div className={styles.cadastroEstanteWrapper}>
+      {mensagem && (
+        <Mensagem 
+          texto={mensagem} 
+          tipo={tipoMensagem} 
+          onClose={() => {
+            setMensagem('');
+            setTipoMensagem('');
+          }}
+        />
+      )}
+      
       <div className={styles.container}>
         <div className={styles.logoContainer}>
           <img src="/img/logoSenai.png" alt="Logo SENAI" className={styles.logo} />
         </div>
 
         <form className={styles.form} onSubmit={handleSubmit}>
-          <h2 style={{ display: 'block', marginBottom: '20px', fontFamily: 'Arial, sans-serif', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Editar Usuário</h2>
+          <h2 style={{ display: 'block', marginBottom: '20px', fontFamily: 'Arial, sans-serif', fontSize: '24px', fontWeight: 'bold', textAlign: 'center' }}>Meu Perfil</h2>
           
+          {/* Campos não editáveis */}
           <div className={styles.formGroup}>
-            <label htmlFor="nome">Nome completo*</label>
-            <input type="text" id="nome" value={nome} onChange={e => setNome(e.target.value)} required />
+            <label htmlFor="nome">Nome completo</label>
+            <input type="text" id="nome" value={nome} readOnly className={styles.readOnly} />
           </div>
 
           <div className={styles.formGroup}>
@@ -133,29 +180,44 @@ const EditarUsuario = () => {
               id="data_nasc"
               name="data_nasc"
               value={dataNasc}
-              onChange={e => setDataNasc(e.target.value)}
+              readOnly
+              className={styles.readOnly}
             />
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="cpf">CPF*</label>
+            <label htmlFor="cpf">CPF</label>
             <input 
               type="text" 
               id="cpf" 
               value={cpf}
-              onChange={e => {
-                const formatado = formatarCPF(e.target.value);
-                setCpf(formatado);
-                const cpfLimpo = formatado.replace(/\D/g, '');
-                setCpfValido(cpfLimpo.length === 11 ? validarCPF(cpfLimpo) : null);
-              }}
-              maxLength="14"
-              required
-              className={cpfValido === false ? styles.invalido : ''}
+              readOnly
+              className={styles.readOnly}
             />
-            {cpfValido === false && <small className={styles.erro}>CPF inválido.</small>}
           </div>
 
+          <div className={styles.formGroup}>
+            <label htmlFor="cep">CEP</label>
+            <input 
+              type="text" 
+              id="cep" 
+              value={cep} 
+              readOnly
+              className={styles.readOnly}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="cidade">Cidade</label>
+            <input type="text" id="cidade" value={cidade} readOnly className={styles.readOnly} />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="estado">Estado</label>
+            <input type="text" id="estado" value={estado} readOnly className={styles.readOnly} />
+          </div>
+
+          {/* Campos editáveis */}
           <div className={styles.formGroup}>
             <label htmlFor="celular">DDD e número de celular*</label>
             <input 
@@ -169,21 +231,8 @@ const EditarUsuario = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="cep">CEP*</label>
-            <input 
-              type="text" 
-              id="cep" 
-              value={cep} 
-              onChange={e => {
-                const formatado = formatarCEP(e.target.value);
-                setCep(formatado);
-                if (formatado.replace(/\D/g,'').length === 8) {
-                  buscarEnderecoPorCEP(formatado, setRua, setBairro, setCidade, setEstado);
-                }
-              }}
-              maxLength="9" 
-              required 
-            />
+            <label htmlFor="email">E-mail*</label>
+            <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required />
           </div>
 
           <div className={styles.formGroup}>
@@ -206,36 +255,6 @@ const EditarUsuario = () => {
             <input type="text" id="bairro" value={bairro} onChange={e => setBairro(e.target.value)} required />
           </div>
 
-          <div className={styles.formGroup}>
-            <label htmlFor="cidade">Cidade*</label>
-            <input type="text" id="cidade" value={cidade} onChange={e => setCidade(e.target.value)} required />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="estado">Estado*</label>
-            <select id="estado" value={estado} onChange={e => setEstado(e.target.value)} required>
-              <option value="">Selecione...</option>
-              {['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'].map(sigla => (
-                <option key={sigla} value={sigla}>{sigla}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="email">E-mail*</label>
-            <input type="email" id="email" value={email} onChange={e => setEmail(e.target.value)} required />
-          </div>
-
-          <div className={styles.formGroup}>
-            <label htmlFor="tipo_usuario">Tipo de Usuário*</label>
-            <select id="tipo_usuario" value={tipoUsuario} onChange={e => setTipoUsuario(e.target.value)} required>
-              <option value="">Selecione...</option>
-              <option value="usuario">Usuário</option>
-              <option value="bibliotecario">Bibliotecário</option>
-              <option value="admin">Administrador</option>
-            </select>
-          </div>
-
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '20px' }}>
             <button 
               type="submit" 
@@ -254,11 +273,11 @@ const EditarUsuario = () => {
                 textAlign: 'center'
               }}
             >
-              Atualizar
+              Atualizar Perfil
             </button>
             <button 
               type="button" 
-              onClick={() => navigate('/usuarios')} 
+              onClick={() => navigate('/biblioteca')} 
               style={{
                 padding: '10px 20px',
                 backgroundColor: '#6c757d',
@@ -273,19 +292,13 @@ const EditarUsuario = () => {
                 textAlign: 'center'
               }}
             >
-              Cancelar
+              Voltar
             </button>
           </div>
         </form>
-
-        {mensagem && (
-          <div className={`${styles.mensagem} ${atualizacaoSucesso ? styles.sucesso : styles.erro}`}>
-            <p>{mensagem}</p>
-          </div>
-        )}
       </div>
     </div>
   );
 };
 
-export default EditarUsuario;
+export default MeuPerfil;

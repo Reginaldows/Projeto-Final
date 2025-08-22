@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: http://localhost:5175");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE");
 header("Access-Control-Allow-Headers: *");
 
@@ -30,7 +30,7 @@ if (empty($data['id'])) {
 }
 
 // Campos obrigatórios
-$camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma', 'preco'];
+$camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma'];
 foreach ($camposObrigatorios as $campo) {
     if (empty($data[$campo])) {
         echo json_encode(["success" => false, "message" => "Campo obrigatório '$campo' não preenchido."]);
@@ -49,7 +49,6 @@ $genero = trim($data['genero']);
 $paginas = intval($data['paginas']);
 $idioma = trim($data['idioma']);
 $descricao = trim($data['descricao'] ?? '');
-$preco = floatval($data['preco']);
 
 // Verificar se o livro existe
 $stmt = $conexao->prepare("SELECT capa FROM livros WHERE id = ?");
@@ -87,10 +86,10 @@ if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
 // Atualizar no banco
 $stmt = $conexao->prepare("UPDATE livros SET 
     titulo = ?, autor = ?, isbn = ?, editora = ?, ano = ?, 
-    genero = ?, paginas = ?, idioma = ?, descricao = ?, preco = ?, capa = ? 
+    genero = ?, paginas = ?, idioma = ?, descricao = ?, capa = ? 
     WHERE id = ?");
-$stmt->bind_param("ssssisssdssi",
-    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $preco, $caminhoDestino, $id);
+$stmt->bind_param("ssssisssssi",
+    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $caminhoDestino, $id);
 
 if ($stmt->execute()) {
     echo json_encode(["success" => true, "message" => "Livro atualizado com sucesso!"]);

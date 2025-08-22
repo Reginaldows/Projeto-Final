@@ -137,6 +137,21 @@
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
 }
 
+.formGroup input.readOnly,
+.formGroup select.readOnly {
+  background-color: #f0f0f0;
+  color: #777;
+  cursor: not-allowed;
+  border-color: #ddd;
+}
+
+:global(body.dark-mode) .formGroup input.readOnly,
+:global(body.dark-mode) .formGroup select.readOnly {
+  background-color: #444;
+  color: #999;
+  border-color: #555;
+}
+
 .formGroup input.invalido,
 .formGroup select.invalido {
   border-color: #dc3545;

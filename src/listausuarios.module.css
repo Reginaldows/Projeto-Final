@@ -55,12 +55,63 @@
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Logo do SENAI */
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 2px;
+  margin-bottom: 10px;
+}
+
+.logo {
+  height: 130px;
+  width: auto;
+}
+
 /* Título da página */
 .title {
   font-size: 2rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: #333;
   text-align: center;
+}
+
+/* Barra de pesquisa */
+.searchContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  gap: 0;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px 0 0 4px;
+  font-size: 1.1rem;
+  min-width: 250px;
+  margin-right: 0;
+}
+
+.searchButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 0px 4px 4px 0;
+  padding: px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+  width: auto;
+  margin-left: 0;
+}
+
+.searchButton:hover {
+  background-color: #0069d9;
 }
 
 /* Estilização da tabela */

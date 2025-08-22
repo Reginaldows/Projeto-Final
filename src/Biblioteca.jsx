@@ -189,6 +189,16 @@ const PaginaIsolada = () => {
                         <p>Logado como: {userName}</p>
                         {localStorage.getItem('tipoUsuario') === 'bibliotecario' && <p>Tipo: Bibliotecário</p>}
                         <button 
+                          className={styles.profileButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/meu-perfil');
+                            setShowLoginStatus(false);
+                          }}
+                        >
+                          Meu Perfil
+                        </button>
+                        <button 
                           className={styles.logoutButton}
                           onClick={(e) => { 
                             e.stopPropagation(); 
@@ -369,7 +379,6 @@ const PaginaIsolada = () => {
                   <div className={styles.bookInfo}>
                     <h3 className={styles.bookTitle}>{livro.titulo}</h3>
                     <p className={styles.bookAuthor}>{livro.autor}</p>
-                    <p className={styles.bookPrice}>R$ {livro.preco}</p>
                     <button 
                       className={styles.detailsButton}
                       onClick={() => {
@@ -393,7 +402,6 @@ const PaginaIsolada = () => {
         <footer className={styles.footer}>
           <div className={styles.footerContent}>
             <div className={styles.footerInfo}>
-              <p>Todos os produtos estão sujeitos a alteração de preço sem prévia comunicação.</p>
               <p>Biblioteca SENAI - www.bibliotecasenai.com.br |  Rua Residêncial 6 - Loteamento Nova Fronteira - Paraíso do Tocantins/TO</p>
             </div>
             <div className={styles.footerCopyright}>
@@ -421,7 +429,6 @@ const PaginaIsolada = () => {
                   <p className={styles.livroAutor}><strong>Autor:</strong> {livroSelecionado.autor}</p>
                   <p className={styles.livroEditora}><strong>Editora:</strong> {livroSelecionado.editora}</p>
                   <p className={styles.livroCategoria}><strong>Categoria:</strong> {livroSelecionado.categoria}</p>
-                  <p className={styles.livroPreco}><strong>Preço:</strong> R$ {livroSelecionado.preco}</p>
                   <div className={styles.livroDescricao}>
                     <h3>Descrição:</h3>
                     <p>{livroSelecionado.descricao || 'Nenhuma descrição disponível para este livro.'}</p>
