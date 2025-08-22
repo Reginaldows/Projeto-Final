@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './cadastroestante.module.css';
+import Acessibilidade from './acessibilidade';
 import { formatarCEP, buscarEnderecoPorCEP, formatarTelefone } from './scripts/validacaoCpfSenha';
 import Mensagem from './mensagem';
 
@@ -27,6 +28,7 @@ const MeuPerfil = () => {
   const [tipoUsuario, setTipoUsuario] = useState('');
   
   // Mensagem de feedback
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [tipoMensagem, setTipoMensagem] = useState('');
 
@@ -297,6 +299,7 @@ const MeuPerfil = () => {
           </div>
         </form>
       </div>
+      <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     </div>
   );
 };

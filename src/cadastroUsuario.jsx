@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './cadastroestante.module.css';
 import { formatarCPF, validarCPF, formatarCEP, buscarEnderecoPorCEP, formatarTelefone, validarRequisitosSenha } from './scripts/validacaoCpfSenha';
+import Acessibilidade from './acessibilidade';
 
 const CadastroUsuario = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const CadastroUsuario = () => {
   const [valido, setValido] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [cadastroSucesso, setCadastroSucesso] = useState(false);
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
   const [requisitos, setRequisitos] = useState({
     min: false,
@@ -96,6 +98,7 @@ const CadastroUsuario = () => {
               name="data_nasc"
               value={dataNasc} // CORREÇÃO: mudou de datanasc para dataNasc
               onChange={e => setDataNasc(e.target.value)} // CORREÇÃO: mudou de setDataNasc para setDataNasc
+              max={new Date().toISOString().split('T')[0]} // Limita a data até o dia atual
             />
           </div>
 
@@ -213,6 +216,7 @@ const CadastroUsuario = () => {
           </div>
         )}
       </div>
+      <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     </div>
   );
 };

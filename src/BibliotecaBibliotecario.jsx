@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './bibliotecario.module.css';
+import Acessibilidade from './acessibilidade';
 import { X } from 'lucide-react';
 
 const BibliotecaBibliotecario = () => {
@@ -20,6 +21,7 @@ const BibliotecaBibliotecario = () => {
   const [livroSelecionado, setLivroSelecionado] = useState(null);
   const [mensagem, setMensagem] = useState('');
   const [tipoMensagem, setTipoMensagem] = useState('');
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
   const carregarLivros = async () => {
     try {
@@ -87,23 +89,32 @@ const BibliotecaBibliotecario = () => {
   };
 
   useEffect(() => {
-    const storedUserName = localStorage.getItem('userName');
-    const isLoggedIn = localStorage.getItem('isLoggedIn');
-    const tipoUsuario = localStorage.getItem('tipoUsuario');
+    // Verificar se o usuário está logado como bibliotecário a cada acesso
+    // Agora verificamos no sessionStorage, já que o login de bibliotecário usa sessionStorage
+    const storedUserName = sessionStorage.getItem('userName');
+    const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+    const tipoUsuario = sessionStorage.getItem('tipoUsuario');
 
-    if (storedUserName && isLoggedIn === 'true') {
-      setUserName(storedUserName);
-      if (tipoUsuario !== 'bibliotecario') {
-        navigate('/biblioteca');
-      }
-    } else {
+    // Sempre redirecionar para a página de login, forçando autenticação
+    if (!storedUserName || !isLoggedIn || tipoUsuario !== 'bibliotecario') {
+      // Limpar dados do sessionStorage
+      sessionStorage.removeItem('userName');
+      sessionStorage.removeItem('isLoggedIn');
+      sessionStorage.removeItem('tipoUsuario');
+      sessionStorage.removeItem('userId');
+      // Limpar também localStorage por segurança
       localStorage.removeItem('userName');
       localStorage.removeItem('isLoggedIn');
       localStorage.removeItem('tipoUsuario');
+      localStorage.removeItem('userId');
       setUserName('');
       navigate('/login');
+      return; // Interrompe a execução do useEffect
     }
 
+    // Se chegou aqui, o usuário está logado como bibliotecário
+    setUserName(storedUserName);
+    
     carregarLivros();
     carregarAutores();
     carregarCategorias();
@@ -243,9 +254,16 @@ const BibliotecaBibliotecario = () => {
                           className={styles.logoutButton}
                           onClick={(e) => { 
                             e.stopPropagation(); 
+                            // Limpar sessionStorage para bibliotecários
+                            sessionStorage.removeItem('userName'); 
+                            sessionStorage.removeItem('isLoggedIn'); 
+                            sessionStorage.removeItem('tipoUsuario');
+                            sessionStorage.removeItem('userId');
+                            // Limpar também localStorage por segurança
                             localStorage.removeItem('userName'); 
                             localStorage.removeItem('isLoggedIn'); 
                             localStorage.removeItem('tipoUsuario');
+                            localStorage.removeItem('userId');
                             setUserName(''); 
                             setShowLoginStatus(false); 
                             navigate('/login');
@@ -274,7 +292,6 @@ const BibliotecaBibliotecario = () => {
           <nav className={styles.nav}>
             <ul className={styles.navList}>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Início</a></li>
-              <li className={styles.navItem}><a className={styles.navLink} href="#">Gerenciar Livros</a></li>
               <li className={styles.navItem}>
                 <div className={styles.dropdownContainer}>
                   <a className={styles.navLink} href="#">Gerenciar Usuários</a>
@@ -508,6 +525,7 @@ const BibliotecaBibliotecario = () => {
           </div>
         )}
       </div>
+      <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     </div>
   );
 };

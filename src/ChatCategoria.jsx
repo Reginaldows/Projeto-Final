@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './chatflutuante.module.css';
+import Acessibilidade from './acessibilidade';
 
 const ChatCategoria = ({ categoria }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,6 +8,7 @@ const ChatCategoria = ({ categoria }) => {
   const [newMessage, setNewMessage] = useState('');
   const [userName, setUserName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
   const coresCategorias = {
     'Ficção': '#000000',
@@ -149,6 +151,7 @@ const ChatCategoria = ({ categoria }) => {
           </form>
         </div>
       )}
+      <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     </div>
   );
 };

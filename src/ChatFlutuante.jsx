@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './chatflutuante.module.css';
+import Acessibilidade from './acessibilidade';
 
 const ChatFlutuante = ({ categoria }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,6 +8,7 @@ const ChatFlutuante = ({ categoria }) => {
   const [newMessage, setNewMessage] = useState('');
   const [userName, setUserName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName');
@@ -136,6 +138,7 @@ const ChatFlutuante = ({ categoria }) => {
           </form>
         </div>
       )}
+      <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     </div>
   );
 };

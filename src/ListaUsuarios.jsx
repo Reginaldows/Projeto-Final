@@ -3,6 +3,7 @@ import { Table, Container, Button, Form } from 'react-bootstrap';
 import styles from './listausuarios.module.css';
 import { formatarCPF } from './scripts/validacaoCpfSenha';
 import Mensagem from './mensagem';
+import Acessibilidade from './acessibilidade';
 
 const ListaUsuarios = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -12,6 +13,7 @@ const ListaUsuarios = () => {
   const [cpfBusca, setCpfBusca] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [tipoMensagem, setTipoMensagem] = useState('');
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
 
   // Buscar usuários
@@ -220,6 +222,7 @@ const ListaUsuarios = () => {
 
 
       </div>
+      <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     </div>
   );
 };

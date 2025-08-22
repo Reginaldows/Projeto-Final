@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import styles from './cadastroestante.module.css';
+import Acessibilidade from './acessibilidade';
 import { formatarCPF, validarCPF, formatarCEP, buscarEnderecoPorCEP, formatarTelefone } from './scripts/validacaoCpfSenha';
 
 const EditarUsuario = () => {
@@ -25,6 +26,7 @@ const EditarUsuario = () => {
   const [tipoUsuario, setTipoUsuario] = useState('');
   const [mensagem, setMensagem] = useState('');
   const [atualizacaoSucesso, setAtualizacaoSucesso] = useState(false);
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
   // Buscar dados do usuário
   useEffect(() => {
@@ -134,6 +136,7 @@ const EditarUsuario = () => {
               name="data_nasc"
               value={dataNasc}
               onChange={e => setDataNasc(e.target.value)}
+              max={new Date().toISOString().split('T')[0]} // Limita a data até o dia atual
             />
           </div>
 
@@ -284,6 +287,7 @@ const EditarUsuario = () => {
           </div>
         )}
       </div>
+      <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './biblioteca.module.css';
 import chatStyles from './chatflutuante.module.css';
 import ChatCategoria from './ChatCategoria';
+import Acessibilidade from './acessibilidade';
 import { X } from 'lucide-react';
 
 const PaginaIsolada = () => {
@@ -20,6 +21,7 @@ const PaginaIsolada = () => {
   const [categorias, setCategorias] = useState([]);
   const [mostrarDetalhes, setMostrarDetalhes] = useState(false);
   const [livroSelecionado, setLivroSelecionado] = useState(null);
+  const [leituraAtiva, setLeituraAtiva] = useState(false);
 
 
   const carregarLivros = async () => {
@@ -442,6 +444,8 @@ const PaginaIsolada = () => {
         <div className={chatStyles.chatCategoriaWrapper}>
           <ChatCategoria categoria={category || (categorias.length > 0 ? categorias[0] : 'Geral')} />
         </div>
+        
+        <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
       </div>
     </div>
   );

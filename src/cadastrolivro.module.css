@@ -559,7 +559,7 @@ html, body {
 
 :global(.icone-acessibilidade) {
   position: fixed;
-  top: 20px;
+  top: 80px;
   right: 20px;
   z-index: 9999;
   width: 60px;

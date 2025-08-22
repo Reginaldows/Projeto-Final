@@ -44,16 +44,25 @@ export default function Login() {
 
         localStorage.clear();
         
-        localStorage.setItem('userName', userName);
-        localStorage.setItem('isLoggedIn', 'true');
-        localStorage.setItem('tipoUsuario', tipoUsuario);
-        localStorage.setItem('userId', userId);
-
-        console.log('Login bem-sucedido:', { userName, tipoUsuario });
-        
+        // Verificar se o usuário é bibliotecário
         if (tipoUsuario === 'bibliotecario') {
+          // Para bibliotecários, armazenar temporariamente apenas para a sessão atual
+          // Não usar localStorage para bibliotecários
+          sessionStorage.setItem('userName', userName);
+          sessionStorage.setItem('isLoggedIn', 'true');
+          sessionStorage.setItem('tipoUsuario', tipoUsuario);
+          sessionStorage.setItem('userId', userId);
+          
+          console.log('Login bibliotecário bem-sucedido (sessão temporária):', { userName, tipoUsuario });
           navigate('/bibliotecario');
         } else {
+          // Para outros usuários, continuar usando localStorage
+          localStorage.setItem('userName', userName);
+          localStorage.setItem('isLoggedIn', 'true');
+          localStorage.setItem('tipoUsuario', tipoUsuario);
+          localStorage.setItem('userId', userId);
+          
+          console.log('Login bem-sucedido:', { userName, tipoUsuario });
           navigate('/');
         }
       } else {
