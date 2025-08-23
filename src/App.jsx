@@ -30,6 +30,7 @@ function App() {
         <Route path="/cadastrolivro" element={<CadastroLivro />} />
         <Route path="/editar-livro/:id" element={<EditarLivro />} />
         <Route path="/login" element={<Login />} />
+
         <Route path="/usuarios" element={<ListaUsuarios />} />
         <Route path="/editarusuario/:id" element={<EditarUsuario />} />
         <Route path="/meu-perfil" element={<MeuPerfil />} />

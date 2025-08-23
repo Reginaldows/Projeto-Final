@@ -448,6 +448,84 @@ html, body {
   margin-top: 4px;
 }
 
+/* Estilos para o container do ISBN com botão de busca */
+.isbnContainer {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+
+.isbnInput {
+  flex: 1;
+  min-width: 0;
+}
+
+.botaoBuscarISBN {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: #667eea;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 44px;
+  width: 44px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.botaoBuscarISBN:hover:not(:disabled) {
+  background: #5a67d8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.botaoBuscarISBN:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.botaoBuscarISBN:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+:global(body.dark-mode) .botaoBuscarISBN {
+  background: #4c51bf;
+}
+
+:global(body.dark-mode) .botaoBuscarISBN:hover:not(:disabled) {
+  background: #553c9a;
+}
+
+:global(body.dark-mode) .botaoBuscarISBN:disabled {
+  background: #4a5568;
+}
+
+.iconeSearch {
+  width: 16px;
+  height: 16px;
+}
+
+/* Spinner para loading */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 .generosSection {
   margin-bottom: 40px;

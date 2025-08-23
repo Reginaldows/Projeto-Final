@@ -49,6 +49,9 @@ $genero = trim($data['genero']);
 $paginas = intval($data['paginas']);
 $idioma = trim($data['idioma']);
 $descricao = trim($data['descricao'] ?? '');
+$cdd = trim($data['cdd'] ?? '');
+$localizacao = trim($data['localizacao'] ?? '');
+$quantidadeCopias = intval($data['quantidadeCopias'] ?? 1);
 
 // Verificar se o livro existe
 $stmt = $conexao->prepare("SELECT capa FROM livros WHERE id = ?");
@@ -86,10 +89,10 @@ if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
 // Atualizar no banco
 $stmt = $conexao->prepare("UPDATE livros SET 
     titulo = ?, autor = ?, isbn = ?, editora = ?, ano = ?, 
-    genero = ?, paginas = ?, idioma = ?, descricao = ?, capa = ? 
+    genero = ?, paginas = ?, idioma = ?, descricao = ?, capa = ?, cdd = ?, localizacao = ?, quantidade_copias = ? 
     WHERE id = ?");
-$stmt->bind_param("ssssisssssi",
-    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $caminhoDestino, $id);
+$stmt->bind_param("ssssissssssii",
+    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $caminhoDestino, $cdd, $localizacao, $quantidadeCopias, $id);
 
 if ($stmt->execute()) {
     echo json_encode(["success" => true, "message" => "Livro atualizado com sucesso!"]);

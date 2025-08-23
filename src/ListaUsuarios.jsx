@@ -174,7 +174,6 @@ const ListaUsuarios = () => {
               <th>Bairro</th>
               <th>Cidade</th>
               <th>Estado</th>
-              <th>Tipo</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -194,7 +193,6 @@ const ListaUsuarios = () => {
                   <td>{usuario.bairro}</td>
                   <td>{usuario.cidade}</td>
                   <td>{usuario.estado}</td>
-                  <td>{usuario.tipo_usuario}</td>
                   <td className={styles.actionButtons}>
                     <Button 
                       className={styles.editButton}

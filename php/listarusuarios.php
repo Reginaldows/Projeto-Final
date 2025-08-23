@@ -20,7 +20,21 @@ function responder($success, $mensagem, $dados = null) {
 }
 
 // Buscar todos os usuários
-$query = "SELECT * FROM dados ORDER BY nome";
+$query = "SELECT 
+    nome,
+    email,
+    cpf,
+    celular,
+    data_nascimento,
+    cep,
+    rua,
+    numero,
+    complemento,
+    bairro,
+    cidade,
+    estado
+FROM dados ORDER By nome ASC ;
+";
 $result = mysqli_query($conexao, $query);
 
 if (!$result) {

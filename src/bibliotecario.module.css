@@ -827,10 +827,22 @@
   line-height: 1.5;
 }
 
-.livroPreco {
+.livroCategoria {
   font-size: 18px;
   color: #006400;
   font-weight: bold;
+}
+
+.livroCdd {
+  font-size: 16px;
+  color: #4682B4;
+  margin-bottom: 10px;
+}
+
+.livroLocalizacao {
+  font-size: 16px;
+  color: #8B4513;
+  margin-bottom: 10px;
 }
 
 .livroDescricao {

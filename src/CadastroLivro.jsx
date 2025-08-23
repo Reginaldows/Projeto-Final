@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Book, User, Calendar, Globe, DollarSign, Hash, Building, Tag, FileText } from 'lucide-react';
+import { Upload, Book, User, Calendar, Globe, DollarSign, Hash, Building, Tag, FileText, Search, Library, MapPin, Copy } from 'lucide-react';
 import Acessibilidade from './acessibilidade';
 import styles from './cadastrolivro.module.css';
 
@@ -9,9 +9,11 @@ export default function CadastroLivro() {
   const [leituraAtiva, setLeituraAtiva] = useState(false);
   const [loading, setLoading] = useState(false);
   const [previewCapa, setPreviewCapa] = useState(null);
+  const [urlCapaAPI, setUrlCapaAPI] = useState(null);
   const [generosSelecionados, setGenerosSelecionados] = useState([]);
   const [mensagem, setMensagem] = useState('');
   const [tipoMensagem, setTipoMensagem] = useState('');
+  const [buscandoISBN, setBuscandoISBN] = useState(false);
 
   const [formData, setFormData] = useState({
     titulo: '',
@@ -23,6 +25,9 @@ export default function CadastroLivro() {
     numeroPaginas: '',
     idioma: '',
     descricao: '',
+    cdd: '',
+    localizacao: '',
+    quantidadeCopias: '',
     capa: null
   });
 
@@ -34,20 +39,83 @@ export default function CadastroLivro() {
     anoPublicacao: { valido: false, mensagem: '' },
     numeroPaginas: { valido: false, mensagem: '' },
     idioma: { valido: false, mensagem: '' },
-    descricao: { valido: true, mensagem: '' }
+    descricao: { valido: true, mensagem: '' },
+    cdd: { valido: false, mensagem: '' },
+    localizacao: { valido: false, mensagem: '' },
+    quantidadeCopias: { valido: false, mensagem: '' }
   });
 
   const generosDisponiveis = [
     'Ficção', 'Romance', 'Mistério', 'Fantasia', 'Ficção Científica',
     'Biografia', 'História', 'Ciência', 'Tecnologia', 'Negócios',
     'Autoajuda', 'Saúde', 'Culinária', 'Arte', 'Filosofia',
-    'Religião', 'Educação', 'Infantil', 'Jovem Adulto', 'Clássico'
+    'Religião', 'Educação'
   ];
 
   const idiomasDisponiveis = [
     'Português', 'Inglês', 'Espanhol', 'Francês', 'Alemão',
     'Italiano', 'Japonês', 'Chinês', 'Russo', 'Árabe'
   ];
+
+  // Mapeamento CDD para categorias
+  const mapaCDD = {
+    '0': ['Conhecimento geral', 'Informática', 'Bibliografia'],
+    '1': ['Filosofia'],
+    '2': ['Religião'],
+    '3': ['Ciências sociais'],
+    '4': ['Linguagem'],
+    '5': ['Ciências naturais e matemática'],
+    '6': ['Tecnologia'],
+    '7': ['Artes e recreação'],
+    '8': ['Literatura'],
+    '9': ['História e geografia']
+  };
+
+  const sugerirCategoriasPorCDD = (cdd) => {
+    if (!cdd) return [];
+    
+    const primeiroDigito = cdd.charAt(0);
+    const categoria = mapaCDD[primeiroDigito];
+    
+    if (categoria) {
+      // Mapeia para os gêneros disponíveis
+      const sugestoes = [];
+      
+      switch (primeiroDigito) {
+        case '0':
+          sugestoes.push('Tecnologia', 'Ciência');
+          break;
+        case '1':
+          sugestoes.push('Filosofia');
+          break;
+        case '2':
+          sugestoes.push('Religião');
+          break;
+        case '3':
+          sugestoes.push('História', 'Educação');
+          break;
+        case '5':
+          sugestoes.push('Ciência', 'Saúde');
+          break;
+        case '6':
+          sugestoes.push('Tecnologia', 'Negócios', 'Saúde');
+          break;
+        case '7':
+          sugestoes.push('Arte');
+          break;
+        case '8':
+          sugestoes.push('Ficção', 'Romance', 'Literatura', 'Clássico');
+          break;
+        case '9':
+          sugestoes.push('História', 'Biografia');
+          break;
+      }
+      
+      return sugestoes.filter(sugestao => generosDisponiveis.includes(sugestao));
+    }
+    
+    return [];
+  };
 
   useEffect(() => {
     validarCampo('titulo', formData.titulo);
@@ -81,9 +149,33 @@ export default function CadastroLivro() {
     validarCampo('descricao', formData.descricao);
   }, [formData.descricao]);
 
+
+
   useEffect(() => {
-    validarCampo('preco', formData.preco);
-  }, [formData.preco]);
+    validarCampo('cdd', formData.cdd);
+  }, [formData.cdd]);
+
+  useEffect(() => {
+    validarCampo('localizacao', formData.localizacao);
+  }, [formData.localizacao]);
+
+  useEffect(() => {
+    validarCampo('quantidadeCopias', formData.quantidadeCopias);
+  }, [formData.quantidadeCopias]);
+
+  useEffect(() => {
+    if (formData.cdd) {
+      const sugestoes = sugerirCategoriasPorCDD(formData.cdd);
+      if (sugestoes.length > 0 && generosSelecionados.length === 0) {
+        // Sugere automaticamente as categorias se nenhuma estiver selecionada
+        setGenerosSelecionados(sugestoes);
+        setFormData(prev => ({
+          ...prev,
+          genero: sugestoes.join(', ')
+        }));
+      }
+    }
+  }, [formData.cdd, generosSelecionados.length]);
 
   const validarCampo = (campo, valor) => {
     let valido = false;
@@ -125,6 +217,19 @@ export default function CadastroLivro() {
       case 'descricao':
         valido = true;
         break;
+      case 'cdd':
+        valido = valor.trim().length > 0;
+        mensagem = valido ? '' : 'CDD é obrigatório';
+        break;
+      case 'localizacao':
+        valido = valor.trim().length > 0;
+        mensagem = valido ? '' : 'Localização é obrigatória';
+        break;
+      case 'quantidadeCopias':
+        const copias = parseInt(valor);
+        valido = copias > 0 && copias <= 1000;
+        mensagem = valido ? '' : 'Quantidade deve ser entre 1 e 1000 cópias';
+        break;
     }
 
     setValidacao(prev => ({
@@ -140,14 +245,102 @@ export default function CadastroLivro() {
     
     if (name === 'isbn') {
       valorFormatado = value.replace(/[^\d-]/g, '');
-    } else if (name === 'numeroPaginas' || name === 'anoPublicacao') {
+    } else if (name === 'numeroPaginas' || name === 'anoPublicacao' || name === 'quantidadeCopias') {
       valorFormatado = value.replace(/[^\d]/g, '');
+    } else if (name === 'cdd') {
+      valorFormatado = value.toUpperCase();
     }
 
     setFormData(prev => ({
       ...prev,
       [name]: valorFormatado
     }));
+  };
+
+  const buscarLivroPorISBN = async () => {
+    const isbnLimpo = formData.isbn.replace(/[-\s]/g, '');
+    
+    if (isbnLimpo.length !== 10 && isbnLimpo.length !== 13) {
+      setMensagem('ISBN deve ter 10 ou 13 dígitos para buscar dados do livro.');
+      setTipoMensagem('erro');
+      setTimeout(() => {
+        setMensagem('');
+        setTipoMensagem('');
+      }, 3000);
+      return;
+    }
+
+    setBuscandoISBN(true);
+    
+    try {
+      // Busca na API Open Library
+      const response = await fetch(`https://openlibrary.org/api/books?bibkeys=ISBN:${isbnLimpo}&format=json&jscmd=data`);
+      const data = await response.json();
+      
+      const bookKey = `ISBN:${isbnLimpo}`;
+      const bookData = data[bookKey];
+      
+      if (bookData) {
+        // Preenche os campos com os dados encontrados
+        const autores = bookData.authors ? bookData.authors.map(author => author.name).join(', ') : '';
+        const editoras = bookData.publishers ? bookData.publishers.map(pub => pub.name).join(', ') : '';
+        const anoPublicacao = bookData.publish_date ? new Date(bookData.publish_date).getFullYear().toString() : '';
+        
+        // Busca a URL da imagem da capa
+        let urlCapa = null;
+        if (bookData.cover) {
+          // URL da imagem da Open Library
+          urlCapa = bookData.cover.large || bookData.cover.medium || bookData.cover.small;
+        }
+        
+        // Define a URL da capa para preview
+        if (urlCapa) {
+          setUrlCapaAPI(urlCapa);
+          setPreviewCapa(urlCapa);
+        }
+        
+        setFormData(prev => ({
+          ...prev,
+          titulo: bookData.title || prev.titulo,
+          autores: autores || prev.autores,
+          editora: editoras || prev.editora,
+          anoPublicacao: anoPublicacao || prev.anoPublicacao,
+          numeroPaginas: bookData.number_of_pages ? bookData.number_of_pages.toString() : prev.numeroPaginas,
+          descricao: bookData.notes || bookData.subtitle || prev.descricao
+        }));
+        
+        // Define gêneros se disponível
+        if (bookData.subjects && bookData.subjects.length > 0) {
+          const generosEncontrados = bookData.subjects
+            .filter(subject => generosDisponiveis.includes(subject.name))
+            .map(subject => subject.name);
+          
+          if (generosEncontrados.length > 0) {
+            setGenerosSelecionados(generosEncontrados);
+            setFormData(prev => ({
+              ...prev,
+              genero: generosEncontrados.join(', ')
+            }));
+          }
+        }
+        
+        setMensagem('Dados do livro encontrados e preenchidos automaticamente!');
+        setTipoMensagem('sucesso');
+      } else {
+        setMensagem('Livro não encontrado na base de dados. Preencha os campos manualmente.');
+        setTipoMensagem('aviso');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar livro:', error);
+      setMensagem('Erro ao buscar dados do livro. Verifique sua conexão e tente novamente.');
+      setTipoMensagem('erro');
+    } finally {
+      setBuscandoISBN(false);
+      setTimeout(() => {
+        setMensagem('');
+        setTipoMensagem('');
+      }, 5000);
+    }
   };
 
   const handleFileUpload = (e) => {
@@ -200,7 +393,8 @@ export default function CadastroLivro() {
     return Object.values(validacao).every(campo => campo.valido) &&
            formData.titulo && formData.autores && formData.isbn &&
            formData.editora && formData.anoPublicacao && formData.numeroPaginas &&
-           formData.idioma && formData.preco !== '' && generosSelecionados.length > 0;
+           formData.idioma && formData.cdd &&
+           formData.localizacao && formData.quantidadeCopias && generosSelecionados.length > 0;
   };
 
   const handleSubmit = async (e) => {
@@ -230,21 +424,35 @@ export default function CadastroLivro() {
       body.append('paginas', formData.numeroPaginas);
       body.append('idioma', formData.idioma);
       body.append('descricao', formData.descricao);
-      body.append('preco', formData.preco);
-      body.append('capa', formData.capa, formData.capa.name);
+      body.append('cdd', formData.cdd);
+      body.append('localizacao', formData.localizacao);
+      body.append('quantidadeCopias', formData.quantidadeCopias);
+      if (formData.capa) {
+        body.append('capa', formData.capa, formData.capa.name);
+      } else if (urlCapaAPI) {
+        body.append('urlCapa', urlCapaAPI);
+      }
     } else {
-      const dados = new URLSearchParams({
-        titulo: formData.titulo,
-        autor: formData.autores,
-        isbn: formData.isbn,
-        editora: formData.editora,
-        ano: formData.anoPublicacao,
-        genero: generosSelecionados.join(', '),
-        paginas: formData.numeroPaginas,
-        idioma: formData.idioma,
-        descricao: formData.descricao,
-        preco: formData.preco
-      });
+        const dadosForm = {
+          titulo: formData.titulo,
+          autor: formData.autores,
+          isbn: formData.isbn,
+          editora: formData.editora,
+          ano: formData.anoPublicacao,
+          genero: generosSelecionados.join(', '),
+          paginas: formData.numeroPaginas,
+          idioma: formData.idioma,
+          descricao: formData.descricao,
+          cdd: formData.cdd,
+          localizacao: formData.localizacao,
+          quantidadeCopias: formData.quantidadeCopias
+        };
+        
+        if (urlCapaAPI) {
+          dadosForm.urlCapa = urlCapaAPI;
+        }
+        
+        const dados = new URLSearchParams(dadosForm);
       body = dados.toString();
       headers['Content-Type'] = 'application/x-www-form-urlencoded';
     }
@@ -266,10 +474,12 @@ export default function CadastroLivro() {
 
       setFormData({
         titulo: '', autores: '', isbn: '', editora: '', anoPublicacao: '',
-        genero: '', numeroPaginas: '', idioma: '', descricao: '', preco: '', capa: null
+        genero: '', numeroPaginas: '', idioma: '', descricao: '',
+        cdd: '', localizacao: '', capa: null
       });
       setGenerosSelecionados([]);
       setPreviewCapa(null);
+      setUrlCapaAPI(null);
     } else {
       setMensagem(resultado.message);
       setTipoMensagem('erro');
@@ -390,16 +600,31 @@ export default function CadastroLivro() {
                   <Hash className={styles.campoIcone} />
                   ISBN *
                 </label>
-                <input
-                  type="text"
-                  id="isbn"
-                  name="isbn"
-                  value={formData.isbn}
-                  onChange={handleInputChange}
-                  className={`${styles.campoInput} ${validacao.isbn.valido ? styles.valido : formData.isbn ? styles.invalido : ''}`}
-                  placeholder="978-85-123-4567-8"
-                  required
-                />
+                <div className={styles.isbnContainer}>
+                  <input
+                    type="text"
+                    id="isbn"
+                    name="isbn"
+                    value={formData.isbn}
+                    onChange={handleInputChange}
+                    className={`${styles.campoInput} ${styles.isbnInput} ${validacao.isbn.valido ? styles.valido : formData.isbn ? styles.invalido : ''}`}
+                    placeholder="978-85-123-4567-8"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={buscarLivroPorISBN}
+                    disabled={!validacao.isbn.valido || buscandoISBN}
+                    className={styles.botaoBuscarISBN}
+                    title="Buscar dados do livro pelo ISBN"
+                  >
+                    {buscandoISBN ? (
+                      <div className={styles.spinner}></div>
+                    ) : (
+                      <Search className={styles.iconeSearch} />
+                    )}
+                  </button>
+                </div>
                 {validacao.isbn.mensagem && (
                   <span className={styles.campoErro}>{validacao.isbn.mensagem}</span>
                 )}
@@ -506,6 +731,68 @@ export default function CadastroLivro() {
                   placeholder="Descrição do livro (opcional)"
                   rows="3"
                 />
+              </div>
+
+              <div className={styles.campoGrupo}>
+                <label htmlFor="cdd" className={styles.campoLabel}>
+                  <Library className={styles.campoIcone} />
+                  CDD*
+                </label>
+                <input
+                  type="text"
+                  id="cdd"
+                  name="cdd"
+                  value={formData.cdd}
+                  onChange={handleInputChange}
+                  className={`${styles.campoInput} ${validacao.cdd.valido ? styles.valido : formData.cdd ? styles.invalido : ''}`}
+                  placeholder="Ex: 004.678 ou 796.332"
+                  required
+                />
+                {validacao.cdd.mensagem && (
+                  <span className={styles.campoErro}>{validacao.cdd.mensagem}</span>
+                )}
+              </div>
+
+              <div className={styles.campoGrupo}>
+                <label htmlFor="localizacao" className={styles.campoLabel}>
+                  <MapPin className={styles.campoIcone} />
+                  Localização na Estante *
+                </label>
+                <input
+                  type="text"
+                  id="localizacao"
+                  name="localizacao"
+                  value={formData.localizacao}
+                  onChange={handleInputChange}
+                  className={`${styles.campoInput} ${validacao.localizacao.valido ? styles.valido : formData.localizacao ? styles.invalido : ''}`}
+                  placeholder="Ex: Estante A - Prateleira 3 - Posição 15"
+                  required
+                />
+                {validacao.localizacao.mensagem && (
+                  <span className={styles.campoErro}>{validacao.localizacao.mensagem}</span>
+                )}
+              </div>
+
+              <div className={styles.campoGrupo}>
+                <label htmlFor="quantidadeCopias" className={styles.campoLabel}>
+                  <Copy className={styles.campoIcone} />
+                  Quantidade de Cópias *
+                </label>
+                <input
+                  type="number"
+                  id="quantidadeCopias"
+                  name="quantidadeCopias"
+                  value={formData.quantidadeCopias}
+                  onChange={handleInputChange}
+                  className={`${styles.campoInput} ${validacao.quantidadeCopias.valido ? styles.valido : formData.quantidadeCopias ? styles.invalido : ''}`}
+                  placeholder="1"
+                  min="1"
+                  max="1000"
+                  required
+                />
+                {validacao.quantidadeCopias.mensagem && (
+                  <span className={styles.campoErro}>{validacao.quantidadeCopias.mensagem}</span>
+                )}
               </div>
 
               <div className={styles.campoGrupo}>

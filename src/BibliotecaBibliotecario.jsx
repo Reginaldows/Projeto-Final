@@ -501,6 +501,15 @@ const BibliotecaBibliotecario = () => {
                   <p className={styles.livroAutor}><strong>Autor:</strong> {livroSelecionado.autor}</p>
                   <p className={styles.livroEditora}><strong>Editora:</strong> {livroSelecionado.editora}</p>
                   <p className={styles.livroCategoria}><strong>Categoria:</strong> {livroSelecionado.categoria}</p>
+                  {livroSelecionado.cdd && (
+                    <p className={styles.livroCdd}><strong>CDD:</strong> {livroSelecionado.cdd}</p>
+                  )}
+                  {livroSelecionado.localizacao && (
+                    <p className={styles.livroLocalizacao}><strong>Localização na Estante:</strong> {livroSelecionado.localizacao}</p>
+                  )}
+                  {livroSelecionado.quantidade_copias && (
+                    <p className={styles.livroQuantidadeCopias}><strong>Quantidade de Cópias:</strong> {livroSelecionado.quantidade_copias}</p>
+                  )}
                   <div className={styles.livroDescricao}>
                     <h3>Descrição:</h3>
                     <p>{livroSelecionado.descricao || 'Nenhuma descrição disponível para este livro.'}</p>
