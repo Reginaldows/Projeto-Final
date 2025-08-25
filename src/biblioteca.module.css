@@ -818,8 +818,108 @@
   margin-bottom: 10px;
 }
 
+.livroQuantidadeCopias {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* Estilos para informações de disponibilidade */
+.disponibilidadeInfo {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 15px 0;
+}
+
+.copiasDisponiveis {
+  font-size: 16px;
+  color: #28a745;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.copiasEmprestadas {
+  font-size: 16px;
+  color: #ffc107;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.copiasManutencao {
+  font-size: 16px;
+  color: #6c757d;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.copiasPerdidas {
+  font-size: 16px;
+  color: #dc3545;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
 .livroDescricao {
   margin-top: 15px;
+}
+
+/* Estilos para os botões de ação */
+.botoesAcao {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.botaoAcao {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.botaoAcao:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.botaoEmprestimo {
+  background-color: #28a745;
+  color: white;
+}
+
+.botaoEmprestimo:hover {
+  background-color: #218838;
+}
+
+.botaoPreReserva {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.botaoPreReserva:hover {
+  background-color: #e0a800;
+}
+
+.botaoReserva {
+  background-color: #dc3545;
+  color: white;
+}
+
+.botaoReserva:hover {
+  background-color: #c82333;
 }
 
 

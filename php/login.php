@@ -34,7 +34,7 @@ $login_normalizado = preg_replace('/[\.\-]/', '', $login);
 
 $stmt = $conexao->prepare("
     SELECT id, nome, senha, tipo_usuario, cpf, email 
-    FROM dados 
+    FROM usuarios 
     WHERE REPLACE(REPLACE(cpf, '.', ''), '-', '') = ? OR email = ?
 ");
 $stmt->bind_param("ss", $login_normalizado, $login);

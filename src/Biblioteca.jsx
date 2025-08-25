@@ -71,6 +71,116 @@ const PaginaIsolada = () => {
     }
   };
 
+  // Funções para lidar com empréstimos e reservas
+  const handleEmprestimo = async (livroId) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('Você precisa estar logado para fazer um empréstimo.');
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch('/php/processar_emprestimo.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          livro_id: livroId,
+          usuario_id: parseInt(userId),
+          dias_emprestimo: 14, // 14 dias padrão
+          observacoes: ''
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`Empréstimo realizado com sucesso! Devolução prevista: ${result.data.datas.devolucao_prevista}`);
+        setMostrarDetalhes(false);
+        carregarLivros(); // Recarregar lista para atualizar disponibilidade
+      } else {
+        alert(`Erro ao realizar empréstimo: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Erro ao processar empréstimo:', error);
+      alert('Erro ao processar empréstimo. Tente novamente.');
+    }
+  };
+
+  const handlePreReserva = async (livroId) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('Você precisa estar logado para fazer uma pré-reserva.');
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch('/php/processar_reserva.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          livro_id: livroId,
+          usuario_id: parseInt(userId),
+          tipo: 'pre_reserva',
+          observacoes: ''
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`Pré-reserva realizada com sucesso! Posição na fila: ${result.data.reserva.posicao_fila}. Válida até: ${result.data.reserva.data_expiracao}`);
+        setMostrarDetalhes(false);
+      } else {
+        alert(`Erro ao realizar pré-reserva: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Erro ao processar pré-reserva:', error);
+      alert('Erro ao processar pré-reserva. Tente novamente.');
+    }
+  };
+
+  const handleReserva = async (livroId) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('Você precisa estar logado para fazer uma reserva.');
+        navigate('/login');
+        return;
+      }
+
+      const response = await fetch('/php/processar_reserva.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          livro_id: livroId,
+          usuario_id: parseInt(userId),
+          tipo: 'reserva',
+          observacoes: ''
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        alert(`Reserva realizada com sucesso! Posição na fila: ${result.data.reserva.posicao_fila}. Válida até: ${result.data.reserva.data_expiracao}`);
+        setMostrarDetalhes(false);
+      } else {
+        alert(`Erro ao realizar reserva: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Erro ao processar reserva:', error);
+      alert('Erro ao processar reserva. Tente novamente.');
+    }
+  };
+
   const carregarCategorias = async () => {
     try {
       console.log('Carregando categorias...');
@@ -431,15 +541,46 @@ const PaginaIsolada = () => {
                   <p className={styles.livroAutor}><strong>Autor:</strong> {livroSelecionado.autor}</p>
                   <p className={styles.livroEditora}><strong>Editora:</strong> {livroSelecionado.editora}</p>
                   <p className={styles.livroCategoria}><strong>Categoria:</strong> {livroSelecionado.categoria}</p>
-                  {livroSelecionado.cdd && (
-                    <p className={styles.livroCdd}><strong>CDD:</strong> {livroSelecionado.cdd}</p>
-                  )}
                   {livroSelecionado.localizacao && (
                     <p className={styles.livroLocalizacao}><strong>Localização na Estante:</strong> {livroSelecionado.localizacao}</p>
                   )}
-                  {livroSelecionado.quantidade_copias && (
-                    <p className={styles.livroQuantidadeCopias}><strong>Quantidade de Cópias:</strong> {livroSelecionado.quantidade_copias}</p>
+                  
+                  {/* Informações de Disponibilidade */}
+                  {livroSelecionado.disponibilidade && (
+                    <div className={styles.disponibilidadeInfo}>
+                      <p className={styles.livroQuantidadeCopias}><strong>Total de Cópias:</strong> {livroSelecionado.disponibilidade.total_copias}</p>
+                      <p className={styles.copiasDisponiveis}><strong>Cópias Disponíveis:</strong> {livroSelecionado.disponibilidade.copias_disponiveis}</p>
+                    </div>
                   )}
+                  
+                  {/* Botões de Ação */}
+                  <div className={styles.botoesAcao}>
+                    {livroSelecionado.disponibilidade?.disponivel_emprestimo && (
+                      <button 
+                        className={`${styles.botaoAcao} ${styles.botaoEmprestimo}`}
+                        onClick={() => handleEmprestimo(livroSelecionado.id)}
+                      >
+                        📚 Empréstimo
+                      </button>
+                    )}
+                    
+                    <button 
+                      className={`${styles.botaoAcao} ${styles.botaoPreReserva}`}
+                      onClick={() => handlePreReserva(livroSelecionado.id)}
+                    >
+                      ⏰ Pré-reserva
+                    </button>
+                    
+                    {livroSelecionado.disponibilidade?.disponivel_reserva && (
+                      <button 
+                        className={`${styles.botaoAcao} ${styles.botaoReserva}`}
+                        onClick={() => handleReserva(livroSelecionado.id)}
+                      >
+                        🔒 Reserva
+                      </button>
+                    )}
+                  </div>
+                  
                   <div className={styles.livroDescricao}>
                     <h3>Descrição:</h3>
                     <p>{livroSelecionado.descricao || 'Nenhuma descrição disponível para este livro.'}</p>

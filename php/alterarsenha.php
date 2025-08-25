@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: http://localhost:5174");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
@@ -46,7 +46,7 @@ try {
     }
 
     $stmt = $conexao->prepare("
-        SELECT dados_id FROM tokens 
+        SELECT usuarios_id FROM tokens 
         WHERE token = ? AND usado = 0 AND expira > NOW()
     ");
     $stmt->bind_param('s', $token);
@@ -58,11 +58,11 @@ try {
         exit(json_encode(['erro' => 'Token inválido ou expirado']));
     }
 
-    $dados_id = $result->fetch_assoc()['dados_id'];
+    $dados_id = $result->fetch_assoc()['usuarios_id'];
 
     $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
     
-    $stmt = $conexao->prepare("UPDATE dados SET senha = ? WHERE id = ?");
+    $stmt = $conexao->prepare("UPDATE usuarios SET senha = ? WHERE id = ?");
     $stmt->bind_param('si', $senhaHash, $dados_id);
     $stmt->execute();
 

@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         responder(false, "ID do usuário não fornecido");
     }
     
-    $stmt = mysqli_prepare($conexao, "SELECT id, nome, data_nasc, cpf, celular, cep, rua, numero, complemento, bairro, cidade, estado, email, tipo_usuario FROM dados WHERE id = ?");
+    $stmt = mysqli_prepare($conexao, "SELECT id, nome, data_nasc, cpf, celular, cep, rua, numero, complemento, bairro, cidade, estado, email, tipo_usuario FROM usuarios WHERE id = ?");
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Preparar a query para atualizar o usuário
     $stmt = mysqli_prepare(
         $conexao, 
-        "UPDATE dados SET 
+        "UPDATE usuarios SET 
         nome = ?, data_nasc = ?, cpf = ?, celular = ?, cep = ?, 
         rua = ?, numero = ?, complemento = ?, bairro = ?, cidade = ?, 
         estado = ?, email = ?, tipo_usuario = ? 

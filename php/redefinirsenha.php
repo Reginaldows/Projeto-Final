@@ -10,7 +10,7 @@ if ($token) {
         $stmt = $conexao->prepare("
             SELECT d.nome, t.expira 
             FROM tokens t 
-            JOIN dados d ON t.dados_id = d.id 
+            JOIN usuarios d ON t.usuarios_id = d.id 
             WHERE t.token = ? AND t.usado = 0 AND t.expira > NOW()
         ");
         $stmt->bind_param('s', $token);

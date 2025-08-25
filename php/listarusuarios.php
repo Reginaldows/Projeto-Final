@@ -33,7 +33,7 @@ $query = "SELECT
     bairro,
     cidade,
     estado
-FROM dados ORDER By nome ASC ;
+FROM usuarios ORDER By nome ASC ;
 ";
 $result = mysqli_query($conexao, $query);
 

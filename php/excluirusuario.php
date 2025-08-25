@@ -26,7 +26,7 @@ if (!$id) {
 }
 
 // Preparar a query para excluir o usuário
-$stmt = mysqli_prepare($conexao, "DELETE FROM dados WHERE id = ?");
+$stmt = mysqli_prepare($conexao, "DELETE FROM usuarios WHERE id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 
 // Executar a query
