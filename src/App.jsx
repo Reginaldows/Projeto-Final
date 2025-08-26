@@ -10,6 +10,8 @@ import CadastroLivro from './CadastroLivro';
 import EditarLivro from './EditarLivro';
 import EditarUsuario from './EditarUsuario';
 import MeuPerfil from './MeuPerfil';
+import MeusEmprestimos from './MeusEmprestimos';
+import GerenciarEmprestimos from './GerenciarEmprestimos';
 import Biblioteca from './Biblioteca';
 import BibliotecaBibliotecario from './BibliotecaBibliotecario';
 import ListaUsuarios from './ListaUsuarios';
@@ -34,6 +36,8 @@ function App() {
         <Route path="/usuarios" element={<ListaUsuarios />} />
         <Route path="/editarusuario/:id" element={<EditarUsuario />} />
         <Route path="/meu-perfil" element={<MeuPerfil />} />
+        <Route path="/meus-emprestimos" element={<MeusEmprestimos />} />
+        <Route path="/gerenciar-emprestimos" element={<GerenciarEmprestimos />} />
       </Routes>
     </BrowserRouter>
   );

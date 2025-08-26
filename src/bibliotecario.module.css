@@ -105,6 +105,67 @@
   font-size: 1.3rem;
   color: #0066b3;
   cursor: pointer;
+  position: relative;
+}
+
+.notificationText {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #4CAF50;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: slideInFromRight 0.5s ease-out;
+}
+
+.notificationText:hover {
+  background-color: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes slideInFromRight {
+  0% {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.notificationDot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  background-color: #ff4444;
+  border-radius: 50%;
+  border: 2px solid white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .userGreeting {
@@ -651,6 +712,358 @@
 
 .detailsButton:hover {
   background-color: #004d8c;
+}
+
+.loanButton {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: background-color 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  text-align: center;
+}
+
+.loanButton:hover {
+  background-color: #218838;
+}
+
+.emprestimoModal {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  max-width: 550px;
+  width: 95%;
+  position: relative;
+  color: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.buscarButton {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-left: 12px;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.buscarButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 172, 254, 0.6);
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+}
+
+.buscarButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(79, 172, 254, 0.2);
+}
+
+.cancelButton {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-right: 12px;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cancelButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+  background: linear-gradient(135deg, #ee5a52 0%, #ff6b6b 100%);
+}
+
+.confirmButton {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(81, 207, 102, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.confirmButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(81, 207, 102, 0.6);
+  background: linear-gradient(135deg, #40c057 0%, #51cf66 100%);
+}
+
+.confirmButton:disabled {
+  background: linear-gradient(135deg, #adb5bd 0%, #868e96 100%);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 8px rgba(173, 181, 189, 0.3);
+  opacity: 0.7;
+}
+
+/* Estilos modernos para o modal de empréstimo */
+.modalTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 1px;
+}
+
+.livroInfoSection {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.livroTitulo {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.livroAutor {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.usuarioSection {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.sectionTitle {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.inputGroup {
+  margin-bottom: 1.5rem;
+}
+
+.inputLabel {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.inputWithButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 50px;
+}
+
+.cpfInput {
+  flex: 0 1 300px;
+  padding: 12px 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  background: rgba(255, 255, 255, 0.95);
+  font-size: 1rem;
+  color: #333;
+  transition: all 0.3s ease;
+  outline: none;
+  min-width: 200px;
+  height: 46px;
+  box-sizing: border-box;
+}
+
+.cpfInput:focus {
+  border-color: rgba(79, 172, 254, 0.8);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+}
+
+.cpfInput::placeholder {
+  color: #999;
+}
+
+.buscarButton {
+  padding: 0 16px;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: 80px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+}
+
+.usuarioEncontrado {
+  background: linear-gradient(135deg, rgba(81, 207, 102, 0.2) 0%, rgba(64, 192, 87, 0.2) 100%);
+  border: 2px solid rgba(81, 207, 102, 0.4);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  backdrop-filter: blur(5px);
+}
+
+.usuarioTitulo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #51cf66;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usuarioDetalhes {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.usuarioDetalhes p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+.usuarioDetalhes strong {
+  color: white;
+  font-weight: 600;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Responsividade para o modal de empréstimo */
+@media (max-width: 768px) {
+  .emprestimoModal {
+    padding: 20px;
+    max-width: 95%;
+  }
+  
+  .modalTitle {
+    font-size: 20px;
+  }
+  
+  .livroTitulo {
+    font-size: 16px;
+  }
+  
+  .inputWithButton {
+    height: 45px;
+    gap: 6px;
+  }
+
+  .cpfInput {
+    padding: 0 12px;
+    font-size: 14px;
+    border-radius: 20px;
+  }
+
+  .buscarButton {
+    padding: 0 12px;
+    font-size: 12px;
+    width: 70px;
+    border-radius: 20px;
+  }
+  
+  .modalActions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .cancelButton,
+  .confirmButton {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .emprestimoModal {
+    padding: 1.5rem 1rem;
+    max-width: 98%;
+  }
+  
+  .modalTitle {
+    font-size: 1.4rem;
+  }
+  
+  .livroInfoSection,
+  .usuarioSection {
+    padding: 1rem;
+  }
+  
+  .sectionTitle {
+    font-size: 1.1rem;
+  }
 }
 
 .bookTitle {

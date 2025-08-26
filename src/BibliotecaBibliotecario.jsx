@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './bibliotecario.module.css';
 import Acessibilidade from './acessibilidade';
+import ModalNotificacao from './components/ModalNotificacao';
 import { X } from 'lucide-react';
 
 const BibliotecaBibliotecario = () => {
@@ -22,6 +23,34 @@ const BibliotecaBibliotecario = () => {
   const [mensagem, setMensagem] = useState('');
   const [tipoMensagem, setTipoMensagem] = useState('');
   const [leituraAtiva, setLeituraAtiva] = useState(false);
+  const [temNotificacaoNaoLida, setTemNotificacaoNaoLida] = useState(() => {
+    return localStorage.getItem('notificacaoEmprestimo') === 'true';
+  });
+  const [modalNotificacaoAberto, setModalNotificacaoAberto] = useState(false);
+  const [dadosUltimoEmprestimo, setDadosUltimoEmprestimo] = useState(() => {
+    const dados = localStorage.getItem('dadosUltimoEmprestimo');
+    return dados ? JSON.parse(dados) : null;
+  });
+  const [mostrarTextoTemporario, setMostrarTextoTemporario] = useState(() => {
+    return localStorage.getItem('mostrarTextoTemporario') === 'true';
+  });
+  const [modalEmprestimoAberto, setModalEmprestimoAberto] = useState(false);
+  const [livroParaEmprestimo, setLivroParaEmprestimo] = useState(null);
+  const [cpfUsuario, setCpfUsuario] = useState('');
+  const [usuarioEncontrado, setUsuarioEncontrado] = useState(null);
+  const [carregandoUsuario, setCarregandoUsuario] = useState(false);
+
+  // Timer para ocultar texto temporário
+  useEffect(() => {
+    if (mostrarTextoTemporario) {
+      const timer = setTimeout(() => {
+        setMostrarTextoTemporario(false);
+        localStorage.removeItem('mostrarTextoTemporario');
+      }, 5000); // 5 segundos
+      
+      return () => clearTimeout(timer);
+    }
+  }, [mostrarTextoTemporario]);
 
   const carregarLivros = async () => {
     try {
@@ -129,7 +158,7 @@ const BibliotecaBibliotecario = () => {
 
   const handleSearch = async () => {
     try {
-      let url = new URL('/php/filtrarlivros.php', window.location.origin);
+      let url = new URL('http://localhost/php/filtrarlivros.php');
       
       if (searchTerm) url.searchParams.append('searchTerm', searchTerm);
       if (category) url.searchParams.append('category', category);
@@ -221,6 +250,89 @@ const BibliotecaBibliotecario = () => {
     }
   };
 
+  const buscarUsuarioPorCpf = async () => {
+    if (!cpfUsuario.trim()) {
+      setMensagem('Por favor, digite um CPF válido');
+      setTipoMensagem('erro');
+      return;
+    }
+
+    setCarregandoUsuario(true);
+    try {
+      const response = await fetch('/php/listarusuarios.php');
+      if (!response.ok) {
+        throw new Error('Erro ao buscar usuários');
+      }
+      
+      const resultado = await response.json();
+      if (!resultado.success || !resultado.dados) {
+        throw new Error('Erro ao carregar lista de usuários');
+      }
+      
+      const usuarios = resultado.dados;
+      const usuario = usuarios.find(u => u.cpf === cpfUsuario.trim());
+      
+      if (usuario) {
+        setUsuarioEncontrado(usuario);
+        setMensagem('Usuário encontrado com sucesso!');
+        setTipoMensagem('sucesso');
+      } else {
+        setUsuarioEncontrado(null);
+        setMensagem('Usuário não encontrado. Verifique o CPF digitado.');
+        setTipoMensagem('erro');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar usuário:', error);
+      setMensagem('Erro ao buscar usuário. Tente novamente.');
+      setTipoMensagem('erro');
+      setUsuarioEncontrado(null);
+    } finally {
+      setCarregandoUsuario(false);
+    }
+  };
+
+  const confirmarEmprestimo = async () => {
+    if (!usuarioEncontrado || !livroParaEmprestimo) {
+      setMensagem('Dados incompletos para realizar o empréstimo');
+      setTipoMensagem('erro');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost/processar_emprestimo_bibliotecario.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          usuario_id: usuarioEncontrado.id,
+          livro_id: livroParaEmprestimo.id
+        })
+      });
+
+      const resultado = await response.json();
+      
+      if (resultado.success) {
+        setMensagem('Empréstimo realizado com sucesso!');
+        setTipoMensagem('sucesso');
+        setModalEmprestimoAberto(false);
+        setCpfUsuario('');
+        setUsuarioEncontrado(null);
+        setLivroParaEmprestimo(null);
+        
+        // Recarregar livros para atualizar disponibilidade
+        carregarLivros();
+      } else {
+        setMensagem(resultado.message || 'Erro ao processar empréstimo');
+        setTipoMensagem('erro');
+      }
+    } catch (error) {
+      console.error('Erro ao confirmar empréstimo:', error);
+      setMensagem('Erro ao processar empréstimo. Tente novamente.');
+      setTipoMensagem('erro');
+    }
+  };
+
   return (
     <div className={styles.pageWrapper}>
       {mensagem && (
@@ -240,7 +352,24 @@ const BibliotecaBibliotecario = () => {
             </h1>
             <div className={styles.headerIcons}>
               <div className={styles.cartIcon}><i className="fas fa-shopping-cart"></i></div>
-              <div className={styles.notificationIcon}><i className="fas fa-bell"></i></div>
+              {mostrarTextoTemporario ? (
+                <div className={styles.notificationText} onClick={() => {
+                  if (dadosUltimoEmprestimo) {
+                    setModalNotificacaoAberto(true); // Abrir modal
+                  }
+                }}>
+                  <span>Empréstimo confirmado</span>
+                </div>
+              ) : (
+                <div className={styles.notificationIcon} onClick={() => {
+                  if (dadosUltimoEmprestimo) {
+                    setModalNotificacaoAberto(true); // Abrir modal com dados salvos
+                  }
+                }}>
+                  🔔
+                  {dadosUltimoEmprestimo && <div className={styles.notificationDot}></div>}
+                </div>
+              )}
               <div className={styles.userGreeting} onClick={() => setShowLoginStatus(!showLoginStatus)}>
                 <i className="fas fa-user"></i>
                 {userName ? <span>Olá, {userName}!</span> : <span className={styles.loginPrompt}>Fazer login</span>}
@@ -302,6 +431,9 @@ const BibliotecaBibliotecario = () => {
                 </div>
               </li>
               <li className={styles.navItem}><a className={styles.navLink} href="#">Relatórios</a></li>
+              <li className={styles.navItem}>
+                <button className={styles.navLink} onClick={() => navigate('/gerenciar-emprestimos')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Gerenciar Empréstimos</button>
+              </li>
               <li className={styles.navItem}>
                 <button className={styles.navLink} onClick={() => navigate('/cadastro-livro')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Cadastrar Livro</button>
               </li>
@@ -441,7 +573,8 @@ const BibliotecaBibliotecario = () => {
                     style={{
                       backgroundImage: `url(${livro.capa || '/public/img/Biblioteca.png'})`
                     }}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setLivroSelecionado(livro);
                       setMostrarDetalhes(true);
                     }}
@@ -458,6 +591,20 @@ const BibliotecaBibliotecario = () => {
                       }}
                     >
                       Ver Detalhes
+                    </button>
+                    
+                    <button 
+                      className={styles.loanButton}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setLivroParaEmprestimo(livro);
+                        setModalEmprestimoAberto(true);
+                        setCpfUsuario('');
+                        setUsuarioEncontrado(null);
+                      }}
+                    >
+                      Fazer Empréstimo
                     </button>
                   </div>
                 </div>
@@ -481,6 +628,86 @@ const BibliotecaBibliotecario = () => {
             </div>
           </div>
         </footer>
+
+        {modalEmprestimoAberto && livroParaEmprestimo && (
+          <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
+              <button className={styles.closeButton} onClick={() => {
+                setModalEmprestimoAberto(false);
+                setCpfUsuario('');
+                setUsuarioEncontrado(null);
+                setLivroParaEmprestimo(null);
+              }}>
+                <X size={16} />
+              </button>
+              <div className={styles.emprestimoModal}>
+                <h2 className={styles.modalTitle}>📚 Fazer Empréstimo</h2>
+                
+                <div className={styles.livroInfoSection}>
+                  <h3 className={styles.livroTitulo}>📖 {livroParaEmprestimo.titulo}</h3>
+                  <p className={styles.livroAutor}>✍️ Autor: {livroParaEmprestimo.autor}</p>
+                </div>
+                
+                <div className={styles.usuarioSection}>
+                  <h4 className={styles.sectionTitle}>👤 Buscar Usuário por CPF</h4>
+                  <div className={styles.inputGroup}>
+                    <label htmlFor="cpfUsuario" className={styles.inputLabel}>CPF do Usuário:</label>
+                    <div className={styles.inputWithButton}>
+                      <input
+                        type="text"
+                        id="cpfUsuario"
+                        value={cpfUsuario}
+                        onChange={(e) => setCpfUsuario(e.target.value)}
+                        placeholder="000.000.000-00"
+                        className={styles.cpfInput}
+                        maxLength="14"
+                      />
+                      <button 
+                        className={styles.buscarButton}
+                        onClick={() => buscarUsuarioPorCpf()}
+                        disabled={carregandoUsuario || !cpfUsuario.trim()}
+                      >
+                        {carregandoUsuario ? '🔍 Buscando...' : '🔍 Buscar'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {usuarioEncontrado && (
+                    <div className={styles.usuarioEncontrado}>
+                      <h5 className={styles.usuarioTitulo}>✅ Usuário Encontrado</h5>
+                      <div className={styles.usuarioDetalhes}>
+                        <p><strong>👤 Nome:</strong> {usuarioEncontrado.nome}</p>
+                        <p><strong>📧 Email:</strong> {usuarioEncontrado.email}</p>
+                        <p><strong>🆔 CPF:</strong> {usuarioEncontrado.cpf}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className={styles.modalActions}>
+                  <button 
+                    className={styles.cancelButton}
+                    onClick={() => {
+                      setModalEmprestimoAberto(false);
+                      setCpfUsuario('');
+                      setUsuarioEncontrado(null);
+                      setLivroParaEmprestimo(null);
+                    }}
+                  >
+                    ❌ Cancelar
+                  </button>
+                  <button 
+                    className={styles.confirmButton}
+                    onClick={() => confirmarEmprestimo()}
+                    disabled={!usuarioEncontrado}
+                  >
+                    ✅ Confirmar Empréstimo
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {mostrarDetalhes && livroSelecionado && (
           <div className={styles.modalOverlay}>
@@ -535,6 +762,13 @@ const BibliotecaBibliotecario = () => {
         )}
       </div>
       <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
+      
+      {/* Modal de Notificação */}
+      <ModalNotificacao 
+        isOpen={modalNotificacaoAberto}
+        onClose={() => setModalNotificacaoAberto(false)}
+        dadosEmprestimo={dadosUltimoEmprestimo}
+      />
     </div>
   );
 };

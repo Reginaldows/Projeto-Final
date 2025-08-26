@@ -451,7 +451,12 @@ body.dark-mode .instrucao-leitura {
 }
 
 .conteudo-principal {
-  font-size: clamp(16px, 4vw, 20px); 
+  font-size: clamp(16px, 4vw, 20px);
+  padding-top: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .conteudo-principal * {
@@ -478,7 +483,8 @@ body.dark-mode .instrucao-leitura {
 .topo {
   display: flex;
   justify-content: center;
-  padding: 2px;
+  padding: 20px 2px;
+  margin-bottom: 20px;
 }
 
 .logo-senai img {
@@ -491,7 +497,7 @@ body.dark-mode .instrucao-leitura {
   display: flex;
   flex-direction: column;
   width: 90%;
-  margin: 30px auto 0;
+  margin: 20px auto;
   gap: 20px;
   font-size: 16px;
 }

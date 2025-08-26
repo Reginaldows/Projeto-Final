@@ -1,6 +1,6 @@
 <?php
 // Permite requisições de qualquer origem (para testes)
-header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Origin: http://localhost:5175");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
@@ -21,7 +21,7 @@ $author = isset($_GET['author']) ? $_GET['author'] : '';
 $keywords = isset($_GET['keywords']) ? json_decode($_GET['keywords']) : [];
 
 // Inicia a construção da consulta SQL
-$sql = "SELECT id, titulo, autor, ano, editora, genero, preco, isbn, paginas, descricao, capa FROM livros WHERE 1=1";
+$sql = "SELECT id, titulo, autor, ano, editora, genero,isbn, paginas, descricao, capa FROM livros WHERE 1=1";
 $params = [];
 $types = "";
 

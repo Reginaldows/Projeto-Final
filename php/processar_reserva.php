@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Origin: http://localhost:5175");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
@@ -140,6 +140,18 @@ try {
 
     $conexao->commit();
 
+    // Preparar dados para email
+    $dadosEmail = [
+        'email' => $usuario['email'],
+        'nomeUsuario' => $usuario['nome'],
+        'tituloLivro' => $livro['titulo'],
+        'autorLivro' => $livro['autor'],
+        'dataReserva' => date('d/m/Y H:i', strtotime($data_reserva)),
+        'dataExpiracao' => date('d/m/Y H:i', strtotime($data_expiracao)),
+        'posicaoFila' => $posicao_fila,
+        'tipoReserva' => $tipo
+    ];
+
     $dados_reserva = [
         'reserva_id' => $reserva_id,
         'livro' => [
@@ -158,7 +170,8 @@ try {
             'data_reserva' => $data_reserva,
             'data_expiracao' => $data_expiracao,
             'status' => 'pendente'
-        ]
+        ],
+        'email_data' => $dadosEmail
     ];
 
     $tipo_nome = ($tipo === 'pre_reserva') ? 'Pré-reserva' : 'Reserva';

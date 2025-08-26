@@ -6,7 +6,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-header("Access-Control-Allow-Origin: http://localhost:5173");
+header("Access-Control-Allow-Origin: http://localhost:5174");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
@@ -18,10 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require 'vendor/autoload.php';
 require 'conexao.php';
 
-function enviarResposta($codigo, $dados) {
+function enviarResposta($codigo, $usuarios) {
     http_response_code($codigo);
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($dados, JSON_UNESCAPED_UNICODE);
+    echo json_encode($usuarios, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -53,7 +53,7 @@ try {
         enviarResposta(400, ['erro' => 'CPF deve conter 11 dígitos']);
     }
 
-    $stmt = $conexao->prepare("SELECT id, nome, email FROM dados WHERE REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = ?");
+    $stmt = $conexao->prepare("SELECT id, nome, email FROM usuarios WHERE REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = ?");
     if (!$stmt) {
         enviarResposta(500, ['erro' => 'Erro interno do servidor']);
     }
@@ -69,7 +69,7 @@ try {
         enviarResposta(400, ['erro' => 'Usuário não possui email cadastrado']);
     }
 
-    $stmt = $conexao->prepare("UPDATE tokens SET usado = 1 WHERE dados_id = ? AND usado = 0");
+    $stmt = $conexao->prepare("UPDATE tokens SET usado = 1 WHERE usuarios_id = ? AND usado = 0");
     if ($stmt) {
         $stmt->bind_param('i', $usuario['id']);
         $stmt->execute();
@@ -78,21 +78,21 @@ try {
     $token = bin2hex(random_bytes(32));
     $expira_em = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
-    $stmt = $conexao->prepare("INSERT INTO tokens (dados_id, token, expira, usado) VALUES (?, ?, ?, 0)");
+    $stmt = $conexao->prepare("INSERT INTO tokens (usuarios_id, token, expira, usado) VALUES (?, ?, ?, 0)");
     if (!$stmt) {
         enviarResposta(500, ['erro' => 'Erro interno do servidor']);
     }
     $stmt->bind_param('iss', $usuario['id'], $token, $expira_em);
     $stmt->execute();
 
-    $link = "http://localhost:5173/alterarsenha?token=" . $token;
+    $link = "http://localhost:5174/alterarsenha?token=" . $token;
 
     $mail = new PHPMailer(true);
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'juniorfb98@gmail.com';
-    $mail->Password = 'neqs uetc knsm hrtd';
+    $mail->Password = 'pgyz zcgj oxft jisv';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port = 465;
     $mail->CharSet = 'UTF-8';

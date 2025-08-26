@@ -4,6 +4,8 @@ import styles from './biblioteca.module.css';
 import chatStyles from './chatflutuante.module.css';
 import ChatCategoria from './ChatCategoria';
 import Acessibilidade from './acessibilidade';
+import NotificacaoEmprestimo from './components/NotificacaoEmprestimo';
+import ModalNotificacao from './components/ModalNotificacao';
 import { X } from 'lucide-react';
 
 const PaginaIsolada = () => {
@@ -22,7 +24,30 @@ const PaginaIsolada = () => {
   const [mostrarDetalhes, setMostrarDetalhes] = useState(false);
   const [livroSelecionado, setLivroSelecionado] = useState(null);
   const [leituraAtiva, setLeituraAtiva] = useState(false);
+  const [notificacaoEmprestimo, setNotificacaoEmprestimo] = useState(null);
+  const [temNotificacaoNaoLida, setTemNotificacaoNaoLida] = useState(() => {
+    return localStorage.getItem('notificacaoEmprestimo') === 'true';
+  });
+  const [modalNotificacaoAberto, setModalNotificacaoAberto] = useState(false);
+  const [dadosUltimoEmprestimo, setDadosUltimoEmprestimo] = useState(() => {
+    const dados = localStorage.getItem('dadosUltimoEmprestimo');
+    return dados ? JSON.parse(dados) : null;
+  });
+  const [mostrarTextoTemporario, setMostrarTextoTemporario] = useState(() => {
+    return localStorage.getItem('mostrarTextoTemporario') === 'true';
+  });
 
+  // Timer para ocultar texto temporário
+  useEffect(() => {
+    if (mostrarTextoTemporario) {
+      const timer = setTimeout(() => {
+        setMostrarTextoTemporario(false);
+        localStorage.removeItem('mostrarTextoTemporario');
+      }, 5000); // 5 segundos
+      
+      return () => clearTimeout(timer);
+    }
+  }, [mostrarTextoTemporario]);
 
   const carregarLivros = async () => {
   try {
@@ -97,9 +122,41 @@ const PaginaIsolada = () => {
       const result = await response.json();
       
       if (result.success) {
-        alert(`Empréstimo realizado com sucesso! Devolução prevista: ${result.data.datas.devolucao_prevista}`);
+        // Mostrar notificação personalizada
+        setNotificacaoEmprestimo(result.data);
+        setTemNotificacaoNaoLida(true); // Marcar como não lida
+        localStorage.setItem('notificacaoEmprestimo', 'true'); // Persistir notificação
+        setDadosUltimoEmprestimo(result.data); // Armazenar dados para o modal
+        localStorage.setItem('dadosUltimoEmprestimo', JSON.stringify(result.data)); // Persistir dados
+        setMostrarTextoTemporario(true); // Mostrar texto temporário
+        localStorage.setItem('mostrarTextoTemporario', 'true'); // Persistir estado temporário
         setMostrarDetalhes(false);
         carregarLivros(); // Recarregar lista para atualizar disponibilidade
+        
+        // Enviar email de confirmação de forma assíncrona (não bloqueia a UI)
+        if (result.data.email_data) {
+          console.log('Enviando email com dados:', result.data.email_data);
+          
+          fetch('/php/enviar_email_emprestimo.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(result.data.email_data)
+          })
+          .then(response => response.json())
+          .then(emailResult => {
+            console.log('Resultado do envio de email:', emailResult);
+            if (emailResult.sucesso) {
+              console.log('Email enviado com sucesso!');
+            } else {
+              console.error('Erro ao enviar email:', emailResult.mensagem);
+            }
+          })
+          .catch(error => {
+            console.error('Erro na requisição de email:', error);
+          });
+        }
       } else {
         alert(`Erro ao realizar empréstimo: ${result.message}`);
       }
@@ -136,6 +193,31 @@ const PaginaIsolada = () => {
       if (result.success) {
         alert(`Pré-reserva realizada com sucesso! Posição na fila: ${result.data.reserva.posicao_fila}. Válida até: ${result.data.reserva.data_expiracao}`);
         setMostrarDetalhes(false);
+        
+        // Enviar email de confirmação de reserva
+        if (result.data.email_data) {
+          console.log('Enviando email de pré-reserva com dados:', result.data.email_data);
+          
+          fetch('/php/enviar_email_reserva.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(result.data.email_data)
+          })
+          .then(response => response.json())
+          .then(emailResult => {
+            console.log('Resultado do envio de email de pré-reserva:', emailResult);
+            if (emailResult.sucesso) {
+              console.log('Email de pré-reserva enviado com sucesso!');
+            } else {
+              console.error('Erro ao enviar email de pré-reserva:', emailResult.mensagem);
+            }
+          })
+          .catch(error => {
+            console.error('Erro na requisição de email de pré-reserva:', error);
+          });
+        }
       } else {
         alert(`Erro ao realizar pré-reserva: ${result.message}`);
       }
@@ -172,6 +254,31 @@ const PaginaIsolada = () => {
       if (result.success) {
         alert(`Reserva realizada com sucesso! Posição na fila: ${result.data.reserva.posicao_fila}. Válida até: ${result.data.reserva.data_expiracao}`);
         setMostrarDetalhes(false);
+        
+        // Enviar email de confirmação de reserva
+        if (result.data.email_data) {
+          console.log('Enviando email de reserva com dados:', result.data.email_data);
+          
+          fetch('/php/enviar_email_reserva.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(result.data.email_data)
+          })
+          .then(response => response.json())
+          .then(emailResult => {
+            console.log('Resultado do envio de email de reserva:', emailResult);
+            if (emailResult.sucesso) {
+              console.log('Email de reserva enviado com sucesso!');
+            } else {
+              console.error('Erro ao enviar email de reserva:', emailResult.mensagem);
+            }
+          })
+          .catch(error => {
+            console.error('Erro na requisição de email de reserva:', error);
+          });
+        }
       } else {
         alert(`Erro ao realizar reserva: ${result.message}`);
       }
@@ -290,7 +397,24 @@ const PaginaIsolada = () => {
             </h1>
             <div className={styles.headerIcons}>
               <div className={styles.cartIcon}><i className="fas fa-shopping-cart"></i></div>
-              <div className={styles.notificationIcon}><i className="fas fa-bell"></i></div>
+              {mostrarTextoTemporario ? (
+                <div className={styles.notificationText} onClick={() => {
+                  if (dadosUltimoEmprestimo) {
+                    setModalNotificacaoAberto(true); // Abrir modal
+                  }
+                }}>
+                  <span>Empréstimo confirmado</span>
+                </div>
+              ) : (
+                <div className={styles.notificationIcon} onClick={() => {
+                  if (dadosUltimoEmprestimo) {
+                    setModalNotificacaoAberto(true); // Abrir modal com dados salvos
+                  }
+                }}>
+                  <i className="fas fa-bell"></i>
+                  {dadosUltimoEmprestimo && <div className={styles.notificationDot}></div>}
+                </div>
+              )}
               <div className={styles.userGreeting} onClick={() => setShowLoginStatus(!showLoginStatus)}>
                 <i className="fas fa-user"></i>
                 {userName ? <span>Olá, {userName}!</span> : <span className={styles.loginPrompt}>Fazer login</span>}
@@ -309,6 +433,16 @@ const PaginaIsolada = () => {
                           }}
                         >
                           Meu Perfil
+                        </button>
+                        <button 
+                          className={styles.profileButton}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate('/meus-emprestimos');
+                            setShowLoginStatus(false);
+                          }}
+                        >
+                          📚 Meus Empréstimos
                         </button>
                         <button 
                           className={styles.logoutButton}
@@ -596,6 +730,19 @@ const PaginaIsolada = () => {
         </div>
         
         <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
+        
+        {/* Notificação de Empréstimo */}
+        <NotificacaoEmprestimo 
+          notificacao={notificacaoEmprestimo}
+          onClose={() => setNotificacaoEmprestimo(null)}
+        />
+        
+        {/* Modal de Notificação */}
+        <ModalNotificacao 
+          isOpen={modalNotificacaoAberto}
+          onClose={() => setModalNotificacaoAberto(false)}
+          dadosEmprestimo={dadosUltimoEmprestimo}
+        />
       </div>
     </div>
   );

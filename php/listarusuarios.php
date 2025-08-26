@@ -25,7 +25,7 @@ $query = "SELECT
     email,
     cpf,
     celular,
-    data_nascimento,
+    data_nasc,
     cep,
     rua,
     numero,
