@@ -55,7 +55,7 @@ const BibliotecaBibliotecario = () => {
   const carregarLivros = async () => {
     try {
       console.log('Tentando carregar livros...');
-      const response = await fetch('/php/listarlivro.php');
+      const response = await fetch('http://localhost/php/listarlivro.php');
       
       console.log('Response status:', response.status);
       
@@ -84,7 +84,7 @@ const BibliotecaBibliotecario = () => {
   const carregarAutores = async () => {
     try {
       console.log('Carregando autores...');
-      const response = await fetch('/php/listarautores.php');
+      const response = await fetch('http://localhost/php/listarautores.php');
       
       if (!response.ok) {
         throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
@@ -102,7 +102,7 @@ const BibliotecaBibliotecario = () => {
   const carregarCategorias = async () => {
     try {
       console.log('Carregando categorias...');
-      const response = await fetch('/php/listarcategorias.php');
+      const response = await fetch('http://localhost/php/listarcategorias.php');
       
       if (!response.ok) {
         throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
@@ -210,7 +210,7 @@ const BibliotecaBibliotecario = () => {
     }
 
     try {
-      const response = await fetch('/php/excluir-livro.php', {
+      const response = await fetch('http://localhost/php/excluir-livro.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -251,87 +251,229 @@ const BibliotecaBibliotecario = () => {
   };
 
   const buscarUsuarioPorCpf = async () => {
-    if (!cpfUsuario.trim()) {
-      setMensagem('Por favor, digite um CPF válido');
-      setTipoMensagem('erro');
-      return;
-    }
+  if (!cpfUsuario.trim()) {
+    setMensagem('Por favor, digite um CPF válido');
+    setTipoMensagem('erro');
+    return;
+  }
 
-    setCarregandoUsuario(true);
-    try {
-      const response = await fetch('/php/listarusuarios.php');
-      if (!response.ok) {
-        throw new Error('Erro ao buscar usuários');
-      }
-      
-      const resultado = await response.json();
-      if (!resultado.success || !resultado.dados) {
-        throw new Error('Erro ao carregar lista de usuários');
-      }
-      
-      const usuarios = resultado.dados;
-      const usuario = usuarios.find(u => u.cpf === cpfUsuario.trim());
-      
-      if (usuario) {
-        setUsuarioEncontrado(usuario);
-        setMensagem('Usuário encontrado com sucesso!');
-        setTipoMensagem('sucesso');
-      } else {
-        setUsuarioEncontrado(null);
-        setMensagem('Usuário não encontrado. Verifique o CPF digitado.');
-        setTipoMensagem('erro');
-      }
-    } catch (error) {
-      console.error('Erro ao buscar usuário:', error);
-      setMensagem('Erro ao buscar usuário. Tente novamente.');
-      setTipoMensagem('erro');
-      setUsuarioEncontrado(null);
-    } finally {
-      setCarregandoUsuario(false);
+  setCarregandoUsuario(true);
+  try {
+    const response = await fetch('http://localhost/php/listarusuarios.php');
+    if (!response.ok) {
+      throw new Error('Erro ao buscar usuários');
     }
-  };
+    
+    const resultado = await response.json();
+    console.log('Resposta da API de usuários:', resultado);
+    
+    if (!resultado.success || !resultado.dados) {
+      throw new Error('Erro ao carregar lista de usuários');
+    }
+    
+    const usuarios = resultado.dados;
+    console.log('Lista de usuários:', usuarios);
+    
+    // Limpar o CPF digitado para comparação
+    const cpfLimpo = cpfUsuario.trim().replace(/[.-]/g, '');
+    console.log('CPF limpo para busca:', cpfLimpo);
+    
+    const usuario = usuarios.find(u => {
+      const cpfUsuarioLimpo = u.cpf ? u.cpf.replace(/[.-]/g, '') : '';
+      console.log('Comparando:', cpfLimpo, 'com', cpfUsuarioLimpo);
+      return cpfUsuarioLimpo === cpfLimpo;
+    });
+    
+    if (usuario) {
+      console.log('Usuário encontrado:', usuario);
+      setUsuarioEncontrado(usuario);
+      setMensagem('Usuário encontrado com sucesso!');
+      setTipoMensagem('sucesso');
+    } else {
+      setUsuarioEncontrado(null);
+      setMensagem('Usuário não encontrado. Verifique o CPF digitado.');
+      setTipoMensagem('erro');
+      console.log('Usuário não encontrado para CPF:', cpfLimpo);
+    }
+  } catch (error) {
+    console.error('Erro ao buscar usuário:', error);
+    setMensagem('Erro ao buscar usuário. Tente novamente.');
+    setTipoMensagem('erro');
+    setUsuarioEncontrado(null);
+  } finally {
+    setCarregandoUsuario(false);
+  }
+};
 
   const confirmarEmprestimo = async () => {
-    if (!usuarioEncontrado || !livroParaEmprestimo) {
-      setMensagem('Dados incompletos para realizar o empréstimo');
+  if (!usuarioEncontrado || !livroParaEmprestimo) {
+    console.error('Usuário ou livro não selecionado.');
+    setMensagem('Selecione um usuário e um livro antes de confirmar.');
+    setTipoMensagem('erro');
+    return;
+  }
+
+  console.log('=== DEBUG ESTRUTURA COMPLETA ===');
+  console.log('usuarioEncontrado completo:', JSON.stringify(usuarioEncontrado, null, 2));
+  console.log('Todas as propriedades do usuário:');
+  Object.keys(usuarioEncontrado).forEach(key => {
+    console.log(`  ${key}:`, usuarioEncontrado[key], typeof usuarioEncontrado[key]);
+  });
+  
+  console.log('livroParaEmprestimo completo:', JSON.stringify(livroParaEmprestimo, null, 2));
+  console.log('Todas as propriedades do livro:');
+  Object.keys(livroParaEmprestimo).forEach(key => {
+    console.log(`  ${key}:`, livroParaEmprestimo[key], typeof livroParaEmprestimo[key]);
+  });
+
+  // Procurar qualquer propriedade que possa ser o ID do usuário
+  const possiveisIdsUsuario = ['id', 'usuario_id', 'user_id', 'userId', 'ID', 'pk', 'primary_key'];
+  let usuario_id = null;
+  
+  for (const prop of possiveisIdsUsuario) {
+    if (usuarioEncontrado[prop] !== undefined && usuarioEncontrado[prop] !== null) {
+      usuario_id = usuarioEncontrado[prop];
+      console.log(`ID do usuário encontrado na propriedade '${prop}':`, usuario_id);
+      break;
+    }
+  }
+  
+  // Se ainda não encontrou, procurar por qualquer propriedade que contenha um número
+  if (!usuario_id) {
+    console.log('Procurando por qualquer propriedade numérica...');
+    Object.keys(usuarioEncontrado).forEach(key => {
+      const value = usuarioEncontrado[key];
+      if (typeof value === 'number' || (typeof value === 'string' && !isNaN(value) && value.trim() !== '')) {
+        console.log(`Propriedade numérica encontrada: ${key} = ${value}`);
+      }
+    });
+  }
+
+  const livro_id = livroParaEmprestimo.id || livroParaEmprestimo.livro_id || null;
+
+  console.log('usuario_id final:', usuario_id, typeof usuario_id);
+  console.log('livro_id final:', livro_id, typeof livro_id);
+
+  // Se não conseguir encontrar o ID do usuário, mostrar erro mais específico
+  if (!usuario_id) {
+    console.error('Não foi possível encontrar ID do usuário');
+    console.error('Propriedades disponíveis:', Object.keys(usuarioEncontrado));
+    setMensagem('Erro: Não foi possível identificar o ID do usuário. Verifique a estrutura dos dados.');
+    setTipoMensagem('erro');
+    return;
+  }
+
+  if (!livro_id) {
+    console.error('Não foi possível encontrar ID do livro');
+    setMensagem('Erro: ID do livro não encontrado');
+    setTipoMensagem('erro');
+    return;
+  }
+
+  // Continuar com o resto da função apenas se tiver os IDs corretos
+  const payload = { 
+    usuario_id: Number(usuario_id), 
+    livro_id: Number(livro_id) 
+  };
+
+  if (isNaN(payload.usuario_id) || isNaN(payload.livro_id)) {
+    console.error('IDs não são números válidos:', payload);
+    setMensagem('Erro: IDs devem ser números válidos');
+    setTipoMensagem('erro');
+    return;
+  }
+
+  console.log('Payload final:', payload);
+  
+  let jsonString;
+  try {
+    jsonString = JSON.stringify(payload);
+    console.log('JSON string:', jsonString);
+  } catch (jsonError) {
+    console.error('Erro ao criar JSON:', jsonError);
+    setMensagem('Erro ao preparar dados para envio');
+    setTipoMensagem('erro');
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      'http://localhost/php/processar_emprestimo_bibliotecario.php',
+      {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json; charset=utf-8',
+          'Accept': 'application/json'
+        },
+        body: jsonString
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Resposta de erro:', errorText);
+      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
+    }
+
+    const responseText = await response.text();
+    console.log('Response text:', responseText);
+
+    let resultado;
+    try {
+      resultado = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Erro ao fazer parse do JSON da resposta:', parseError);
+      setMensagem('Erro na resposta do servidor');
       setTipoMensagem('erro');
       return;
     }
 
-    try {
-      const response = await fetch('http://localhost/processar_emprestimo_bibliotecario.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          usuario_id: usuarioEncontrado.id,
-          livro_id: livroParaEmprestimo.id
-        })
-      });
+    console.log('Resultado:', resultado);
 
-      const resultado = await response.json();
+    if (resultado.success) {
+      // Criar dados para o modal de notificação personalizada
+      const dadosEmprestimo = {
+        livro: {
+          titulo: livroParaEmprestimo.titulo,
+          autor: livroParaEmprestimo.autor,
+          capa: livroParaEmprestimo.capa || '/img/Biblioteca.png'
+        },
+        datas: {
+          emprestimo: resultado.data.data_emprestimo,
+          devolucao_prevista: resultado.data.data_devolucao,
+          dias_emprestimo: 14
+        }
+      };
       
-      if (resultado.success) {
-        setMensagem('Empréstimo realizado com sucesso!');
-        setTipoMensagem('sucesso');
-        setModalEmprestimoAberto(false);
-        setCpfUsuario('');
-        setUsuarioEncontrado(null);
-        setLivroParaEmprestimo(null);
-        
-        // Recarregar livros para atualizar disponibilidade
-        carregarLivros();
-      } else {
-        setMensagem(resultado.message || 'Erro ao processar empréstimo');
-        setTipoMensagem('erro');
-      }
-    } catch (error) {
-      console.error('Erro ao confirmar empréstimo:', error);
-      setMensagem('Erro ao processar empréstimo. Tente novamente.');
+      // Salvar dados no localStorage e abrir modal
+      setDadosUltimoEmprestimo(dadosEmprestimo);
+      localStorage.setItem('dadosUltimoEmprestimo', JSON.stringify(dadosEmprestimo));
+      localStorage.setItem('notificacaoEmprestimo', 'true');
+      localStorage.setItem('mostrarTextoTemporario', 'true');
+      
+      // Abrir modal de notificação
+      setModalNotificacaoAberto(true);
+      setMostrarTextoTemporario(true);
+      setTemNotificacaoNaoLida(true);
+      
+      // Fechar modal de empréstimo e limpar dados
+      setModalEmprestimoAberto(false);
+      setCpfUsuario('');
+      setUsuarioEncontrado(null);
+      setLivroParaEmprestimo(null);
+      carregarLivros();
+    } else {
+      setMensagem(resultado.message || 'Erro ao processar empréstimo');
       setTipoMensagem('erro');
     }
-  };
+  } catch (error) {
+    console.error('Erro completo:', error);
+    setMensagem(`Erro ao processar empréstimo: ${error.message}`);
+    setTipoMensagem('erro');
+  }
+};
+
+
 
   return (
     <div className={styles.pageWrapper}>
@@ -641,7 +783,7 @@ const BibliotecaBibliotecario = () => {
                 <X size={16} />
               </button>
               <div className={styles.emprestimoModal}>
-                <h2 className={styles.modalTitle}>📚 Fazer Empréstimo</h2>
+                <h2 className={styles.modalTitle}> Fazer Empréstimo</h2>
                 
                 <div className={styles.livroInfoSection}>
                   <h3 className={styles.livroTitulo}>📖 {livroParaEmprestimo.titulo}</h3>

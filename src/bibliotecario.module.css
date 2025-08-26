@@ -994,10 +994,10 @@
 
 .modalActions {
   display: flex;
-  justify-content: center;
-  gap: 1rem;
+  justify-content: space-evenly;
+  gap: 2rem;
   margin-top: 2rem;
-  padding-top: 1.5rem;
+  padding: 1.5rem 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -1174,8 +1174,11 @@
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  padding: 20px;
+  padding: 40px 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .closeButton {

@@ -57,6 +57,9 @@ logDebug("Dados completos: " . json_encode($dados, JSON_UNESCAPED_UNICODE));
 
 // Função principal para enviar email de reserva
 function enviarEmailReserva($dados) {
+    // Definir timezone de Brasília
+    date_default_timezone_set('America/Sao_Paulo');
+    
     logDebug("=== INICIANDO ENVIO DE EMAIL DE RESERVA ===");
     
     $destinatario = $dados['email'] ?? '';
@@ -67,11 +70,13 @@ function enviarEmailReserva($dados) {
     $dataExpiracao = $dados['dataExpiracao'] ?? '';
     $posicaoFila = $dados['posicaoFila'] ?? '';
     $tipoReserva = $dados['tipoReserva'] ?? '';
+    $codigoReserva = $dados['codigoReserva'] ?? '';
     
     logDebug("Destinatário: {$destinatario}");
     logDebug("Nome: {$nomeUsuario}");
     logDebug("Livro: {$tituloLivro}");
     logDebug("Tipo: {$tipoReserva}");
+    logDebug("Código Reserva: {$codigoReserva}");
     
     $tipoNome = ($tipoReserva === 'pre_reserva') ? 'Pré-reserva' : 'Reserva';
     $assunto = "Confirmação de {$tipoNome} - {$tituloLivro}";
@@ -94,6 +99,12 @@ function enviarEmailReserva($dados) {
                     <p><strong>Título:</strong> " . htmlspecialchars($tituloLivro) . "</p>
                     <p><strong>Autor:</strong> " . htmlspecialchars($autorLivro) . "</p>
                 </div>
+                " . (!empty($codigoReserva) ? "
+                <div style='background-color: #fff3cd; border: 2px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 5px; text-align: center;'>
+                    <h3 style='margin-top: 0; color: #856404;'>🔑 Código da Reserva</h3>
+                    <p style='font-size: 24px; font-weight: bold; color: #856404; font-family: monospace; letter-spacing: 3px; margin: 10px 0;'>{$codigoReserva}</p>
+                    <p style='font-size: 12px; color: #6c757d; margin-bottom: 0;'>Guarde este código para consultas futuras</p>
+                </div>" : "") . "
                 <p><strong>Informações da {$tipoNome}:</strong></p>
                 <ul>
                     <li><strong>Posição na fila:</strong> {$posicaoFila}º</li>
@@ -130,7 +141,8 @@ function enviarEmailReserva($dados) {
         $mail->Subject = $assunto;
         $mail->Body = $mensagemHtml;
         
-        $mail->AltBody = "Olá " . $nomeUsuario . "!\n\nSua {$tipoReserva} foi confirmada com sucesso na Biblioteca SENAI.\n\nDetalhes do Livro:\nTítulo: " . $tituloLivro . "\nAutor: " . $autorLivro . "\n\nInformações da {$tipoNome}:\nPosição na fila: " . $posicaoFila . "º\nData da reserva: " . $dataReserva . "\nVálida até: " . $dataExpiracao . "\n\nVocê será notificado por email quando o livro estiver disponível.";
+        $codigoTexto = !empty($codigoReserva) ? "\n\nCódigo da Reserva: {$codigoReserva}\nGuarde este código para consultas futuras." : "";
+        $mail->AltBody = "Olá " . $nomeUsuario . "!\n\nSua {$tipoReserva} foi confirmada com sucesso na Biblioteca SENAI.\n\nDetalhes do Livro:\nTítulo: " . $tituloLivro . "\nAutor: " . $autorLivro . $codigoTexto . "\n\nInformações da {$tipoNome}:\nPosição na fila: " . $posicaoFila . "º\nData da reserva: " . $dataReserva . "\nVálida até: " . $dataExpiracao . "\n\nVocê será notificado por email quando o livro estiver disponível.";
 
         $mail->send();
         logDebug("Email de reserva enviado com sucesso!");

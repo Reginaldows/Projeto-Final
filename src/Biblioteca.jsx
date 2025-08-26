@@ -5,6 +5,7 @@ import chatStyles from './chatflutuante.module.css';
 import ChatCategoria from './ChatCategoria';
 import Acessibilidade from './acessibilidade';
 import NotificacaoEmprestimo from './components/NotificacaoEmprestimo';
+import NotificacaoReserva from './components/NotificacaoReserva';
 import ModalNotificacao from './components/ModalNotificacao';
 import { X } from 'lucide-react';
 
@@ -36,6 +37,8 @@ const PaginaIsolada = () => {
   const [mostrarTextoTemporario, setMostrarTextoTemporario] = useState(() => {
     return localStorage.getItem('mostrarTextoTemporario') === 'true';
   });
+  const [codigosReserva, setCodigosReserva] = useState({});
+  const [notificacaoReserva, setNotificacaoReserva] = useState(null);
 
   // Timer para ocultar texto temporário
   useEffect(() => {
@@ -106,7 +109,7 @@ const PaginaIsolada = () => {
         return;
       }
 
-      const response = await fetch('/php/processar_emprestimo.php', {
+      const response = await fetch('http://localhost/php/processar_emprestimo.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -191,7 +194,29 @@ const PaginaIsolada = () => {
       const result = await response.json();
       
       if (result.success) {
-        alert(`Pré-reserva realizada com sucesso! Posição na fila: ${result.data.reserva.posicao_fila}. Válida até: ${result.data.reserva.data_expiracao}`);
+        const codigoReserva = result.data.reserva.codigo_reserva;
+        
+        // Armazenar o código de reserva para este livro
+        setCodigosReserva(prev => ({
+          ...prev,
+          [livroId]: codigoReserva
+        }));
+        
+        // Criar dados para a notificação de reserva
+        const dadosNotificacao = {
+          livro: {
+            titulo: livroSelecionado.titulo,
+            autor: livroSelecionado.autor,
+            capa: livroSelecionado.capa
+          },
+          reserva: {
+            codigo_reserva: codigoReserva,
+            posicao_fila: result.data.reserva.posicao_fila,
+            data_expiracao: result.data.reserva.data_expiracao
+          }
+        };
+        
+        setNotificacaoReserva(dadosNotificacao);
         setMostrarDetalhes(false);
         
         // Enviar email de confirmação de reserva
@@ -702,7 +727,10 @@ const PaginaIsolada = () => {
                       className={`${styles.botaoAcao} ${styles.botaoPreReserva}`}
                       onClick={() => handlePreReserva(livroSelecionado.id)}
                     >
-                      ⏰ Pré-reserva
+                      {codigosReserva[livroSelecionado.id] ? 
+                        `📋 Código: ${codigosReserva[livroSelecionado.id]}` : 
+                        '⏰ Pré-reserva'
+                      }
                     </button>
                     
                     {livroSelecionado.disponibilidade?.disponivel_reserva && (
@@ -735,6 +763,12 @@ const PaginaIsolada = () => {
         <NotificacaoEmprestimo 
           notificacao={notificacaoEmprestimo}
           onClose={() => setNotificacaoEmprestimo(null)}
+        />
+        
+        {/* Notificação de Reserva */}
+        <NotificacaoReserva 
+          notificacao={notificacaoReserva}
+          onClose={() => setNotificacaoReserva(null)}
         />
         
         {/* Modal de Notificação */}

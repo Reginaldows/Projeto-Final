@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5175");
+header("Access-Control-Allow-Origin: http://localhost:5174");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
@@ -121,6 +121,21 @@ try {
     $stmt->execute();
     $posicao_fila = $stmt->get_result()->fetch_assoc()['posicao_fila'];
 
+    // Gerar código único para a reserva
+    function gerarCodigoReserva() {
+        $caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $codigo = '';
+        for ($i = 0; $i < 8; $i++) {
+            $codigo .= $caracteres[rand(0, strlen($caracteres) - 1)];
+        }
+        return $codigo;
+    }
+    
+    $codigo_reserva = gerarCodigoReserva();
+    
+    // Definir timezone de Brasília
+    date_default_timezone_set('America/Sao_Paulo');
+    
     // Datas
     $data_reserva = date('Y-m-d H:i:s');
     $dias_expiracao = ($tipo === 'pre_reserva') ? 30 : 7;
@@ -128,10 +143,10 @@ try {
 
     // Criar reserva
     $stmt = $conexao->prepare("
-        INSERT INTO reservas (usuario_id, livro_id, tipo, data_reserva, data_expiracao, posicao_fila, status)
-        VALUES (?, ?, ?, ?, ?, ?, 'pendente')
+        INSERT INTO reservas (usuario_id, livro_id, tipo, codigo_reserva, data_reserva, data_expiracao, posicao_fila, status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'pendente')
     ");
-    $stmt->bind_param("iisssi", $usuario_id, $livro_id, $tipo, $data_reserva, $data_expiracao, $posicao_fila);
+    $stmt->bind_param("iissssi", $usuario_id, $livro_id, $tipo, $codigo_reserva, $data_reserva, $data_expiracao, $posicao_fila);
     if (!$stmt->execute()) {
         $conexao->rollback();
         responder(false, 'Erro ao criar reserva');
@@ -149,7 +164,8 @@ try {
         'dataReserva' => date('d/m/Y H:i', strtotime($data_reserva)),
         'dataExpiracao' => date('d/m/Y H:i', strtotime($data_expiracao)),
         'posicaoFila' => $posicao_fila,
-        'tipoReserva' => $tipo
+        'tipoReserva' => $tipo,
+        'codigoReserva' => $codigo_reserva
     ];
 
     $dados_reserva = [
@@ -166,6 +182,7 @@ try {
         ],
         'reserva' => [
             'tipo' => $tipo,
+            'codigo_reserva' => $codigo_reserva,
             'posicao_fila' => $posicao_fila,
             'data_reserva' => $data_reserva,
             'data_expiracao' => $data_expiracao,

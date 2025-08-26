@@ -968,6 +968,11 @@
 .botaoPreReserva {
   background-color: #ffc107;
   color: #212529;
+  min-width: 160px;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .botaoPreReserva:hover {

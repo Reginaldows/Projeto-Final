@@ -20,7 +20,8 @@ function responder($success, $mensagem, $dados = null) {
 }
 
 // Buscar todos os usuários
-$query = "SELECT 
+$query = "SELECT
+    id,
     nome,
     email,
     cpf,
