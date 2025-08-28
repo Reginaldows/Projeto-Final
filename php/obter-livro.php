@@ -6,7 +6,6 @@ header('Content-Type: application/json');
 
 require_once 'conexao.php';
 
-// Verificar se o ID foi fornecido
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     echo json_encode(['success' => false, 'message' => 'ID do livro não fornecido']);
     exit;
@@ -15,7 +14,6 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $id = $_GET['id'];
 
 try {
-    // Preparar a consulta SQL
     $stmt = $conexao->prepare("SELECT * FROM livros WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

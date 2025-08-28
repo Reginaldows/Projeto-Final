@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: *");
 
@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require 'conexao.php';
 
-// Função para responder em JSON
 function responder($success, $message, $emprestimos = null) {
     echo json_encode([
         'success' => $success,
@@ -21,19 +20,16 @@ function responder($success, $message, $emprestimos = null) {
     exit;
 }
 
-// Verificar se é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método não permitido');
 }
 
-// Receber dados JSON
 $input = json_decode(file_get_contents('php://input'), true);
 
 $filtro = isset($input['filtro']) ? trim($input['filtro']) : '';
 $tipo_filtro = isset($input['tipo_filtro']) ? $input['tipo_filtro'] : 'cpf';
 
 try {
-    // Query base para buscar empréstimos em aberto
     $sql = "
         SELECT 
             e.id,
@@ -61,7 +57,6 @@ try {
     $params = [];
     $types = '';
     
-    // Adicionar filtros baseados no tipo de busca
     if (!empty($filtro)) {
         switch ($tipo_filtro) {
             case 'cpf':
@@ -86,7 +81,6 @@ try {
         }
     }
     
-    // Ordenar por data de empréstimo (mais antigos primeiro)
     $sql .= " ORDER BY e.data_emprestimo ASC";
     
     $stmt = $conexao->prepare($sql);
@@ -101,7 +95,6 @@ try {
     $emprestimos = [];
     
     while ($row = $result->fetch_assoc()) {
-        // Calcular status do empréstimo baseado na data
         $hoje = new DateTime();
         $data_prevista = new DateTime($row['data_prevista_devolucao']);
         $diff = $hoje->diff($data_prevista);
@@ -117,13 +110,11 @@ try {
             $dias_diferenca = $diff->days;
         }
         
-        // Calcular multa (R$ 2,00 por dia de atraso)
         $multa = 0;
         if ($status_calculado === 'atrasado') {
             $multa = $dias_diferenca * 2.00;
         }
         
-        // Formatar URL da capa
         $capa_url = '';
         if (!empty($row['capa'])) {
             if (strpos($row['capa'], 'http') === 0) {

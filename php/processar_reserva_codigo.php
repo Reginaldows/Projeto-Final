@@ -8,7 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-// Start session and verify authentication
 session_start();
 if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['tipo_usuario'])) {
     http_response_code(401);
@@ -19,7 +18,6 @@ if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['tipo_usuario'])) {
     exit();
 }
 
-// Verify if user is bibliotecario
 if ($_SESSION['tipo_usuario'] !== 'bibliotecario') {
     http_response_code(403);
     echo json_encode([
@@ -31,7 +29,6 @@ if ($_SESSION['tipo_usuario'] !== 'bibliotecario') {
 
 require_once 'conexao.php';
 
-// Função para responder em JSON
 function responder($success, $message, $data = null) {
     echo json_encode([
         'success' => $success,
@@ -42,12 +39,10 @@ function responder($success, $message, $data = null) {
 }
 
 try {
-    // Verificar se é POST
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         responder(false, 'Método não permitido');
     }
 
-    // Obter dados JSON
     $input = json_decode(file_get_contents('php://input'), true);
     
     if (!$input) {
@@ -56,7 +51,6 @@ try {
 
     $codigo_reserva = trim($input['codigo_reserva'] ?? '');
 
-    // Validar código
     if (empty($codigo_reserva)) {
         responder(false, 'Código de reserva é obrigatório');
     }
@@ -65,10 +59,8 @@ try {
         responder(false, 'Código de reserva deve ter 8 caracteres');
     }
 
-    // Iniciar transação
     $conexao->begin_transaction();
 
-    // Primeiro, verificar se o código existe (independente do status)
     $stmt = $conexao->prepare("
         SELECT pr.id, pr.usuario_id, pr.livro_id, pr.status, pr.data_solicitacao,
                u.nome as usuario_nome, u.email as usuario_email,
@@ -90,19 +82,16 @@ try {
     
     $pre_reserva_info = $result->fetch_assoc();
     
-    // Verificar se já foi convertida
     if ($pre_reserva_info['status'] === 'convertida') {
         $conexao->rollback();
         responder(false, 'Este código de pré-reserva já foi confirmado anteriormente');
     }
-    
-    // Verificar se ainda está pendente
+  
     if ($pre_reserva_info['status'] !== 'pendente') {
         $conexao->rollback();
         responder(false, 'Código de pré-reserva inválido ou expirado');
     }
     
-    // Buscar pré-reserva pendente
     $stmt = $conexao->prepare("
         SELECT pr.id, pr.usuario_id, pr.livro_id, pr.status, pr.data_solicitacao,
                u.nome as usuario_nome, u.email as usuario_email,
@@ -124,18 +113,16 @@ try {
     
     $pre_reserva = $result->fetch_assoc();
     
-    // Verificar se a pré-reserva não expirou (30 dias após solicitação)
     $agora = new DateTime();
     $data_solicitacao = new DateTime($pre_reserva['data_solicitacao']);
     $data_expiracao = clone $data_solicitacao;
-    $data_expiracao->add(new DateInterval('P30D')); // 30 dias
+    $data_expiracao->add(new DateInterval('P30D')); 
     
     if ($agora > $data_expiracao) {
         $conexao->rollback();
         responder(false, 'Código de pré-reserva expirado');
     }
     
-    // Verificar se há cópias disponíveis
     $stmt = $conexao->prepare("
         SELECT COUNT(*) as copias_disponiveis 
         FROM copias 
@@ -146,12 +133,12 @@ try {
     $disponibilidade = $stmt->get_result()->fetch_assoc();
     
     if ($disponibilidade['copias_disponiveis'] > 0) {
-        // Se há cópias disponíveis, fazer empréstimo direto
+        
         $conexao->rollback();
         responder(false, 'Há cópias disponíveis. Faça um empréstimo direto ao invés de reserva');
     }
     
-    // Calcular nova posição na fila (reservas ativas)
+   
     $stmt = $conexao->prepare("
         SELECT COUNT(*) + 1 as posicao_fila
         FROM reservas
@@ -161,14 +148,11 @@ try {
     $stmt->execute();
     $posicao_fila = $stmt->get_result()->fetch_assoc()['posicao_fila'];
     
-    // Definir timezone de Brasília
     date_default_timezone_set('America/Sao_Paulo');
     
-    // Criar nova reserva e marcar pré-reserva como convertida
     $data_confirmacao = date('Y-m-d H:i:s');
-    $data_expiracao_reserva = date('Y-m-d H:i:s', strtotime("+7 days")); // Reserva válida por 7 dias
+    $data_expiracao_reserva = date('Y-m-d H:i:s', strtotime("+7 days")); 
     
-    // Inserir nova reserva
     $stmt = $conexao->prepare("
         INSERT INTO reservas (usuario_id, livro_id, pre_reserva_id, data_reserva, data_expiracao, posicao_fila, status)
         VALUES (?, ?, ?, ?, ?, ?, 'ativa')
@@ -181,8 +165,7 @@ try {
     }
     
     $reserva_id = $conexao->insert_id;
-    
-    // Marcar pré-reserva como convertida
+
     $stmt = $conexao->prepare("
         UPDATE pre_reservas 
         SET status = 'convertida'
@@ -197,7 +180,6 @@ try {
     
     $conexao->commit();
     
-    // Preparar dados de resposta
     $dados_reserva = [
         'reserva_id' => $reserva_id,
         'pre_reserva_id' => $pre_reserva['id'],
@@ -221,7 +203,6 @@ try {
         ]
     ];
     
-    // Preparar dados para email de confirmação
     $dadosEmail = [
         'email' => $pre_reserva['usuario_email'],
         'nomeUsuario' => $pre_reserva['usuario_nome'],
@@ -234,7 +215,6 @@ try {
         'codigoReserva' => $codigo_reserva
     ];
     
-    // Enviar email de confirmação (opcional)
     $emailEnviado = false;
     try {
         if (file_exists('enviar_email_reserva.php')) {
@@ -242,11 +222,9 @@ try {
             $emailEnviado = enviarEmailReserva($dadosEmail);
         }
     } catch (Exception $emailError) {
-        // Log do erro de email, mas não interrompe o processo
         error_log('Erro no envio de email: ' . $emailError->getMessage());
     }
     
-    // Responder com sucesso independente do email
     $mensagem = 'Pré-reserva confirmada com sucesso! Posição na fila: ' . $posicao_fila;
     if (!$emailEnviado) {
         $mensagem .= ' (Email de confirmação não pôde ser enviado)';

@@ -1,5 +1,4 @@
 <?php
-// Forçar saída JSON e suprimir warnings
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -20,7 +19,6 @@ try {
 
     $id = (int)$data['id'];
 
-    // Obter caminho da capa
     $stmt = $conexao->prepare("SELECT capa FROM livros WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -36,13 +34,11 @@ try {
 
     $stmt->close();
 
-    // Deletar livro
     $stmt = $conexao->prepare("DELETE FROM livros WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
 
     if ($stmt->affected_rows > 0) {
-        // Excluir capa se existir
         if (!empty($capa_path) && file_exists($capa_path)) {
             @unlink($capa_path); // @ para suprimir warnings
         }

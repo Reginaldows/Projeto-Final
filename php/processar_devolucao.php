@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: *");
 
@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require 'conexao.php';
 
-// Função para responder em JSON
 function responder($success, $message, $data = null) {
     echo json_encode([
         'success' => $success,
@@ -21,15 +20,12 @@ function responder($success, $message, $data = null) {
     exit;
 }
 
-// Verificar se é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método não permitido');
 }
 
-// Receber dados JSON
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Validar campos obrigatórios
 if (!isset($input['emprestimo_id']) || empty($input['emprestimo_id'])) {
     responder(false, 'ID do empréstimo não fornecido');
 }
@@ -37,10 +33,8 @@ if (!isset($input['emprestimo_id']) || empty($input['emprestimo_id'])) {
 $emprestimo_id = intval($input['emprestimo_id']);
 
 try {
-    // Iniciar transação
     $conexao->autocommit(false);
 
-    // Verificar se o empréstimo existe e está ativo
     $stmt = $conexao->prepare("
         SELECT e.id, e.usuario_id, e.copia_id, e.data_emprestimo, e.data_prevista_devolucao,
                c.livro_id, c.codigo_copia, c.status as status_copia,
@@ -63,7 +57,6 @@ try {
 
     $emprestimo = $result->fetch_assoc();
 
-    // Atualizar status do empréstimo para 'finalizado' e registrar data de devolução
     $data_devolucao = date('Y-m-d');
     $stmt = $conexao->prepare("UPDATE emprestimos SET status = 'finalizado', data_prevista_devolucao = ? WHERE id = ?");
     $stmt->bind_param("si", $data_devolucao, $emprestimo_id);
@@ -73,7 +66,6 @@ try {
         responder(false, 'Erro ao atualizar status do empréstimo');
     }
 
-    // Atualizar status da cópia para 'disponivel'
     $stmt = $conexao->prepare("UPDATE copias SET status = 'disponivel' WHERE id = ?");
     $stmt->bind_param("i", $emprestimo['copia_id']);
     
@@ -82,7 +74,6 @@ try {
         responder(false, 'Erro ao atualizar status da cópia');
     }
 
-    // Verificar se há reservas pendentes para este livro
     $stmt = $conexao->prepare("
         SELECT r.id, r.usuario_id, r.tipo, r.data_reserva,
                u.nome as usuario_nome, u.email as usuario_email
@@ -100,12 +91,10 @@ try {
     if ($result->num_rows > 0) {
         $reserva = $result->fetch_assoc();
         
-        // Atualizar status da reserva para 'disponivel'
         $stmt = $conexao->prepare("UPDATE reservas SET status = 'disponivel' WHERE id = ?");
         $stmt->bind_param("i", $reserva['id']);
         $stmt->execute();
 
-        // Preparar dados para email de disponibilidade
         $reserva_notificada = [
             'reserva_id' => $reserva['id'],
             'usuario' => [
@@ -130,7 +119,6 @@ try {
         ];
     }
 
-    // Confirmar transação
     $conexao->commit();
 
     $dados_devolucao = [
@@ -157,28 +145,22 @@ try {
         'reserva_notificada' => $reserva_notificada
     ];
 
-    // Se há uma reserva para notificar, enviar email de disponibilidade
     if ($reserva_notificada) {
-        // Enviar email de forma assíncrona (não bloqueia a resposta)
         $email_data = $reserva_notificada['email_data'];
         
-        // Fazer requisição para enviar email (pode ser feito pelo frontend também)
         $email_json = json_encode($email_data);
-        
-        // Usar cURL para enviar email de forma assíncrona
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://localhost:8000/enviar_email_disponibilidade.php');
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $email_json);
         curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout de 5 segundos
+        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
         
         $email_result = curl_exec($ch);
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
         
-        // Log do resultado do email (opcional)
         if ($http_code === 200) {
             error_log("Email de disponibilidade enviado com sucesso para: " . $email_data['email']);
         } else {

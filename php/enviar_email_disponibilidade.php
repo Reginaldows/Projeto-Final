@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: *");
 
@@ -15,18 +15,15 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-// Função para log de debug
 function logDebug($message) {
     error_log("[EMAIL_DISPONIBILIDADE] " . date('Y-m-d H:i:s') . " - " . $message);
 }
 
-// Verificar se é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     echo json_encode(['sucesso' => false, 'mensagem' => 'Método não permitido']);
     exit;
 }
 
-// Receber dados JSON
 $input = file_get_contents('php://input');
 logDebug("Dados recebidos: " . $input);
 
@@ -38,7 +35,6 @@ if (!$dados) {
     exit;
 }
 
-// Validar campos obrigatórios
 $camposObrigatorios = ['email', 'nomeUsuario', 'tituloLivro', 'autorLivro'];
 foreach ($camposObrigatorios as $campo) {
     if (!isset($dados[$campo]) || empty($dados[$campo])) {
@@ -48,7 +44,6 @@ foreach ($camposObrigatorios as $campo) {
     }
 }
 
-// Extrair dados
 $email = $dados['email'];
 $nomeUsuario = $dados['nomeUsuario'];
 $tituloLivro = $dados['tituloLivro'];
@@ -65,7 +60,6 @@ logDebug("Livro: $tituloLivro - $autorLivro");
 try {
     $mail = new PHPMailer(true);
 
-    // Configurações do servidor SMTP
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
@@ -75,7 +69,6 @@ try {
     $mail->Port = 587;
     $mail->CharSet = 'UTF-8';
 
-    // Configurações do email
     $mail->setFrom('bibliotecasenai464@gmail.com', 'Biblioteca SENAI');
     $mail->addAddress($email, $nomeUsuario);
     $mail->addReplyTo('bibliotecasenai464@gmail.com', 'Biblioteca SENAI');
@@ -83,7 +76,6 @@ try {
     $mail->isHTML(true);
     $mail->Subject = "📚 Livro Disponível - {$tipoNome} - Biblioteca SENAI";
 
-    // Corpo do email em HTML
     $mail->Body = "
     <!DOCTYPE html>
     <html lang='pt-BR'>
@@ -136,7 +128,6 @@ try {
     </body>
     </html>";
 
-    // Versão em texto simples
     $mail->AltBody = "
     Biblioteca SENAI - Livro Disponível
     

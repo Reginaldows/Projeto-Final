@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 require 'conexao.php';
 
-// Seleciona livros com informações de disponibilidade
 $sql = "SELECT 
     l.id, l.titulo, l.autor, l.ano, l.editora, l.genero, l.isbn, l.paginas, 
     l.descricao, l.capa, l.cdd, l.localizacao,
@@ -40,25 +39,20 @@ $result = $conexao->query($sql);
 $livros = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
-        // Categoria para front-end
         $row['categoria'] = $row['genero'];
 
-        // Descrição padrão caso esteja vazia
         $row['descricao'] = $row['descricao'] ? $row['descricao'] : "Nenhuma descrição disponível para este livro.";
 
-        // Capa do livro ou imagem padrão
         $row['capa'] = $row['capa'] 
             ? "/php/uploads/" . basename($row['capa']) 
             : "/public/img/Biblioteca.png";
 
-        // Calcula disponibilidade real
         $total_copias = (int)$row['total_copias'];
         $copias_emprestadas = (int)$row['emprestimos_ativos'];
         $copias_manutencao = (int)$row['copias_manutencao'];
         $copias_perdidas = (int)$row['copias_perdidas'];
         $copias_disponiveis = $total_copias - $copias_emprestadas - $copias_manutencao - $copias_perdidas;
         
-        // Informações de disponibilidade
         $row['disponibilidade'] = [
             'total_copias' => $total_copias,
             'copias_disponiveis' => max(0, $copias_disponiveis),
@@ -73,7 +67,6 @@ if ($result->num_rows > 0) {
     }
 }
 
-// Retorna JSON
 echo json_encode($livros);
 
 $conexao->close();

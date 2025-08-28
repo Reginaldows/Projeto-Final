@@ -29,8 +29,7 @@ if (!$login || !$senha) {
     responder(false, "Login e senha são obrigatórios.");
 }
 
-// Normaliza o CPF removendo pontos e traços
-$login_normalizado = preg_replace('/[\.\-]/', '', $login);
+$login_normalizado = preg_replace('/[\.\.\-]/', '', $login);
 
 $stmt = $conexao->prepare("
     SELECT id, nome, senha, tipo_usuario, cpf, email 
@@ -47,12 +46,10 @@ if ($result->num_rows === 0) {
 
 $usuario = $result->fetch_assoc();
 
-// Verifica a senha hash
 if (!password_verify($senha, $usuario['senha'])) {
     responder(false, "Senha incorreta.");
 }
 
-// Login OK
 $resposta_nome = $usuario['nome'];
 $resposta_tipo = $usuario['tipo_usuario'];
 $resposta_id = $usuario['id'];

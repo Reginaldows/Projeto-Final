@@ -2,7 +2,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-header('Access-Control-Allow-Origin: http://localhost:5174');
+header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json; charset=UTF-8');
@@ -15,15 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 require __DIR__ . '/vendor/autoload.php';
 require 'conexao.php';
 
-// Função para log detalhado
 function logDebug($mensagem) {
     $logFile = __DIR__ . '/logs/email_debug.log';
     if (!is_dir(dirname($logFile))) mkdir(dirname($logFile), 0755, true);
     file_put_contents($logFile, '[' . date('Y-m-d H:i:s') . '] ' . $mensagem . "\n", FILE_APPEND | LOCK_EX);
-    error_log($mensagem); // Também no error_log do PHP
+    error_log($mensagem);
 }
 
-// Função para responder em JSON
 function responder($sucesso, $mensagem, $dados = null) {
     $resposta = [
         'sucesso' => $sucesso,
@@ -38,12 +36,10 @@ function responder($sucesso, $mensagem, $dados = null) {
     exit();
 }
 
-// Verificar se é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método não permitido');
 }
 
-// Receber dados
 $input = file_get_contents('php://input');
 $dados = json_decode($input, true);
 
@@ -51,12 +47,10 @@ if (!$dados) {
     responder(false, 'Dados inválidos');
 }
 
-// Log dos dados recebidos
 logDebug("=== DADOS RECEBIDOS ===");
 logDebug("Dados completos: " . json_encode($dados, JSON_UNESCAPED_UNICODE));
 logDebug("URL da capa recebida: " . ($dados['capaLivro'] ?? 'VAZIO'));
 
-// Função para processar URL da Open Library
 function processarUrlOpenLibrary($url) {
     if (empty($url)) {
         logDebug("URL vazia recebida para processar");
@@ -65,13 +59,10 @@ function processarUrlOpenLibrary($url) {
     
     logDebug("URL original: {$url}");
     
-    // Se for URL da Open Library, otimizar
     if (strpos($url, 'covers.openlibrary.org') !== false) {
-        // Substituir por versão de melhor qualidade
         $url = str_replace('-S.jpg', '-M.jpg', $url);
         $url = str_replace('-S.png', '-M.png', $url);
         
-        // Garantir HTTPS
         $url = str_replace('http://', 'https://', $url);
         logDebug("URL processada Open Library: {$url}");
     }
@@ -79,13 +70,6 @@ function processarUrlOpenLibrary($url) {
     return $url;
 }
 
-// Função removida - não precisamos mais de imagens
-
-// Função removida - não precisamos mais de imagens
-
-// Função removida - não precisamos mais de imagens
-
-// Função principal para enviar email
 function enviarEmailEmprestimo($dados) {
     logDebug("=== INICIANDO ENVIO DE EMAIL ===");
     
@@ -105,9 +89,6 @@ function enviarEmailEmprestimo($dados) {
     
     $assunto = "Confirmação de Empréstimo - {$tituloLivro}";
     
-    // Não processamos mais imagens - apenas texto
-
-    // HTML do email no estilo do enviar.php
     $mensagemHtml = "
     <html>
     <head><meta charset='UTF-8'><title>Empréstimo Confirmado</title></head>
@@ -155,7 +136,6 @@ function enviarEmailEmprestimo($dados) {
         $mail->setFrom('juniorfb98@gmail.com', 'Sistema Biblioteca SENAI');
         $mail->addAddress($destinatario, $nomeUsuario);
 
-        // Não anexamos mais imagens
         logDebug("Email sem anexos de imagem");
 
         $mail->isHTML(true);
@@ -167,14 +147,10 @@ function enviarEmailEmprestimo($dados) {
         $mail->send();
         logDebug("Email enviado com sucesso!");
 
-        // Não há mais arquivos temporários para limpar
-
         return true;
 
     } catch (Exception $e) {
         logDebug("ERRO no envio: " . $mail->ErrorInfo);
-        
-        // Não há mais arquivos temporários para limpar
         
         return $mail->ErrorInfo;
     }

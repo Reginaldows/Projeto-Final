@@ -2,7 +2,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-header('Access-Control-Allow-Origin: http://localhost:5174');
+header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json; charset=UTF-8');
@@ -15,15 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 require __DIR__ . '/vendor/autoload.php';
 require 'conexao.php';
 
-// Função para log detalhado
 function logDebug($mensagem) {
     $logFile = __DIR__ . '/logs/email_bibliotecario_debug.log';
     if (!is_dir(dirname($logFile))) mkdir(dirname($logFile), 0755, true);
     file_put_contents($logFile, '[' . date('Y-m-d H:i:s') . '] ' . $mensagem . "\n", FILE_APPEND | LOCK_EX);
-    error_log($mensagem); // Também no error_log do PHP
+    error_log($mensagem);
 }
 
-// Função para responder em JSON
 function responder($sucesso, $mensagem, $dados = null) {
     $resposta = [
         'sucesso' => $sucesso,
@@ -38,12 +36,10 @@ function responder($sucesso, $mensagem, $dados = null) {
     exit();
 }
 
-// Verificar se é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método não permitido');
 }
 
-// Receber dados
 $input = file_get_contents('php://input');
 $dados = json_decode($input, true);
 
@@ -54,7 +50,6 @@ if (!$dados) {
 
 logDebug('Dados recebidos: ' . json_encode($dados));
 
-// Validar campos obrigatórios
 $camposObrigatorios = ['email', 'nomeUsuario', 'tituloLivro', 'autorLivro', 'dataEmprestimo', 'dataDevolucao'];
 foreach ($camposObrigatorios as $campo) {
     if (empty($dados[$campo])) {
@@ -64,27 +59,23 @@ foreach ($camposObrigatorios as $campo) {
 }
 
 try {
-    // Configurar PHPMailer
     $mail = new PHPMailer(true);
     
-    // Configurações do servidor SMTP
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
     $mail->Username = 'juniorfb98@@gmail.com';
-    $mail->Password = 'pgyz zcgj oxft jisv'; // App Password
+    $mail->Password = 'pgyz zcgj oxft jisv';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port = 465;
     $mail->CharSet = 'UTF-8';
     
-    // Configurações do email
     $mail->setFrom('bibliotecasenai2024@gmail.com', 'Biblioteca SENAI');
     $mail->addAddress($dados['email'], $dados['nomeUsuario']);
     
     $mail->isHTML(true);
     $mail->Subject = '📚 Empréstimo Realizado - Biblioteca SENAI';
     
-    // Template HTML do email
     $htmlBody = '
     <!DOCTYPE html>
     <html lang="pt-BR">
@@ -204,7 +195,6 @@ try {
     
     $mail->Body = $htmlBody;
     
-    // Versão texto alternativa
     $mail->AltBody = "Olá, {$dados['nomeUsuario']}!\n\n";
     $mail->AltBody .= "Seu empréstimo foi realizado com sucesso pelo bibliotecário.\n\n";
     $mail->AltBody .= "Livro: {$dados['tituloLivro']}\n";
@@ -216,7 +206,6 @@ try {
     
     logDebug('Tentando enviar email para: ' . $dados['email']);
     
-    // Enviar email
     $mail->send();
     
     logDebug('Email enviado com sucesso para: ' . $dados['email']);

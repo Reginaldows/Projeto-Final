@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json; charset=utf-8');
-header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: *");
 
@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require 'conexao.php';
 
-// Função para responder em JSON
 function responder($success, $message, $data = null) {
     echo json_encode([
         'success' => $success,
@@ -21,15 +20,12 @@ function responder($success, $message, $data = null) {
     exit;
 }
 
-// Verificar se é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método não permitido');
 }
 
-// Receber dados JSON
 $input = json_decode(file_get_contents('php://input'), true);
 
-// Validar campo obrigatório
 if (!isset($input['usuario_id']) || empty($input['usuario_id'])) {
     responder(false, 'ID do usuário não fornecido');
 }
@@ -37,7 +33,6 @@ if (!isset($input['usuario_id']) || empty($input['usuario_id'])) {
 $usuario_id = intval($input['usuario_id']);
 
 try {
-    // Verificar se o usuário existe
     $stmt = $conexao->prepare("SELECT id, nome FROM usuarios WHERE id = ?");
     $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
@@ -47,7 +42,6 @@ try {
         responder(false, 'Usuário não encontrado');
     }
 
-    // Buscar empréstimos ativos do usuário
     $stmt = $conexao->prepare("
         SELECT e.id, e.data_emprestimo, e.data_prevista_devolucao, e.status,
                l.id as livro_id, l.titulo, l.autor, l.capa,
@@ -65,7 +59,6 @@ try {
     
     $emprestimos = [];
     while ($row = $result->fetch_assoc()) {
-        // Processar capa do livro
         $capa_url = null;
         if ($row['capa']) {
             if (strpos($row['capa'], 'http') === 0) {
@@ -75,7 +68,6 @@ try {
             }
         }
         
-        // Calcular status baseado na data de devolução
         $hoje = new DateTime();
         $data_devolucao = new DateTime($row['data_prevista_devolucao']);
         $diff = $hoje->diff($data_devolucao);

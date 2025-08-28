@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 include('conexao.php');
 
-// Função para responder em formato JSON
 function responder($success, $mensagem) {
     echo json_encode([
         'success' => $success,
@@ -18,18 +17,15 @@ function responder($success, $mensagem) {
     exit;
 }
 
-// Verificar se o ID foi fornecido
 $id = $_POST['id'] ?? null;
 
 if (!$id) {
     responder(false, "ID do usuário não fornecido");
 }
 
-// Preparar a query para excluir o usuário
 $stmt = mysqli_prepare($conexao, "DELETE FROM usuarios WHERE id = ?");
 mysqli_stmt_bind_param($stmt, "i", $id);
 
-// Executar a query
 if (mysqli_stmt_execute($stmt)) {
     responder(true, "Usuário excluído com sucesso");
 } else {

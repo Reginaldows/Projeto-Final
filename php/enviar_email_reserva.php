@@ -2,7 +2,7 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-header('Access-Control-Allow-Origin: http://localhost:5174');
+header('Access-Control-Allow-Origin: http://localhost:5173');
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Content-Type: application/json; charset=UTF-8');
@@ -15,7 +15,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 require __DIR__ . '/vendor/autoload.php';
 require 'conexao.php';
 
-// Função para log detalhado
 function logDebug($mensagem) {
     $logFile = __DIR__ . '/logs/email_reserva_debug.log';
     if (!is_dir(dirname($logFile))) mkdir(dirname($logFile), 0755, true);
@@ -23,7 +22,6 @@ function logDebug($mensagem) {
     error_log($mensagem);
 }
 
-// Função para responder em JSON
 function responder($sucesso, $mensagem, $dados = null) {
     $resposta = [
         'sucesso' => $sucesso,
@@ -38,12 +36,10 @@ function responder($sucesso, $mensagem, $dados = null) {
     exit();
 }
 
-// Verificar se é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método não permitido');
 }
 
-// Receber dados
 $input = file_get_contents('php://input');
 $dados = json_decode($input, true);
 
@@ -51,13 +47,10 @@ if (!$dados) {
     responder(false, 'Dados inválidos');
 }
 
-// Log dos dados recebidos
 logDebug("=== DADOS RECEBIDOS ===");
 logDebug("Dados completos: " . json_encode($dados, JSON_UNESCAPED_UNICODE));
 
-// Função principal para enviar email de reserva
 function enviarEmailReserva($dados) {
-    // Definir timezone de Brasília
     date_default_timezone_set('America/Sao_Paulo');
     
     logDebug("=== INICIANDO ENVIO DE EMAIL DE RESERVA ===");
@@ -81,7 +74,6 @@ function enviarEmailReserva($dados) {
     $tipoNome = ($tipoReserva === 'pre_reserva') ? 'Pré-reserva' : 'Reserva';
     $assunto = "Confirmação de {$tipoNome} - {$tituloLivro}";
     
-    // HTML do email
     $mensagemHtml = "
     <html>
     <head><meta charset='UTF-8'><title>{$tipoNome} Confirmada</title></head>

@@ -9,7 +9,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 include('conexao.php');
 
-// Função para responder em formato JSON
 function responder($success, $mensagem, $dados = null) {
     echo json_encode([
         'success' => $success,
@@ -19,7 +18,6 @@ function responder($success, $mensagem, $dados = null) {
     exit;
 }
 
-// Buscar todos os usuários
 $query = "SELECT
     id,
     nome,

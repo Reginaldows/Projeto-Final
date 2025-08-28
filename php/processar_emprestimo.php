@@ -1,23 +1,19 @@
 <?php
-// Enable error reporting for debugging (remove in production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Set headers first
-header("Access-Control-Allow-Origin: http://localhost:5174");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json; charset=UTF-8");
 
-// Handle preflight request
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// Function to log errors and respond with JSON
+
 function responder($success, $message, $data = null, $error_details = null) {
-    // Log error details for debugging
     if (!$success && $error_details) {
         error_log("Emprestimo Error: " . print_r($error_details, true));
     }
@@ -28,7 +24,7 @@ function responder($success, $message, $data = null, $error_details = null) {
         'data' => $data
     ];
     
-    // Add error details in development mode
+    
     if (!$success && $error_details && $_ENV['APP_ENV'] !== 'production') {
         $response['debug'] = $error_details;
     }
@@ -37,34 +33,27 @@ function responder($success, $message, $data = null, $error_details = null) {
     exit;
 }
 
-// Verify HTTP method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     responder(false, 'Método não permitido');
 }
 
 try {
-    // Include database connection
     require_once 'conexao.php';
     
-    // Check if connection exists
     if (!isset($conexao) || !$conexao) {
         responder(false, 'Erro na conexão com banco de dados', null, 'Database connection not available');
     }
-    
-    // Get JSON input
     $json_input = file_get_contents('php://input');
     if (empty($json_input)) {
         responder(false, 'Dados não fornecidos', null, 'Empty request body');
     }
     
     $input = json_decode($json_input, true);
-    
-    // Check JSON parsing
+   
     if (json_last_error() !== JSON_ERROR_NONE) {
         responder(false, 'Dados JSON inválidos: ' . json_last_error_msg(), null, 'JSON decode error');
     }
     
-    // Validate required fields
     $camposObrigatorios = ['livro_id', 'usuario_id', 'dias_emprestimo'];
     foreach ($camposObrigatorios as $campo) {
         if (!isset($input[$campo]) || $input[$campo] === '' || $input[$campo] === null) {
@@ -75,7 +64,6 @@ try {
         }
     }
     
-    // Convert and validate data types
     $livro_id = intval($input['livro_id']);
     $usuario_id = intval($input['usuario_id']);
     $dias_emprestimo = intval($input['dias_emprestimo']);
@@ -88,17 +76,14 @@ try {
         responder(false, 'ID do usuário inválido', null, ['usuario_id' => $input['usuario_id']]);
     }
     
-    // Validate loan period
     if ($dias_emprestimo < 1 || $dias_emprestimo > 30) {
         responder(false, 'Dias de empréstimo deve ser entre 1 e 30 dias');
     }
     
-    // Start transaction
     if (!$conexao->autocommit(false)) {
         responder(false, 'Erro ao iniciar transação', null, $conexao->error);
     }
     
-    // Check if book exists
     $stmt = $conexao->prepare("SELECT id, titulo, autor, capa FROM livros WHERE id = ?");
     if (!$stmt) {
         $conexao->rollback();
@@ -119,7 +104,6 @@ try {
     $livro = $result->fetch_assoc();
     $stmt->close();
     
-    // Check if user exists
     $stmt = $conexao->prepare("SELECT id, nome, email FROM usuarios WHERE id = ?");
     if (!$stmt) {
         $conexao->rollback();
@@ -140,7 +124,6 @@ try {
     $usuario = $result->fetch_assoc();
     $stmt->close();
     
-    // Check for available copy
     $stmt = $conexao->prepare("
         SELECT id, codigo_copia 
         FROM copias 
@@ -166,7 +149,6 @@ try {
     $copia = $result->fetch_assoc();
     $stmt->close();
     
-    // Check if user already has active loan for this book
     $stmt = $conexao->prepare("
         SELECT e.id 
         FROM emprestimos e
@@ -191,11 +173,9 @@ try {
     }
     $stmt->close();
     
-    // Calculate dates
     $data_emprestimo = date('Y-m-d');
     $data_devolucao_prevista = date('Y-m-d', strtotime("+$dias_emprestimo days"));
     
-    // Create loan
     $stmt = $conexao->prepare("
         INSERT INTO emprestimos (usuario_id, copia_id, data_emprestimo, data_prevista_devolucao, status)
         VALUES (?, ?, ?, ?, 'ativo')
@@ -212,8 +192,6 @@ try {
     }
     $emprestimo_id = $conexao->insert_id;
     $stmt->close();
-    
-    // Update copy status
     $stmt = $conexao->prepare("UPDATE copias SET status = 'emprestado' WHERE id = ?");
     if (!$stmt) {
         $conexao->rollback();
@@ -227,7 +205,6 @@ try {
     }
     $stmt->close();
     
-    // Handle reservations
     $stmt = $conexao->prepare("
         SELECT r.id, r.usuario_id 
         FROM reservas r
@@ -252,13 +229,10 @@ try {
         $stmt->close();
     }
     
-    // Commit transaction
     if (!$conexao->commit()) {
         $conexao->rollback();
         responder(false, 'Erro ao finalizar empréstimo', null, $conexao->error);
     }
-    
-    // Prepare response data
     $dados_emprestimo = [
         'emprestimo_id' => $emprestimo_id,
         'livro' => [
