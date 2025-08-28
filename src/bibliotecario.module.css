@@ -573,7 +573,7 @@
 .emptyMessage {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 40px 20px;
+  padding: 20px 10px;
   background-color: #f8f9fa;
   border-radius: 8px;
   color: #6c757d;
@@ -733,6 +733,34 @@
 
 .loanButton:hover {
   background-color: #218838;
+}
+
+.preReservaButton {
+  background: linear-gradient(135deg, #fd7e14, #e55a4e);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(253, 126, 20, 0.3);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.preReservaButton:hover {
+  background: linear-gradient(135deg, #e55a4e, #dc3545);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(253, 126, 20, 0.4);
+}
+
+.preReservaButton:active {
+  transform: translateY(0);
 }
 
 .emprestimoModal {
@@ -1174,7 +1202,7 @@
   max-height: 90vh;
   overflow-y: auto;
   position: relative;
-  padding: 40px 20px;
+  padding: 20px 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
   justify-content: center;
@@ -1210,7 +1238,7 @@
 .livroDetalhes {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  gap: 15px;
 }
 
 .livroImagemContainer {
@@ -1268,10 +1296,10 @@
 
 .botoesAcao {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  flex-direction: row;
+  gap: 5px;
   margin-top: 20px;
-  width: 80px;
+  width: auto;
 }
 
 .editarButton, .excluirButton {
@@ -1647,4 +1675,164 @@
     padding: 8px 16px;
     font-size: 14px;
   }
+}
+
+/* Estilos para Modal de Reserva por Código */
+.modalHeader {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.modalHeader h2 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.modalHeader p {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modalBody {
+  width: 100%;
+  max-width: 400px;
+}
+
+.inputGroup {
+  margin-bottom: 25px;
+}
+
+.inputGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+}
+
+.codigoInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: border-color 0.3s ease;
+}
+
+.codigoInput:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.codigoInput:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.modalActions {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+}
+
+.cancelButton, .confirmButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cancelButton {
+  background-color: #6c757d;
+  color: white;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background-color: #5a6268;
+}
+
+.confirmButton {
+  background-color: #007bff;
+  color: white;
+}
+
+.confirmButton:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.cancelButton:disabled, .confirmButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reservaCodigoActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.reservaCodigoActions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.reservaCodigoActions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.codigoInputError {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2) !important;
+}
+
+.erroMensagem {
+  color: #e74c3c;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+  font-weight: 500;
+}
+
+.codigoInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.codigoInfo small {
+  color: #666;
+  font-size: 11px;
+}
+
+.contadorCaracteres {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.codigoInput:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }

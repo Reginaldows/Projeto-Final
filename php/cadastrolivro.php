@@ -12,17 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Conexão
 require 'conexao.php';
-
-// Receber dados (JSON ou FormData)
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 if (!$data) {
     $data = $_POST;
 }
 
-// Campos obrigatórios
+
 $camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma', 'cdd', 'localizacao', 'quantidadeCopias'];
 foreach ($camposObrigatorios as $campo) {
     if (empty($data[$campo])) {
@@ -31,7 +28,7 @@ foreach ($camposObrigatorios as $campo) {
     }
 }
 
-// Receber dados
+
 $titulo = trim($data['titulo']);
 $autor = trim($data['autor']);
 $isbn = trim($data['isbn']);
@@ -45,10 +42,10 @@ $cdd = trim($data['cdd']);
 $localizacao = trim($data['localizacao']);
 $quantidadeCopias = intval($data['quantidadeCopias']);
 
-// Upload da capa (arquivo ou URL)
+
 $caminhoDestino = null;
 
-// Upload de arquivo
+
 if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
     $uploadsDir = __DIR__ . '/uploads/';
     if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
@@ -58,7 +55,7 @@ if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
     $caminhoDestino = 'uploads/' . $nomeArquivo;
     move_uploaded_file($_FILES['capa']['tmp_name'], $caminhoCompleto);
 }
-// Upload via URL
+
 elseif (!empty($data['urlCapa'])) {
     $urlCapa = $data['urlCapa'];
     $uploadsDir = __DIR__ . '/uploads/';
@@ -81,7 +78,7 @@ elseif (!empty($data['urlCapa'])) {
     }
 }
 
-// Inserir livro no banco
+
 $stmt = $conexao->prepare("INSERT INTO livros 
     (titulo, autor, isbn, editora, ano, genero, paginas, idioma, descricao, cdd, localizacao, capa) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -91,9 +88,9 @@ $stmt->bind_param("ssssisssssss",
 if ($stmt->execute()) {
     $livroId = $conexao->insert_id;
 
-    // Criar cópias automaticamente
+
     for ($i = 1; $i <= $quantidadeCopias; $i++) {
-        $codigoCopia = $livroId . '-' . $i; // Ex.: 12-1, 12-2, 12-3
+        $codigoCopia = $livroId . '-' . $i;
         $stmtCopia = $conexao->prepare("INSERT INTO copias (livro_id, codigo_copia) VALUES (?, ?)");
         $stmtCopia->bind_param("is", $livroId, $codigoCopia);
         $stmtCopia->execute();

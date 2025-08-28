@@ -23,6 +23,7 @@ export default function Login() {
     try {
       const response = await fetch('http://localhost/php/login.php', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: formData.toString(),
       });

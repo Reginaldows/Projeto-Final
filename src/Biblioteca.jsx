@@ -55,7 +55,7 @@ const PaginaIsolada = () => {
   const carregarLivros = async () => {
   try {
     console.log('Tentando carregar livros...');
-    const response = await fetch('/php/listarlivro.php');
+    const response = await fetch('http://localhost/php/listarlivro.php');
     
     console.log('Response status:', response.status);
     
@@ -84,7 +84,7 @@ const PaginaIsolada = () => {
   const carregarAutores = async () => {
     try {
       console.log('Carregando autores...');
-      const response = await fetch('/php/listarautores.php');
+      const response = await fetch('http://localhost/php/listarautores.php');
       
       if (!response.ok) {
         throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
@@ -140,7 +140,7 @@ const PaginaIsolada = () => {
         if (result.data.email_data) {
           console.log('Enviando email com dados:', result.data.email_data);
           
-          fetch('/php/enviar_email_emprestimo.php', {
+          fetch('http://localhost/php/enviar_email_emprestimo.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -316,7 +316,7 @@ const PaginaIsolada = () => {
   const carregarCategorias = async () => {
     try {
       console.log('Carregando categorias...');
-      const response = await fetch('/php/listarcategorias.php');
+      const response = await fetch('http://localhost/php/listarcategorias.php');
       
       if (!response.ok) {
         throw new Error(`Erro HTTP: ${response.status} - ${response.statusText}`);
@@ -363,7 +363,7 @@ const PaginaIsolada = () => {
   const handleSearch = async () => {
     try {
       
-      let url = new URL('/php/filtrarlivros.php', window.location.origin);
+      let url = new URL('http://localhost/php/filtrarlivros.php');
       
       if (searchTerm) url.searchParams.append('searchTerm', searchTerm);
       if (category) url.searchParams.append('category', category);
@@ -709,6 +709,12 @@ const PaginaIsolada = () => {
                     <div className={styles.disponibilidadeInfo}>
                       <p className={styles.livroQuantidadeCopias}><strong>Total de Cópias:</strong> {livroSelecionado.disponibilidade.total_copias}</p>
                       <p className={styles.copiasDisponiveis}><strong>Cópias Disponíveis:</strong> {livroSelecionado.disponibilidade.copias_disponiveis}</p>
+                      {livroSelecionado.disponibilidade.pre_reservas_ativas > 0 && (
+                        <p className={styles.preReservasAtivas}><strong>Pré-reservas Ativas:</strong> {livroSelecionado.disponibilidade.pre_reservas_ativas}</p>
+                      )}
+                      {livroSelecionado.disponibilidade.reservas_ativas > 0 && (
+                        <p className={styles.reservasAtivas}><strong>Reservas Ativas:</strong> {livroSelecionado.disponibilidade.reservas_ativas}</p>
+                      )}
                     </div>
                   )}
                   
@@ -723,15 +729,17 @@ const PaginaIsolada = () => {
                       </button>
                     )}
                     
-                    <button 
-                      className={`${styles.botaoAcao} ${styles.botaoPreReserva}`}
-                      onClick={() => handlePreReserva(livroSelecionado.id)}
-                    >
-                      {codigosReserva[livroSelecionado.id] ? 
-                        `📋 Código: ${codigosReserva[livroSelecionado.id]}` : 
-                        '⏰ Pré-reserva'
-                      }
-                    </button>
+                    {!livroSelecionado.disponibilidade?.disponivel_emprestimo && (
+                      <button 
+                        className={`${styles.botaoAcao} ${styles.botaoPreReserva}`}
+                        onClick={() => handlePreReserva(livroSelecionado.id)}
+                      >
+                        {codigosReserva[livroSelecionado.id] ? 
+                          `📋 Código: ${codigosReserva[livroSelecionado.id]}` : 
+                          '⏰ Pré-reserva'
+                        }
+                      </button>
+                    )}
                     
                     {livroSelecionado.disponibilidade?.disponivel_reserva && (
                       <button 

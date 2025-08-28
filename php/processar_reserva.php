@@ -43,7 +43,6 @@ if (!in_array($tipo, ['reserva', 'pre_reserva'])) {
 try {
     $conexao->autocommit(false);
 
-    // Verificar livro
     $stmt = $conexao->prepare("SELECT id, titulo, autor FROM livros WHERE id = ?");
     $stmt->bind_param("i", $livro_id);
     $stmt->execute();
@@ -54,7 +53,6 @@ try {
     }
     $livro = $result->fetch_assoc();
 
-    // Verificar usuário
     $stmt = $conexao->prepare("SELECT id, nome, email FROM usuarios WHERE id = ?");
     $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
@@ -65,7 +63,6 @@ try {
     }
     $usuario = $result->fetch_assoc();
 
-    // Verificar se usuário já possui reserva ativa deste livro
     $stmt = $conexao->prepare("
         SELECT id, tipo 
         FROM reservas 
@@ -80,7 +77,6 @@ try {
         responder(false, 'Usuário já possui ' . $reserva_existente['tipo'] . ' ativa para este livro');
     }
 
-    // Verificar se usuário já tem empréstimo ativo deste livro
     $stmt = $conexao->prepare("
         SELECT e.id
         FROM emprestimos e
@@ -95,7 +91,6 @@ try {
         responder(false, 'Usuário já possui empréstimo ativo deste livro');
     }
 
-    // Para reserva normal, verificar se há cópias disponíveis
     if ($tipo === 'reserva') {
         $stmt = $conexao->prepare("
             SELECT COUNT(*) as copias_disponiveis 
@@ -111,7 +106,6 @@ try {
         }
     }
 
-    // Calcular posição na fila
     $stmt = $conexao->prepare("
         SELECT COUNT(*) + 1 as posicao_fila
         FROM reservas
@@ -121,7 +115,6 @@ try {
     $stmt->execute();
     $posicao_fila = $stmt->get_result()->fetch_assoc()['posicao_fila'];
 
-    // Gerar código único para a reserva
     function gerarCodigoReserva() {
         $caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         $codigo = '';
@@ -133,15 +126,12 @@ try {
     
     $codigo_reserva = gerarCodigoReserva();
     
-    // Definir timezone de Brasília
     date_default_timezone_set('America/Sao_Paulo');
     
-    // Datas
     $data_reserva = date('Y-m-d H:i:s');
     $dias_expiracao = ($tipo === 'pre_reserva') ? 30 : 7;
     $data_expiracao = date('Y-m-d H:i:s', strtotime("+$dias_expiracao days"));
 
-    // Criar reserva
     $stmt = $conexao->prepare("
         INSERT INTO reservas (usuario_id, livro_id, tipo, codigo_reserva, data_reserva, data_expiracao, posicao_fila, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, 'pendente')
@@ -155,7 +145,6 @@ try {
 
     $conexao->commit();
 
-    // Preparar dados para email
     $dadosEmail = [
         'email' => $usuario['email'],
         'nomeUsuario' => $usuario['nome'],

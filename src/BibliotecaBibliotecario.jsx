@@ -34,6 +34,14 @@ const BibliotecaBibliotecario = () => {
   const [mostrarTextoTemporario, setMostrarTextoTemporario] = useState(() => {
     return localStorage.getItem('mostrarTextoTemporario') === 'true';
   });
+  const [modalReservaCodigo, setModalReservaCodigo] = useState(false);
+  const [codigoReserva, setCodigoReserva] = useState('');
+  const [processandoReserva, setProcessandoReserva] = useState(false);
+  const [erroCodigoReserva, setErroCodigoReserva] = useState('');
+  const [modalConfirmarPreReserva, setModalConfirmarPreReserva] = useState(false);
+  const [codigoPreReserva, setCodigoPreReserva] = useState('');
+  const [processandoPreReserva, setProcessandoPreReserva] = useState(false);
+  const [erroCodigoPreReserva, setErroCodigoPreReserva] = useState('');
   const [modalEmprestimoAberto, setModalEmprestimoAberto] = useState(false);
   const [livroParaEmprestimo, setLivroParaEmprestimo] = useState(null);
   const [cpfUsuario, setCpfUsuario] = useState('');
@@ -247,6 +255,113 @@ const BibliotecaBibliotecario = () => {
         setMensagem('');
         setTipoMensagem('');
       }, 3000);
+    }
+  };
+
+  const validarCodigoReserva = (codigo) => {
+    if (!codigo) {
+      return '';
+    }
+    
+    if (codigo.length < 8) {
+      return 'Código deve ter 8 caracteres';
+    }
+    
+    if (!/^[A-Z0-9]+$/.test(codigo)) {
+      return 'Código deve conter apenas letras e números';
+    }
+    
+    return '';
+  };
+
+  const handleCodigoChange = (valor) => {
+    const codigoLimpo = valor.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
+    setCodigoReserva(codigoLimpo);
+    setErroCodigoReserva(validarCodigoReserva(codigoLimpo));
+  };
+
+  const handleProcessarReservaCodigo = async () => {
+    const erro = validarCodigoReserva(codigoReserva);
+    if (erro) {
+      setErroCodigoReserva(erro);
+      return;
+    }
+
+    if (!codigoReserva.trim()) {
+      setErroCodigoReserva('Por favor, insira um código de reserva válido.');
+      return;
+    }
+
+    setProcessandoReserva(true);
+    setErroCodigoReserva('');
+    
+    try {
+      const response = await fetch('/php/processar_reserva_codigo.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          codigo_reserva: codigoReserva.trim().toUpperCase()
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        setMensagem(`Reserva confirmada com sucesso! Livro: ${result.data.livro.titulo}`);
+        setTipoMensagem('sucesso');
+        setModalReservaCodigo(false);
+        setCodigoReserva('');
+        setErroCodigoReserva('');
+        carregarLivros(); // Atualizar lista de livros
+      } else {
+        setErroCodigoReserva(result.message || 'Erro ao processar reserva');
+      }
+    } catch (error) {
+      console.error('Erro ao processar reserva por código:', error);
+      setErroCodigoReserva('Erro ao processar reserva. Tente novamente.');
+    } finally {
+      setProcessandoReserva(false);
+    }
+  };
+
+  const confirmarPreReserva = async () => {
+    if (!codigoPreReserva.trim()) {
+      setErroCodigoPreReserva('Por favor, digite o código da pré-reserva');
+      return;
+    }
+
+    setProcessandoPreReserva(true);
+    setErroCodigoPreReserva('');
+
+    try {
+      const response = await fetch('http://localhost/php/processar_reserva_codigo.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          codigo: codigoPreReserva.trim()
+        })
+      });
+
+      const resultado = await response.json();
+      
+      if (resultado.success) {
+        setMensagem(`Pré-reserva confirmada com sucesso! ${resultado.message}`);
+        setTipoMensagem('sucesso');
+        setModalConfirmarPreReserva(false);
+        setCodigoPreReserva('');
+        carregarLivros(); // Recarregar a lista de livros
+      } else {
+        setErroCodigoPreReserva(resultado.message || 'Erro ao confirmar pré-reserva');
+      }
+    } catch (error) {
+      console.error('Erro ao confirmar pré-reserva:', error);
+      setErroCodigoPreReserva('Erro de conexão. Tente novamente.');
+    } finally {
+      setProcessandoPreReserva(false);
     }
   };
 
@@ -572,7 +687,9 @@ const BibliotecaBibliotecario = () => {
                   </div>
                 </div>
               </li>
-              <li className={styles.navItem}><a className={styles.navLink} href="#">Relatórios</a></li>
+              <li className={styles.navItem}>
+                <button className={styles.navLink} onClick={() => navigate('/relatorios')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Relatórios</button>
+              </li>
               <li className={styles.navItem}>
                 <button className={styles.navLink} onClick={() => navigate('/gerenciar-emprestimos')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Gerenciar Empréstimos</button>
               </li>
@@ -748,6 +865,19 @@ const BibliotecaBibliotecario = () => {
                     >
                       Fazer Empréstimo
                     </button>
+                    
+                    <button 
+                      className={styles.preReservaButton}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setModalConfirmarPreReserva(true);
+                        setCodigoPreReserva('');
+                        setErroCodigoPreReserva('');
+                      }}
+                    >
+                      Confirmar Pré-reserva
+                    </button>
                   </div>
                 </div>
               ))
@@ -783,7 +913,7 @@ const BibliotecaBibliotecario = () => {
                 <X size={16} />
               </button>
               <div className={styles.emprestimoModal}>
-                <h2 className={styles.modalTitle}> Fazer Empréstimo</h2>
+                <h2 className={styles.modalTitle}>📚 Fazer Empréstimo</h2>
                 
                 <div className={styles.livroInfoSection}>
                   <h3 className={styles.livroTitulo}>📖 {livroParaEmprestimo.titulo}</h3>
@@ -879,6 +1009,20 @@ const BibliotecaBibliotecario = () => {
                   {livroSelecionado.quantidade_copias && (
                     <p className={styles.livroQuantidadeCopias}><strong>Quantidade de Cópias:</strong> {livroSelecionado.quantidade_copias}</p>
                   )}
+                  
+                  {/* Informações de Disponibilidade */}
+                  {livroSelecionado.disponibilidade && (
+                    <div className={styles.disponibilidadeInfo}>
+                      <p className={styles.livroQuantidadeCopias}><strong>Total de Cópias:</strong> {livroSelecionado.disponibilidade.total_copias}</p>
+                      <p className={styles.copiasDisponiveis}><strong>Cópias Disponíveis:</strong> {livroSelecionado.disponibilidade.copias_disponiveis}</p>
+                      {livroSelecionado.disponibilidade.pre_reservas_ativas > 0 && (
+                        <p className={styles.preReservasAtivas}><strong>Pré-reservas Ativas:</strong> {livroSelecionado.disponibilidade.pre_reservas_ativas}</p>
+                      )}
+                      {livroSelecionado.disponibilidade.reservas_ativas > 0 && (
+                        <p className={styles.reservasAtivas}><strong>Reservas Ativas:</strong> {livroSelecionado.disponibilidade.reservas_ativas}</p>
+                      )}
+                    </div>
+                  )}
                   <div className={styles.livroDescricao}>
                     <h3>Descrição:</h3>
                     <p>{livroSelecionado.descricao || 'Nenhuma descrição disponível para este livro.'}</p>
@@ -911,6 +1055,135 @@ const BibliotecaBibliotecario = () => {
         onClose={() => setModalNotificacaoAberto(false)}
         dadosEmprestimo={dadosUltimoEmprestimo}
       />
+      
+      {/* Modal de Reserva por Código */}
+      {modalReservaCodigo && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <button 
+              className={styles.closeButton} 
+              onClick={() => {
+                setModalReservaCodigo(false);
+                setCodigoReserva('');
+              }}
+            >
+              <X size={16} />
+            </button>
+            <div className={styles.modalHeader}>
+              <h2>Confirmar Reserva por Código</h2>
+              <p>Insira o código de pré-reserva fornecido pelo usuário para confirmar a reserva do livro.</p>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.inputGroup}>
+                <label htmlFor="codigoReserva">Código de Reserva:</label>
+                <input
+                  type="text"
+                  id="codigoReserva"
+                  value={codigoReserva}
+                  onChange={(e) => handleCodigoChange(e.target.value)}
+                  placeholder="Ex: ABC12345"
+                  maxLength={8}
+                  className={`${styles.codigoInput} ${erroCodigoReserva ? styles.codigoInputError : ''}`}
+                  disabled={processandoReserva}
+                />
+                {erroCodigoReserva && (
+                  <span className={styles.erroMensagem}>{erroCodigoReserva}</span>
+                )}
+                <div className={styles.codigoInfo}>
+                  <small>Código deve ter 8 caracteres (letras e números)</small>
+                  <small className={styles.contadorCaracteres}>{codigoReserva.length}/8</small>
+                </div>
+              </div>
+              <div className={styles.modalActions}>
+                <button 
+                  className={styles.cancelButton}
+                  onClick={() => {
+                    setModalReservaCodigo(false);
+                    setCodigoReserva('');
+                    setErroCodigoReserva('');
+                  }}
+                  disabled={processandoReserva}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  className={styles.confirmButton}
+                  onClick={handleProcessarReservaCodigo}
+                  disabled={processandoReserva || !codigoReserva.trim() || erroCodigoReserva}
+                >
+                  {processandoReserva ? 'Processando...' : 'Confirmar Reserva'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de Confirmação de Pré-reserva */}
+      {modalConfirmarPreReserva && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <button 
+              className={styles.closeButton} 
+              onClick={() => {
+                setModalConfirmarPreReserva(false);
+                setCodigoPreReserva('');
+                setErroCodigoPreReserva('');
+              }}
+            >
+              <X size={16} />
+            </button>
+            <div className={styles.modalHeader}>
+              <h2>Confirmar Pré-reserva</h2>
+              <p>Digite o código de pré-reserva do usuário para confirmar a reserva</p>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.inputGroup}>
+                <label htmlFor="codigoPreReserva" className={styles.inputLabel}>
+                  Código de Pré-reserva:
+                </label>
+                <input
+                  type="text"
+                  id="codigoPreReserva"
+                  value={codigoPreReserva}
+                  onChange={(e) => {
+                    const valor = e.target.value.toUpperCase();
+                    setCodigoPreReserva(valor);
+                    if (erroCodigoPreReserva) {
+                      setErroCodigoPreReserva('');
+                    }
+                  }}
+                  placeholder="Ex: ABC123XY"
+                  className={`${styles.codigoInput} ${erroCodigoPreReserva ? styles.inputError : ''}`}
+                  maxLength="8"
+                />
+                {erroCodigoPreReserva && (
+                  <span className={styles.errorMessage}>{erroCodigoPreReserva}</span>
+                )}
+              </div>
+              <div className={styles.reservaCodigoActions}>
+                <button 
+                  className={styles.cancelButton}
+                  onClick={() => {
+                    setModalConfirmarPreReserva(false);
+                    setCodigoPreReserva('');
+                    setErroCodigoPreReserva('');
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button 
+                  className={styles.confirmButton}
+                  onClick={() => confirmarPreReserva()}
+                  disabled={processandoPreReserva || !codigoPreReserva.trim() || erroCodigoPreReserva}
+                >
+                  {processandoPreReserva ? 'Processando...' : 'Confirmar'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

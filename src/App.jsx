@@ -15,6 +15,7 @@ import GerenciarEmprestimos from './GerenciarEmprestimos';
 import Biblioteca from './Biblioteca';
 import BibliotecaBibliotecario from './BibliotecaBibliotecario';
 import ListaUsuarios from './ListaUsuarios';
+import Relatorios from './Relatorios';
 import viteLogo from '/vite.svg';
 import { iniciarScript } from './script';
 function App() {
@@ -38,6 +39,7 @@ function App() {
         <Route path="/meu-perfil" element={<MeuPerfil />} />
         <Route path="/meus-emprestimos" element={<MeusEmprestimos />} />
         <Route path="/gerenciar-emprestimos" element={<GerenciarEmprestimos />} />
+        <Route path="/relatorios" element={<Relatorios />} />
       </Routes>
     </BrowserRouter>
   );

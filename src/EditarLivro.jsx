@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Upload, Book, User, Calendar, Globe, DollarSign, Hash, Building, Tag, FileText } from 'lucide-react';
+import { Upload, Book, User, Calendar, Globe, Hash, Building, Tag, FileText, Library, MapPin, Copy } from 'lucide-react';
 import Acessibilidade from './acessibilidade';
 import styles from './cadastrolivro.module.css';
 
@@ -25,7 +25,11 @@ export default function EditarLivro() {
     numeroPaginas: '',
     idioma: '',
     descricao: '',
-    preco: '',
+    cdd: '',
+    cutter: '',
+    edicao: '',
+    localizacao: '',
+    quantidadeCopias: '',
     capa: null
   });
 
@@ -38,7 +42,11 @@ export default function EditarLivro() {
     numeroPaginas: { valido: false, mensagem: '' },
     idioma: { valido: false, mensagem: '' },
     descricao: { valido: true, mensagem: '' },
-    preco: { valido: false, mensagem: '' }
+    cdd: { valido: false, mensagem: '' },
+    cutter: { valido: false, mensagem: '' },
+    edicao: { valido: false, mensagem: '' },
+    localizacao: { valido: false, mensagem: '' },
+    quantidadeCopias: { valido: false, mensagem: '' }
   });
 
   const generosDisponiveis = [
@@ -55,6 +63,13 @@ export default function EditarLivro() {
 
   useEffect(() => {
   const carregarLivro = async () => {
+    console.log('ID capturado da URL:', id, typeof id);
+    if (!id) {
+      console.error('ID não encontrado nos parâmetros da URL');
+      setMensagem('ID do livro não encontrado na URL');
+      setTipoMensagem('erro');
+      return;
+    }
     try {
       setCarregando(true);
       const response = await fetch(`http://localhost/php/obter-livro.php?id=${id}`);
@@ -79,6 +94,11 @@ export default function EditarLivro() {
         numeroPaginas: livro.paginas || '',
         idioma: livro.idioma || '',
         descricao: livro.descricao || '',
+        cdd: livro.cdd || '',
+        cutter: livro.cutter || '',
+        edicao: livro.edicao || '',
+        localizacao: livro.localizacao || '',
+        quantidadeCopias: livro.quantidadeCopias || '',
         capa: null
       });
 
@@ -139,8 +159,24 @@ export default function EditarLivro() {
   }, [formData.descricao]);
 
   useEffect(() => {
-    validarCampo('preco', formData.preco);
-  }, [formData.preco]);
+    validarCampo('cdd', formData.cdd);
+  }, [formData.cdd]);
+
+  useEffect(() => {
+    validarCampo('cutter', formData.cutter);
+  }, [formData.cutter]);
+
+  useEffect(() => {
+    validarCampo('edicao', formData.edicao);
+  }, [formData.edicao]);
+
+  useEffect(() => {
+    validarCampo('localizacao', formData.localizacao);
+  }, [formData.localizacao]);
+
+  useEffect(() => {
+    validarCampo('quantidadeCopias', formData.quantidadeCopias);
+  }, [formData.quantidadeCopias]);
 
   const validarCampo = (campo, valor) => {
   valor = valor || '';
@@ -183,6 +219,27 @@ export default function EditarLivro() {
     case 'descricao':
       valido = true;
       break;
+    case 'cdd':
+      valido = valor.length >= 3;
+      mensagem = valido ? '' : 'CDD deve ter pelo menos 3 caracteres';
+      break;
+    case 'cutter':
+      valido = valor.length >= 2;
+      mensagem = valido ? '' : 'Cutter deve ter pelo menos 2 caracteres';
+      break;
+    case 'edicao':
+      valido = valor.length >= 1;
+      mensagem = valido ? '' : 'Edição é obrigatória';
+      break;
+    case 'localizacao':
+      valido = valor.length >= 2;
+      mensagem = valido ? '' : 'Localização deve ter pelo menos 2 caracteres';
+      break;
+    case 'quantidadeCopias':
+      const copias = parseInt(valor);
+      valido = copias > 0 && copias <= 1000;
+      mensagem = valido ? '' : 'Quantidade deve ser entre 1 e 1000';
+      break;
   }
 
   setValidacao(prev => ({
@@ -199,7 +256,7 @@ export default function EditarLivro() {
     
     if (name === 'isbn') {
       valorFormatado = value.replace(/[^\d-]/g, '');
-    } else if (name === 'numeroPaginas' || name === 'anoPublicacao') {
+    } else if (name === 'numeroPaginas' || name === 'anoPublicacao' || name === 'quantidadeCopias') {
       valorFormatado = value.replace(/[^\d]/g, '');
     }
 
@@ -259,61 +316,84 @@ export default function EditarLivro() {
     return Object.values(validacao).every(campo => campo.valido) &&
            formData.titulo && formData.autores && formData.isbn &&
            formData.editora && formData.anoPublicacao && formData.numeroPaginas &&
-           formData.idioma && formData.preco !== '' && generosSelecionados.length > 0;
+           formData.idioma && formData.cdd && formData.cutter && formData.edicao &&
+           formData.localizacao && formData.quantidadeCopias && 
+           generosSelecionados.length > 0;
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!formularioValido()) {
-    setMensagem('Por favor, preencha todos os campos corretamente.');
-    setTipoMensagem('erro');
-    setTimeout(() => { setMensagem(''); setTipoMensagem(''); }, 3000);
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-    let body;
-    let headers = {};
-
-    if (formData.capa) {
-      body = new FormData();
-      body.append('id', id);
-      body.append('titulo', formData.titulo);
-      body.append('autor', formData.autores);
-      body.append('isbn', formData.isbn);
-      body.append('editora', formData.editora);
-      body.append('ano', formData.anoPublicacao);
-      body.append('genero', generosSelecionados.join(', '));
-      body.append('paginas', formData.numeroPaginas);
-      body.append('idioma', formData.idioma);
-      body.append('descricao', formData.descricao);
-      body.append('preco', formData.preco);
-      body.append('capa', formData.capa, formData.capa.name);
-    } else {
-      const dados = new URLSearchParams({
-        id: id,
-        titulo: formData.titulo,
-        autor: formData.autores,
-        isbn: formData.isbn,
-        editora: formData.editora,
-        ano: formData.anoPublicacao,
-        genero: generosSelecionados.join(', '),
-        paginas: formData.numeroPaginas,
-        idioma: formData.idioma,
-        descricao: formData.descricao,
-        preco: formData.preco
-      });
-      body = dados.toString();
-      headers['Content-Type'] = 'application/x-www-form-urlencoded';
+    if (!id) {
+      setMensagem('ID do livro não encontrado. Redirecionando...');
+      setTipoMensagem('erro');
+      setTimeout(() => navigate('/bibliotecario'), 2000);
+      return;
     }
 
+    if (!formularioValido()) {
+      setMensagem('Por favor, preencha todos os campos corretamente.');
+      setTipoMensagem('erro');
+      setTimeout(() => { setMensagem(''); setTipoMensagem(''); }, 3000);
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      let body;
+      let headers = {};
+
+      if (formData.capa) {
+        body = new FormData();
+        body.append('id', id);
+        body.append('titulo', formData.titulo);
+        body.append('autor', formData.autores);
+        body.append('isbn', formData.isbn);
+        body.append('editora', formData.editora);
+        body.append('ano', formData.anoPublicacao);
+        body.append('genero', generosSelecionados.join(', '));
+        body.append('paginas', formData.numeroPaginas);
+        body.append('idioma', formData.idioma);
+        body.append('descricao', formData.descricao);
+        body.append('cdd', formData.cdd);
+        body.append('cutter', formData.cutter);
+        body.append('edicao', formData.edicao);
+        body.append('localizacao', formData.localizacao);
+        body.append('quantidadeCopias', formData.quantidadeCopias);
+        body.append('capa', formData.capa, formData.capa.name);
+      } else {
+        const dados = new URLSearchParams({
+          id: id,
+          titulo: formData.titulo,
+          autor: formData.autores,
+          isbn: formData.isbn,
+          editora: formData.editora,
+          ano: formData.anoPublicacao,
+          genero: generosSelecionados.join(', '),
+          paginas: formData.numeroPaginas,
+          idioma: formData.idioma,
+          descricao: formData.descricao,
+          cdd: formData.cdd,
+          cutter: formData.cutter,
+          edicao: formData.edicao,
+          localizacao: formData.localizacao,
+          quantidadeCopias: formData.quantidadeCopias
+        });
+        body = dados.toString();
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
+      }
+
+
+
+    console.log('Enviando requisição com ID:', id, typeof id);
+    console.log('Dados sendo enviados:', body instanceof FormData ? 'FormData' : body);
+    
     const response = await fetch('http://localhost/php/atualizar-livro.php', {
       method: 'POST',
       headers,
-      body
+      body,
+      credentials: 'include'
     });
 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -571,6 +651,109 @@ export default function EditarLivro() {
                     rows="3"
                   />
                 </div>
+
+                <div className={styles.campoGrupo}>
+                  <label htmlFor="cdd" className={styles.campoLabel}>
+                    <Library className={styles.campoIcone} />
+                    CDD (Classificação Decimal de Dewey) *
+                  </label>
+                  <input
+                    type="text"
+                    id="cdd"
+                    name="cdd"
+                    value={formData.cdd}
+                    onChange={handleInputChange}
+                    className={`${styles.campoInput} ${validacao.cdd.valido ? styles.valido : formData.cdd ? styles.invalido : ''}`}
+                    placeholder="Ex: 004.678"
+                    required
+                  />
+                  {validacao.cdd.mensagem && (
+                    <span className={styles.campoErro}>{validacao.cdd.mensagem}</span>
+                  )}
+                </div>
+
+                <div className={styles.campoGrupo}>
+                  <label htmlFor="cutter" className={styles.campoLabel}>
+                    <Hash className={styles.campoIcone} />
+                    Cutter *
+                  </label>
+                  <input
+                    type="text"
+                    id="cutter"
+                    name="cutter"
+                    value={formData.cutter}
+                    onChange={handleInputChange}
+                    className={`${styles.campoInput} ${validacao.cutter.valido ? styles.valido : formData.cutter ? styles.invalido : ''}`}
+                    placeholder="Ex: S586p"
+                    required
+                  />
+                  {validacao.cutter.mensagem && (
+                    <span className={styles.campoErro}>{validacao.cutter.mensagem}</span>
+                  )}
+                </div>
+
+                <div className={styles.campoGrupo}>
+                  <label htmlFor="edicao" className={styles.campoLabel}>
+                    <FileText className={styles.campoIcone} />
+                    Edição *
+                  </label>
+                  <input
+                    type="text"
+                    id="edicao"
+                    name="edicao"
+                    value={formData.edicao}
+                    onChange={handleInputChange}
+                    className={`${styles.campoInput} ${validacao.edicao.valido ? styles.valido : formData.edicao ? styles.invalido : ''}`}
+                    placeholder="Ex: 1ª edição"
+                    required
+                  />
+                  {validacao.edicao.mensagem && (
+                    <span className={styles.campoErro}>{validacao.edicao.mensagem}</span>
+                  )}
+                </div>
+
+                <div className={styles.campoGrupo}>
+                  <label htmlFor="localizacao" className={styles.campoLabel}>
+                    <MapPin className={styles.campoIcone} />
+                    Localização na Estante *
+                  </label>
+                  <input
+                    type="text"
+                    id="localizacao"
+                    name="localizacao"
+                    value={formData.localizacao}
+                    onChange={handleInputChange}
+                    className={`${styles.campoInput} ${validacao.localizacao.valido ? styles.valido : formData.localizacao ? styles.invalido : ''}`}
+                    placeholder="Ex: Estante A - Prateleira 3"
+                    required
+                  />
+                  {validacao.localizacao.mensagem && (
+                    <span className={styles.campoErro}>{validacao.localizacao.mensagem}</span>
+                  )}
+                </div>
+
+                <div className={styles.campoGrupo}>
+                  <label htmlFor="quantidadeCopias" className={styles.campoLabel}>
+                    <Copy className={styles.campoIcone} />
+                    Quantidade de Cópias *
+                  </label>
+                  <input
+                    type="number"
+                    id="quantidadeCopias"
+                    name="quantidadeCopias"
+                    value={formData.quantidadeCopias}
+                    onChange={handleInputChange}
+                    className={`${styles.campoInput} ${validacao.quantidadeCopias.valido ? styles.valido : formData.quantidadeCopias ? styles.invalido : ''}`}
+                    placeholder="1"
+                    min="1"
+                    max="1000"
+                    required
+                  />
+                  {validacao.quantidadeCopias.mensagem && (
+                    <span className={styles.campoErro}>{validacao.quantidadeCopias.mensagem}</span>
+                  )}
+                </div>
+
 
 
               </div>

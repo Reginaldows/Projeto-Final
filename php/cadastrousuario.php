@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 include('conexao.php');
 
-// Recebendo todos os campos do formulário
+
 $nomeCompleto   = $_POST['nome'] ?? null;
 $dataNascimento = $_POST['data_nasc'] ?? null;
 $cpf            = $_POST['cpf'] ?? null;
@@ -24,10 +24,10 @@ $estado         = $_POST['estado'] ?? null;
 $email          = $_POST['email'] ?? null;
 $senha          = $_POST['senha'] ?? null;
 
-// Definindo tipo fixo para usuário
+
 $tipo = "usuario";
 
-// Validação mínima
+
 if (
     !$nomeCompleto || !$cpf || !$email || !$senha || !$cep || !$endereco || 
     !$numero || !$bairro || !$cidade || !$estado || !$celular
@@ -37,10 +37,10 @@ if (
     exit;
 }
 
-// Criptografar senha
+
 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-// Preparando a query (agora incluindo tipo)
+
 $stmt = mysqli_prepare(
     $conexao, 
     "INSERT INTO usuarios 
@@ -48,7 +48,7 @@ $stmt = mysqli_prepare(
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
 );
 
-// 14 parâmetros (13 de antes + tipo)
+
 mysqli_stmt_bind_param(
     $stmt, 
     "ssssssssssssss", 

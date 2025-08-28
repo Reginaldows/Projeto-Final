@@ -1,28 +1,23 @@
 <?php
-// Headers CORS
 header("Access-Control-Allow-Origin: http://localhost:5174");
 header("Access-Control-Allow-Headers: Content-Type, Accept");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header('Content-Type: application/json; charset=utf-8');
 
-// Responder pré-flight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit;
 }
 
-// Log de início
 error_log("=== INICIO DEBUG EMPRESTIMO ===");
 error_log("Método: " . $_SERVER['REQUEST_METHOD']);
 error_log("Content-Type: " . ($_SERVER['CONTENT_TYPE'] ?? 'indefinido'));
 
 try {
-    // Obter dados de entrada
     $rawInput = file_get_contents('php://input');
     error_log("Input bruto: '" . $rawInput . "'");
     error_log("Tamanho do input: " . strlen($rawInput));
     
-    // Verificar se há input
     if (empty($rawInput)) {
         error_log("Input vazio!");
         echo json_encode([
@@ -33,7 +28,6 @@ try {
         exit;
     }
     
-    // Verificar se é JSON válido
     $data = json_decode($rawInput, true);
     $jsonError = json_last_error();
     
@@ -41,7 +35,6 @@ try {
         error_log("Erro JSON: " . json_last_error_msg());
         error_log("Código do erro: " . $jsonError);
         
-        // Tentar identificar o problema
         $inputClean = trim($rawInput);
         error_log("Input limpo: '" . $inputClean . "'");
         error_log("Primeiro char: '" . (strlen($inputClean) > 0 ? $inputClean[0] : 'VAZIO') . "'");
@@ -62,7 +55,6 @@ try {
     
     error_log("JSON decodificado com sucesso: " . print_r($data, true));
     
-    // Verificar dados necessários
     if (!is_array($data)) {
         error_log("Dados não são um array");
         echo json_encode([
@@ -107,8 +99,6 @@ try {
         exit;
     }
     
-    // Se chegou até aqui, significa que o JSON está OK
-    // Agora vamos tentar conectar ao banco (se o arquivo existe)
     if (!file_exists('conexao.php')) {
         echo json_encode([
             'success' => false,
@@ -119,7 +109,6 @@ try {
     
     require_once 'conexao.php';
     
-    // Verificar conexão
     if (!isset($conexao) || !$conexao) {
         echo json_encode([
             'success' => false,
@@ -128,7 +117,6 @@ try {
         exit;
     }
     
-    // Iniciar transação
     if (!$conexao->autocommit(false)) {
         echo json_encode([
             'success' => false,
@@ -137,7 +125,6 @@ try {
         exit;
     }
 
-    // Verificar se o livro existe
     $stmt = $conexao->prepare("SELECT id, titulo, autor FROM livros WHERE id = ?");
     if (!$stmt) {
         $conexao->rollback();
@@ -170,7 +157,6 @@ try {
     $livro = $result->fetch_assoc();
     $stmt->close();
 
-    // Verificar se o usuário existe
     $stmt = $conexao->prepare("SELECT id, nome, email FROM usuarios WHERE id = ?");
     if (!$stmt) {
         $conexao->rollback();
@@ -203,7 +189,6 @@ try {
     $usuario = $result->fetch_assoc();
     $stmt->close();
 
-    // Verificar se há cópia disponível
     $stmt = $conexao->prepare("
         SELECT id, codigo_copia 
         FROM copias 
@@ -241,11 +226,9 @@ try {
     $copia = $result->fetch_assoc();
     $stmt->close();
 
-    // Calcular datas (empréstimo padrão de 14 dias)
     $data_emprestimo = date('Y-m-d');
     $data_devolucao_prevista = date('Y-m-d', strtotime("+14 days"));
 
-    // Criar empréstimo
     $stmt = $conexao->prepare("
         INSERT INTO emprestimos (usuario_id, copia_id, data_emprestimo, data_prevista_devolucao, status)
         VALUES (?, ?, ?, ?, 'ativo')
@@ -271,7 +254,6 @@ try {
     $emprestimo_id = $conexao->insert_id;
     $stmt->close();
 
-    // Atualizar status da cópia
     $stmt = $conexao->prepare("UPDATE copias SET status = 'emprestado' WHERE id = ?");
     if (!$stmt) {
         $conexao->rollback();
@@ -293,7 +275,6 @@ try {
     }
     $stmt->close();
 
-    // Confirmar transação
     if (!$conexao->commit()) {
         $conexao->rollback();
         echo json_encode([
@@ -303,7 +284,6 @@ try {
         exit;
     }
 
-    // Enviar email de confirmação
     $emailData = [
         'email' => $usuario['email'],
         'nomeUsuario' => $usuario['nome'],
@@ -315,7 +295,6 @@ try {
         'capaLivro' => 'https://via.placeholder.com/100x150/667eea/ffffff?text=Livro'
     ];
 
-    // Fazer requisição para enviar email usando arquivo específico do bibliotecário
     $emailJson = json_encode($emailData);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, 'http://localhost:8000/enviar_email_emprestimo_bibliotecario.php');
@@ -332,14 +311,12 @@ try {
     $emailHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
     
-    // Log do resultado do email (não bloquear o empréstimo se falhar)
     if ($emailHttpCode === 200) {
         error_log("Email de empréstimo enviado com sucesso para: " . $usuario['email']);
     } else {
         error_log("Falha ao enviar email de empréstimo para: " . $usuario['email'] . " - Response: " . $emailResponse);
     }
 
-    // Retornar sucesso
     echo json_encode([
         'success' => true,
         'message' => 'Empréstimo realizado com sucesso!',

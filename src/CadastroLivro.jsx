@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Upload, Book, User, Calendar, Globe, DollarSign, Hash, Building, Tag, FileText, Search, Library, MapPin, Copy } from 'lucide-react';
+import { Upload, Book, User, Calendar, Globe, Hash, Building, Tag, FileText, Search, Library, MapPin, Copy } from 'lucide-react';
 import Acessibilidade from './acessibilidade';
 import styles from './cadastrolivro.module.css';
 
@@ -26,6 +26,8 @@ export default function CadastroLivro() {
     idioma: '',
     descricao: '',
     cdd: '',
+    cutter: '',
+    edicao: '',
     localizacao: '',
     quantidadeCopias: '',
     capa: null
@@ -41,6 +43,8 @@ export default function CadastroLivro() {
     idioma: { valido: false, mensagem: '' },
     descricao: { valido: true, mensagem: '' },
     cdd: { valido: false, mensagem: '' },
+    cutter: { valido: false, mensagem: '' },
+    edicao: { valido: false, mensagem: '' },
     localizacao: { valido: false, mensagem: '' },
     quantidadeCopias: { valido: false, mensagem: '' }
   });
@@ -156,6 +160,14 @@ export default function CadastroLivro() {
   }, [formData.cdd]);
 
   useEffect(() => {
+    validarCampo('cutter', formData.cutter);
+  }, [formData.cutter]);
+
+  useEffect(() => {
+    validarCampo('edicao', formData.edicao);
+  }, [formData.edicao]);
+
+  useEffect(() => {
     validarCampo('localizacao', formData.localizacao);
   }, [formData.localizacao]);
 
@@ -220,6 +232,14 @@ export default function CadastroLivro() {
       case 'cdd':
         valido = valor.trim().length > 0;
         mensagem = valido ? '' : 'CDD é obrigatório';
+        break;
+      case 'cutter':
+        valido = valor.trim().length > 0;
+        mensagem = valido ? '' : 'Cutter é obrigatório';
+        break;
+      case 'edicao':
+        valido = valor.trim().length > 0;
+        mensagem = valido ? '' : 'Edição é obrigatória';
         break;
       case 'localizacao':
         valido = valor.trim().length > 0;
@@ -393,7 +413,7 @@ export default function CadastroLivro() {
     return Object.values(validacao).every(campo => campo.valido) &&
            formData.titulo && formData.autores && formData.isbn &&
            formData.editora && formData.anoPublicacao && formData.numeroPaginas &&
-           formData.idioma && formData.cdd &&
+           formData.idioma && formData.cdd && formData.cutter && formData.edicao &&
            formData.localizacao && formData.quantidadeCopias && generosSelecionados.length > 0;
   };
 
@@ -425,6 +445,8 @@ export default function CadastroLivro() {
       body.append('idioma', formData.idioma);
       body.append('descricao', formData.descricao);
       body.append('cdd', formData.cdd);
+      body.append('cutter', formData.cutter);
+      body.append('edicao', formData.edicao);
       body.append('localizacao', formData.localizacao);
       body.append('quantidadeCopias', formData.quantidadeCopias);
       if (formData.capa) {
@@ -444,6 +466,8 @@ export default function CadastroLivro() {
           idioma: formData.idioma,
           descricao: formData.descricao,
           cdd: formData.cdd,
+          cutter: formData.cutter,
+          edicao: formData.edicao,
           localizacao: formData.localizacao,
           quantidadeCopias: formData.quantidadeCopias
         };
@@ -475,7 +499,7 @@ export default function CadastroLivro() {
       setFormData({
         titulo: '', autores: '', isbn: '', editora: '', anoPublicacao: '',
         genero: '', numeroPaginas: '', idioma: '', descricao: '',
-        cdd: '', localizacao: '', capa: null
+        cdd: '', cutter: '', edicao: '', localizacao: '', quantidadeCopias: '', capa: null
       });
       setGenerosSelecionados([]);
       setPreviewCapa(null);
@@ -750,6 +774,46 @@ export default function CadastroLivro() {
                 />
                 {validacao.cdd.mensagem && (
                   <span className={styles.campoErro}>{validacao.cdd.mensagem}</span>
+                )}
+              </div>
+
+              <div className={styles.campoGrupo}>
+                <label htmlFor="cutter" className={styles.campoLabel}>
+                  <Hash className={styles.campoIcone} />
+                  Cutter *
+                </label>
+                <input
+                  type="text"
+                  id="cutter"
+                  name="cutter"
+                  value={formData.cutter}
+                  onChange={handleInputChange}
+                  className={`${styles.campoInput} ${validacao.cutter.valido ? styles.valido : formData.cutter ? styles.invalido : ''}`}
+                  placeholder="Ex: A123b"
+                  required
+                />
+                {validacao.cutter.mensagem && (
+                  <span className={styles.campoErro}>{validacao.cutter.mensagem}</span>
+                )}
+              </div>
+
+              <div className={styles.campoGrupo}>
+                <label htmlFor="edicao" className={styles.campoLabel}>
+                  <FileText className={styles.campoIcone} />
+                  Edição *
+                </label>
+                <input
+                  type="text"
+                  id="edicao"
+                  name="edicao"
+                  value={formData.edicao}
+                  onChange={handleInputChange}
+                  className={`${styles.campoInput} ${validacao.edicao.valido ? styles.valido : formData.edicao ? styles.invalido : ''}`}
+                  placeholder="Ex: 1ª edição, 2ª edição revisada"
+                  required
+                />
+                {validacao.edicao.mensagem && (
+                  <span className={styles.campoErro}>{validacao.edicao.mensagem}</span>
                 )}
               </div>
 

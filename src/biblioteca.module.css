@@ -909,6 +909,20 @@
   font-weight: 500;
 }
 
+.preReservasAtivas {
+  font-size: 16px;
+  color: #17a2b8;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.reservasAtivas {
+  font-size: 16px;
+  color: #6f42c1;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
 .copiasManutencao {
   font-size: 16px;
   color: #6c757d;

@@ -12,24 +12,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
-// Conexão
 require 'conexao.php';
 
-// Receber dados (JSON ou FormData)
 $input = file_get_contents('php://input');
 $data = json_decode($input, true);
 if (!$data) {
-    // fallback para $_POST
     $data = $_POST;
 }
 
-// Verificar ID
+
 if (empty($data['id'])) {
     echo json_encode(["success" => false, "message" => "ID do livro não fornecido."]);
     exit;
 }
 
-// Campos obrigatórios
+
 $camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma'];
 foreach ($camposObrigatorios as $campo) {
     if (empty($data[$campo])) {
@@ -38,7 +35,7 @@ foreach ($camposObrigatorios as $campo) {
     }
 }
 
-// Receber dados
+
 $id = intval($data['id']);
 $titulo = trim($data['titulo']);
 $autor = trim($data['autor']);
@@ -53,7 +50,7 @@ $cdd = trim($data['cdd'] ?? '');
 $localizacao = trim($data['localizacao'] ?? '');
 $quantidadeCopias = intval($data['quantidadeCopias'] ?? 1);
 
-// Verificar se o livro existe
+
 $stmt = $conexao->prepare("SELECT capa FROM livros WHERE id = ?");
 $stmt->bind_param("i", $id);
 $stmt->execute();
@@ -69,8 +66,8 @@ $livro = $result->fetch_assoc();
 $capaAtual = $livro['capa'];
 $stmt->close();
 
-// Upload da capa (se estiver usando FormData)
-$caminhoDestino = $capaAtual; // Mantém a capa atual por padrão
+
+$caminhoDestino = $capaAtual;
 if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
     $uploadsDir = __DIR__ . '/uploads/';
     if (!is_dir($uploadsDir)) mkdir($uploadsDir, 0755, true);
@@ -80,13 +77,13 @@ if (isset($_FILES['capa']) && $_FILES['capa']['error'] === UPLOAD_ERR_OK) {
     $caminhoDestino = 'uploads/' . $nomeArquivo;
     move_uploaded_file($_FILES['capa']['tmp_name'], $caminhoCompleto);
     
-    // Remover capa antiga se existir e for diferente da padrão
+
     if ($capaAtual && $capaAtual !== 'img/Biblioteca.png' && file_exists(__DIR__ . '/' . $capaAtual)) {
         @unlink(__DIR__ . '/' . $capaAtual);
     }
 }
 
-// Atualizar no banco
+
 $stmt = $conexao->prepare("UPDATE livros SET 
     titulo = ?, autor = ?, isbn = ?, editora = ?, ano = ?, 
     genero = ?, paginas = ?, idioma = ?, descricao = ?, capa = ?, cdd = ?, localizacao = ?, quantidade_copias = ? 

@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 require 'conexao.php';
 
-// Função para responder em JSON
 function responder($success, $message, $data = null) {
     echo json_encode([
         'success' => $success,
@@ -22,7 +21,6 @@ function responder($success, $message, $data = null) {
 }
 
 try {
-    // Buscar reservas pendentes para livros que têm cópias disponíveis
     $stmt = $conexao->prepare("
         SELECT DISTINCT r.id as reserva_id, r.usuario_id, r.livro_id, r.tipo, r.data_reserva,
                u.nome as usuario_nome, u.email as usuario_email,
@@ -46,12 +44,10 @@ try {
     $emails_enviados = 0;
     
     while ($reserva = $result->fetch_assoc()) {
-        // Atualizar status da reserva para 'disponivel'
         $update_stmt = $conexao->prepare("UPDATE reservas SET status = 'disponivel' WHERE id = ?");
         $update_stmt->bind_param("i", $reserva['reserva_id']);
         $update_stmt->execute();
         
-        // Preparar dados para email de disponibilidade
         $email_data = [
             'email' => $reserva['usuario_email'],
             'nomeUsuario' => $reserva['usuario_nome'],
@@ -62,7 +58,6 @@ try {
             'tipoReserva' => $reserva['tipo']
         ];
         
-        // Enviar email de disponibilidade
         $email_json = json_encode($email_data);
         
         $ch = curl_init();

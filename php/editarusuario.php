@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 include('conexao.php');
 
-// Função para responder em formato JSON
+
 function responder($success, $mensagem, $dados = null) {
     echo json_encode([
         'success' => $success,
@@ -19,7 +19,7 @@ function responder($success, $mensagem, $dados = null) {
     exit;
 }
 
-// Se for uma requisição GET, busca os dados do usuário para edição
+
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $id = $_GET['id'] ?? null;
     
@@ -40,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     responder(true, "Usuário encontrado", $usuario);
 }
 
-// Se for uma requisição POST, atualiza os dados do usuário
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id'] ?? null;
     $nome = $_POST['nome'] ?? null;
@@ -57,12 +57,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? null;
     $tipoUsuario = $_POST['tipo_usuario'] ?? null;
     
-    // Verificar dados obrigatórios
+
     if (!$id || !$nome || !$cpf || !$email || !$celular) {
         responder(false, "Dados obrigatórios não fornecidos");
     }
     
-    // Preparar a query para atualizar o usuário
+
     $stmt = mysqli_prepare(
         $conexao, 
         "UPDATE usuarios SET 
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id
     );
     
-    // Executar a query
+
     if (mysqli_stmt_execute($stmt)) {
         responder(true, "Usuário atualizado com sucesso");
     } else {

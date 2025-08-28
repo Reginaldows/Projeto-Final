@@ -125,6 +125,16 @@ const MeusEmprestimos = () => {
               
               return (
                 <div key={emprestimo.id} className={`${styles.cardEmprestimo} ${styles[status]}`}>
+                  <div className={styles.capaContainer}>
+                    <img 
+                      src={emprestimo.capa || '/img/Biblioteca.png'} 
+                      alt={emprestimo.titulo}
+                      className={styles.capaLivro}
+                      onError={(e) => {
+                        e.target.src = '/img/Biblioteca.png';
+                      }}
+                    />
+                  </div>
                   <div className={styles.infoEmprestimo}>
                     <h3 className={styles.tituloLivro}>{emprestimo.titulo}</h3>
                     <p className={styles.autorLivro}>por {emprestimo.autor}</p>

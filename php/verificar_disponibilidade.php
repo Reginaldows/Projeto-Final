@@ -11,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
 
 require 'conexao.php';
 
-// Função para responder em JSON
 function responder($success, $message, $data = null) {
     echo json_encode([
         'success' => $success,
@@ -21,7 +20,6 @@ function responder($success, $message, $data = null) {
     exit;
 }
 
-// Verificar se o ID do livro foi fornecido
 if (!isset($_GET['livro_id']) || empty($_GET['livro_id'])) {
     responder(false, 'ID do livro não fornecido');
 }
@@ -29,7 +27,6 @@ if (!isset($_GET['livro_id']) || empty($_GET['livro_id'])) {
 $livro_id = intval($_GET['livro_id']);
 
 try {
-    // Buscar informações do livro e quantidade total de cópias
     $stmt = $conexao->prepare("
         SELECT l.id, l.titulo, l.autor, l.quantidade_copias,
                COUNT(c.id) as copias_cadastradas,
@@ -53,7 +50,6 @@ try {
     
     $livro = $result->fetch_assoc();
     
-    // Se não há cópias cadastradas, criar cópias baseado na quantidade_copias
     if ($livro['copias_cadastradas'] == 0 && $livro['quantidade_copias'] > 0) {
         $stmt_insert = $conexao->prepare("INSERT INTO copias (livro_id, codigo_copia, status) VALUES (?, ?, 'disponivel')");
         
@@ -65,13 +61,11 @@ try {
         
         $stmt_insert->close();
         
-        // Recarregar dados após inserir cópias
         $stmt->execute();
         $result = $stmt->get_result();
         $livro = $result->fetch_assoc();
     }
     
-    // Buscar empréstimos ativos
     $stmt_emprestimos = $conexao->prepare("
         SELECT e.id, e.data_emprestimo, e.data_prevista_devolucao, 
                u.nome as usuario_nome, c.codigo_copia
@@ -91,7 +85,6 @@ try {
         $emprestimos_ativos[] = $row;
     }
     
-    // Buscar reservas ativas
     $stmt_reservas = $conexao->prepare("
         SELECT r.id, r.data_reserva, r.tipo, r.posicao_fila, r.status,
                u.nome as usuario_nome
@@ -110,10 +103,9 @@ try {
         $reservas_ativas[] = $row;
     }
     
-    // Determinar disponibilidade e ações possíveis
     $disponivel_emprestimo = $livro['copias_disponiveis'] > 0;
-    $disponivel_pre_reserva = true; // Pré-reserva sempre disponível
-    $disponivel_reserva = $livro['copias_disponiveis'] == 0; // Reserva só quando não há cópias disponíveis
+    $disponivel_pre_reserva = true;
+    $disponivel_reserva = $livro['copias_disponiveis'] == 0;
     
     $dados_disponibilidade = [
         'livro' => [
