@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { toast } from 'react-toastify';
+import Acessibilidade from './Acessibilidade';
 
 toast.success("Empréstimo cadastrado com sucesso!");
 toast.error("Erro ao cadastrar reserva!");
@@ -32,6 +33,7 @@ function ReservaForm({ onAdd }) {
       <input name="aluno" placeholder="Aluno" value={form.aluno} onChange={handleChange} />
       <input name="data" type="date" value={form.data} onChange={handleChange} />
       <button type="submit">Reservar</button>
+      <Acessibilidade />
     </form>
   );
 }

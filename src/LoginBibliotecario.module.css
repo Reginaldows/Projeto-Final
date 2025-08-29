@@ -1,0 +1,289 @@
+/* Reset básico para esta tela */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.login-bibliotecario-container {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.login-bibliotecario-content {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+}
+
+.logo-section {
+  margin-bottom: 30px;
+  
+}
+
+.logo-section img {
+  margin-bottom: 20px;
+  width: 140px;
+  height: 120px;
+}
+
+.logo-section h1 {
+  color: #1e3c72;
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0 0 10px 0;
+}
+
+.logo-section p {
+  color: #666;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.login-form {
+  width: 100%;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+  width: 100%;
+}
+
+.formulario strong {
+  color: #1e3c72;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.campo {
+  position: relative;
+  width: 100%;
+}
+
+.base {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.base i {
+  color: #1e3c72;
+  font-size: 1rem;
+  width: 16px;
+  text-align: center;
+}
+
+.base label {
+  color: #333;
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.base label span {
+  color: #e74c3c;
+  margin-left: 2px;
+}
+
+.campo input {
+  width: 100%;
+  padding: 12px 15px;
+  padding-right: 45px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: #fff;
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: #1e3c72;
+  box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.1);
+}
+
+.campo input::placeholder {
+  color: #999;
+  font-size: 0.9rem;
+}
+
+.visibilidade {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.visibilidade:hover {
+  color: #1e3c72;
+}
+
+.esqueceu {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.esqueceu-senha {
+  color: #1e3c72;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.esqueceu-senha:hover {
+  color: #2a5298;
+  text-decoration: underline;
+}
+
+.mensagem-erro {
+  background-color: #fee;
+  color: #c33;
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 4px solid #e74c3c;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.formulario button {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 20px auto 0 auto;
+  display: block;
+  width: fit-content;
+}
+
+.formulario button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(30, 60, 114, 0.3);
+}
+
+.formulario button:active {
+  transform: translateY(0);
+}
+
+.conta {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.conta p {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.conta a {
+  color: #1e3c72;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.conta a:hover {
+  color: #2a5298;
+  text-decoration: underline;
+}
+
+.conta a:focus {
+  outline: 2px solid #1e3c72;
+  outline-offset: 2px;
+}
+
+/* Estilos para links */
+.esqueceu-senha b {
+  font-weight: 600;
+}
+
+.esqueceu-senha:focus {
+  outline: 2px solid #1e3c72;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Garantir que os ícones do FontAwesome funcionem */
+.base i,
+.visibilidade {
+  font-family: 'Font Awesome 5 Free', 'Font Awesome 5 Pro', 'FontAwesome', sans-serif;
+  font-weight: 900;
+}
+
+/* Estilos adicionais para acessibilidade */
+.formulario button:focus {
+  outline: 3px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: #1e3c72;
+  box-shadow: 0 0 0 3px rgba(30, 60, 114, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .login-bibliotecario-container {
+    padding: 10px;
+  }
+  
+  .login-bibliotecario-content {
+    padding: 30px 20px;
+    max-width: 100%;
+  }
+  
+  .logo-section h1 {
+    font-size: 1.5rem;
+  }
+  
+  .logo-section img {
+    width: 250px;
+    height: 125px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-bibliotecario-content {
+    padding: 20px 15px;
+  }
+  
+  .logo-section h1 {
+    font-size: 1.3rem;
+  }
+  
+  .formulario strong {
+    font-size: 1rem;
+  }
+}

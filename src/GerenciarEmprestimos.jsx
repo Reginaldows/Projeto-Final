@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './gerenciaremprestimos.module.css';
+import Acessibilidade from './Acessibilidade';
 
 const GerenciarEmprestimos = () => {
     const [emprestimos, setEmprestimos] = useState([]);
@@ -117,6 +118,32 @@ const GerenciarEmprestimos = () => {
             setMessage({ type: 'error', text: 'Erro ao processar devolução' });
         } finally {
             setProcessingDevolucao(false);
+        }
+    };
+
+    const gerarLinkPagamento = async (emprestimoId, valorMulta) => {
+        try {
+            const response = await fetch('/php/criar_pagamento_multa.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    emprestimo_id: emprestimoId,
+                    valor_multa: valorMulta
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Abrir o link de pagamento em uma nova aba
+                window.open(data.init_point, '_blank');
+                setMessage({ type: 'success', text: 'Link de pagamento gerado com sucesso!' });
+            } else {
+                setMessage({ type: 'error', text: data.message || 'Erro ao gerar link de pagamento' });
+            }
+        } catch (error) {
+            setMessage({ type: 'error', text: 'Erro ao gerar link de pagamento' });
         }
     };
 
@@ -288,6 +315,13 @@ const GerenciarEmprestimos = () => {
                                     <span className={styles.multaValor}>
                                         R$ {selectedEmprestimo.multa.toFixed(2)}
                                     </span>
+                                    <button
+                                        onClick={() => gerarLinkPagamento(selectedEmprestimo.id, selectedEmprestimo.multa)}
+                                        className={styles.botaoPagamento}
+                                        disabled={processingDevolucao}
+                                    >
+                                        💳 Gerar Link de Pagamento
+                                    </button>
                                 </div>
                             )}
                         </div>
@@ -311,6 +345,7 @@ const GerenciarEmprestimos = () => {
                     </div>
                 </div>
             )}
+            <Acessibilidade />
         </div>
     );
 };

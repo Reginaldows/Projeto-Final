@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testar Sistema de Multas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button.danger {
+            background-color: #dc3545;
+        }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+        button.success {
+            background-color: #28a745;
+        }
+        button.success:hover {
+            background-color: #218838;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f9fa;
+        }
+        .status-ativo {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .status-atrasado {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .status-pendente {
+            color: #ffc107;
+            font-weight: bold;
+        }
+        .status-pago {
+            color: #28a745;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Testar Sistema de Multas</h1>
+    
+    <div class="container">
+        <h2>📋 1. Listar Empréstimos Ativos</h2>
+        <p>Primeiro, vamos ver quais empréstimos estão ativos no sistema:</p>
+        <button onclick="listarEmprestimos()">Listar Empréstimos</button>
+        <div id="emprestimos-result"></div>
+    </div>
+    
+    <div class="container">
+        <h2>⏰ 2. Simular Atraso</h2>
+        <p>Selecione um empréstimo e simule um atraso alterando as datas:</p>
+        <div class="form-group">
+            <label for="emprestimo-id">ID do Empréstimo:</label>
+            <input type="number" id="emprestimo-id" placeholder="Digite o ID do empréstimo">
+        </div>
+        <div class="form-group">
+            <label for="dias-atraso">Dias de Atraso:</label>
+            <select id="dias-atraso">
+                <option value="1">1 dia</option>
+                <option value="3">3 dias</option>
+                <option value="7" selected>7 dias</option>
+                <option value="15">15 dias</option>
+                <option value="30">30 dias</option>
+            </select>
+        </div>
+        <button onclick="simularAtraso()">Simular Atraso</button>
+        <div id="simular-result"></div>
+    </div>
+    
+    <div class="container">
+        <h2>💰 3. Verificar Multas</h2>
+        <p>Veja as multas geradas no sistema:</p>
+        <button onclick="verificarMultas()">Verificar Multas</button>
+        <div id="multas-result"></div>
+    </div>
+    
+    <div class="container">
+        <h2>🔄 4. Resetar Empréstimo</h2>
+        <p>Restaure um empréstimo para as datas originais e remova multas:</p>
+        <div class="form-group">
+            <label for="reset-emprestimo-id">ID do Empréstimo:</label>
+            <input type="number" id="reset-emprestimo-id" placeholder="Digite o ID do empréstimo">
+        </div>
+        <button class="danger" onclick="resetarEmprestimo()">Resetar Empréstimo</button>
+        <div id="reset-result"></div>
+    </div>
+
+    <script>
+        const API_URL = 'simular_atraso_emprestimo.php';
+
+        async function fazerRequisicao(acao, dados = {}) {
+            try {
+                const formData = new FormData();
+                formData.append('acao', acao);
+                
+                for (const [key, value] of Object.entries(dados)) {
+                    formData.append(key, value);
+                }
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                return {
+                    success: false,
+                    message: 'Erro de conexão: ' + error.message
+                };
+            }
+        }
+
+        function mostrarResultado(elementId, result) {
+            const element = document.getElementById(elementId);
+            const className = result.success ? 'success' : 'error';
+            
+            let html = `<div class="result ${className}">`;
+            html += `<strong>${result.success ? '✅' : '❌'} ${result.message}</strong>\n`;
+            
+            if (result.data) {
+                html += `\n${JSON.stringify(result.data, null, 2)}`;
+            }
+            
+            html += '</div>';
+            element.innerHTML = html;
+        }
+
+        function criarTabelaEmprestimos(emprestimos) {
+            if (!emprestimos || emprestimos.length === 0) {
+                return '<p>Nenhum empréstimo ativo encontrado.</p>';
+            }
+
+            let html = '<table>';
+            html += '<tr><th>ID</th><th>Usuário</th><th>Livro</th><th>Data Empréstimo</th><th>Data Devolução</th><th>Dias Atraso</th><th>Status</th></tr>';
+            
+            emprestimos.forEach(emp => {
+                const statusClass = emp.dias_atraso > 0 ? 'status-atrasado' : 'status-ativo';
+                const statusText = emp.dias_atraso > 0 ? `ATRASADO (${emp.dias_atraso} dias)` : 'ATIVO';
+                
+                html += '<tr>';
+                html += `<td>${emp.id}</td>`;
+                html += `<td>${emp.usuario_nome}</td>`;
+                html += `<td>${emp.livro_titulo}</td>`;
+                html += `<td>${emp.data_emprestimo}</td>`;
+                html += `<td>${emp.data_devolucao_prevista}</td>`;
+                html += `<td>${emp.dias_atraso}</td>`;
+                html += `<td class="${statusClass}">${statusText}</td>`;
+                html += '</tr>';
+            });
+            
+            html += '</table>';
+            return html;
+        }
+
+        function criarTabelaMultas(multas) {
+            if (!multas || multas.length === 0) {
+                return '<p>Nenhuma multa encontrada.</p>';
+            }
+
+            let html = '<table>';
+            html += '<tr><th>ID Multa</th><th>ID Empréstimo</th><th>Usuário</th><th>Livro</th><th>Valor</th><th>Data Multa</th><th>Status</th><th>Dias Atraso Atual</th></tr>';
+            
+            multas.forEach(multa => {
+                const statusClass = multa.multa_status === 'pago' ? 'status-pago' : 'status-pendente';
+                
+                html += '<tr>';
+                html += `<td>${multa.multa_id}</td>`;
+                html += `<td>${multa.emprestimo_id}</td>`;
+                html += `<td>${multa.usuario_nome}</td>`;
+                html += `<td>${multa.livro_titulo}</td>`;
+                html += `<td>R$ ${parseFloat(multa.valor).toFixed(2)}</td>`;
+                html += `<td>${multa.data_multa}</td>`;
+                html += `<td class="${statusClass}">${multa.multa_status.toUpperCase()}</td>`;
+                html += `<td>${multa.dias_atraso_atual}</td>`;
+                html += '</tr>';
+            });
+            
+            html += '</table>';
+            return html;
+        }
+
+        async function listarEmprestimos() {
+            const result = await fazerRequisicao('listar_emprestimos');
+            
+            if (result.success && result.data) {
+                const tabela = criarTabelaEmprestimos(result.data);
+                document.getElementById('emprestimos-result').innerHTML = 
+                    `<div class="result success"><strong>✅ ${result.message}</strong></div>${tabela}`;
+            } else {
+                mostrarResultado('emprestimos-result', result);
+            }
+        }
+
+        async function simularAtraso() {
+            const emprestimoId = document.getElementById('emprestimo-id').value;
+            const diasAtraso = document.getElementById('dias-atraso').value;
+            
+            if (!emprestimoId) {
+                mostrarResultado('simular-result', {
+                    success: false,
+                    message: 'Por favor, digite o ID do empréstimo'
+                });
+                return;
+            }
+
+            const result = await fazerRequisicao('simular_atraso', {
+                emprestimo_id: emprestimoId,
+                dias_atraso: diasAtraso
+            });
+            
+            mostrarResultado('simular-result', result);
+        }
+
+        async function verificarMultas() {
+            const result = await fazerRequisicao('verificar_multas');
+            
+            if (result.success && result.data) {
+                const tabela = criarTabelaMultas(result.data);
+                document.getElementById('multas-result').innerHTML = 
+                    `<div class="result success"><strong>✅ ${result.message}</strong></div>${tabela}`;
+            } else {
+                mostrarResultado('multas-result', result);
+            }
+        }
+
+        async function resetarEmprestimo() {
+            const emprestimoId = document.getElementById('reset-emprestimo-id').value;
+            
+            if (!emprestimoId) {
+                mostrarResultado('reset-result', {
+                    success: false,
+                    message: 'Por favor, digite o ID do empréstimo'
+                });
+                return;
+            }
+
+            if (!confirm('Tem certeza que deseja resetar este empréstimo? Isso removerá todas as multas relacionadas.')) {
+                return;
+            }
+
+            const result = await fazerRequisicao('resetar_emprestimo', {
+                emprestimo_id: emprestimoId
+            });
+            
+            mostrarResultado('reset-result', result);
+        }
+
+        // Carregar empréstimos automaticamente ao abrir a página
+        window.onload = function() {
+            listarEmprestimos();
+        };
+    </script>
+</body>
+</html>

@@ -3,7 +3,8 @@
     "description": "Sistema de Biblioteca SENAI",
     "type": "project",
     "require": {
-        "phpmailer/phpmailer": "^6.8"
+        "phpmailer/phpmailer": "^6.8",
+        "mercadopago/dx-php": "^3.0"
     },
     "autoload": {
         "psr-4": {

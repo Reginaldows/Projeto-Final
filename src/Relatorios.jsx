@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styles from './relatorios.module.css';
+import Acessibilidade from './Acessibilidade';
 
 const Relatorios = () => {
   const [dados, setDados] = useState({
@@ -137,6 +138,7 @@ const Relatorios = () => {
           🔄 Atualizar Dados
         </button>
       </div>
+      <Acessibilidade />
     </div>
   );
 };

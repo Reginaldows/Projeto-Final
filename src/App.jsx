@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import './style.css';
 import Login from './Login';
+import LoginBibliotecario from './LoginBibliotecario';
 import Cadastro from './cadastro';
 import CadastroUsuario from './cadastroUsuario';
 import RecuperarSenha from './esquecisenha';
@@ -16,6 +17,10 @@ import Biblioteca from './Biblioteca';
 import BibliotecaBibliotecario from './BibliotecaBibliotecario';
 import ListaUsuarios from './ListaUsuarios';
 import Relatorios from './Relatorios';
+import PagamentoMultas from './PagamentoMultas';
+import PagamentoSucesso from './PagamentoSucesso';
+import PagamentoFalha from './PagamentoFalha';
+import PagamentoPendente from './PagamentoPendente';
 import viteLogo from '/vite.svg';
 import { iniciarScript } from './script';
 function App() {
@@ -33,6 +38,7 @@ function App() {
         <Route path="/cadastrolivro" element={<CadastroLivro />} />
         <Route path="/editar-livro/:id" element={<EditarLivro />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/login-bibliotecario" element={<LoginBibliotecario />} />
 
         <Route path="/usuarios" element={<ListaUsuarios />} />
         <Route path="/editarusuario/:id" element={<EditarUsuario />} />
@@ -40,6 +46,10 @@ function App() {
         <Route path="/meus-emprestimos" element={<MeusEmprestimos />} />
         <Route path="/gerenciar-emprestimos" element={<GerenciarEmprestimos />} />
         <Route path="/relatorios" element={<Relatorios />} />
+        <Route path="/pagamento-multas" element={<PagamentoMultas />} />
+        <Route path="/pagamento-sucesso" element={<PagamentoSucesso />} />
+        <Route path="/pagamento-falha" element={<PagamentoFalha />} />
+        <Route path="/pagamento-pendente" element={<PagamentoPendente />} />
       </Routes>
     </BrowserRouter>
   );

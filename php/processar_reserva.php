@@ -63,8 +63,23 @@ try {
     }
     $usuario = $result->fetch_assoc();
 
+    // Verificar se já existe pré-reserva ativa
     $stmt = $conexao->prepare("
-        SELECT id, tipo 
+        SELECT id 
+        FROM pre_reservas 
+        WHERE livro_id = ? AND usuario_id = ? AND status = 'pendente'
+    ");
+    $stmt->bind_param("ii", $livro_id, $usuario_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
+        $conexao->rollback();
+        responder(false, 'Usuário já possui pré-reserva ativa para este livro');
+    }
+
+    // Verificar se já existe reserva ativa
+    $stmt = $conexao->prepare("
+        SELECT id 
         FROM reservas 
         WHERE livro_id = ? AND usuario_id = ? AND status = 'ativa'
     ");
@@ -72,9 +87,8 @@ try {
     $stmt->execute();
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
-        $reserva_existente = $result->fetch_assoc();
         $conexao->rollback();
-        responder(false, 'Usuário já possui ' . $reserva_existente['tipo'] . ' ativa para este livro');
+        responder(false, 'Usuário já possui reserva ativa para este livro');
     }
 
     $stmt = $conexao->prepare("
@@ -106,11 +120,20 @@ try {
         }
     }
 
-    $stmt = $conexao->prepare("
-        SELECT COUNT(*) + 1 as posicao_fila
-        FROM reservas
-        WHERE livro_id = ? AND status IN ('pendente', 'confirmada')
-    ");
+    // Calcular posição na fila baseado no tipo de reserva
+    if ($tipo === 'pre_reserva') {
+        $stmt = $conexao->prepare("
+            SELECT COUNT(*) + 1 as posicao_fila
+            FROM pre_reservas
+            WHERE livro_id = ? AND status = 'pendente'
+        ");
+    } else {
+        $stmt = $conexao->prepare("
+            SELECT COUNT(*) + 1 as posicao_fila
+            FROM reservas
+            WHERE livro_id = ? AND status = 'ativa'
+        ");
+    }
     $stmt->bind_param("i", $livro_id);
     $stmt->execute();
     $posicao_fila = $stmt->get_result()->fetch_assoc()['posicao_fila'];
@@ -132,11 +155,20 @@ try {
     $dias_expiracao = ($tipo === 'pre_reserva') ? 30 : 7;
     $data_expiracao = date('Y-m-d H:i:s', strtotime("+$dias_expiracao days"));
 
-    $stmt = $conexao->prepare("
-        INSERT INTO reservas (usuario_id, livro_id, tipo, codigo_reserva, data_reserva, data_expiracao, posicao_fila, status)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 'pendente')
-    ");
-    $stmt->bind_param("iissssi", $usuario_id, $livro_id, $tipo, $codigo_reserva, $data_reserva, $data_expiracao, $posicao_fila);
+    // Inserir na tabela apropriada baseado no tipo
+    if ($tipo === 'pre_reserva') {
+        $stmt = $conexao->prepare("
+            INSERT INTO pre_reservas (usuario_id, livro_id, codigo_reserva, data_solicitacao, status)
+            VALUES (?, ?, ?, ?, 'pendente')
+        ");
+        $stmt->bind_param("iiss", $usuario_id, $livro_id, $codigo_reserva, $data_reserva);
+    } else {
+        $stmt = $conexao->prepare("
+            INSERT INTO reservas (usuario_id, livro_id, data_reserva, data_expiracao, posicao_fila, status)
+            VALUES (?, ?, ?, ?, ?, 'ativa')
+        ");
+        $stmt->bind_param("iissi", $usuario_id, $livro_id, $data_reserva, $data_expiracao, $posicao_fila);
+    }
     if (!$stmt->execute()) {
         $conexao->rollback();
         responder(false, 'Erro ao criar reserva');

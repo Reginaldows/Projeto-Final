@@ -1,16 +1,15 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import styles from './LoginBibliotecario.module.css';
 import Acessibilidade from './Acessibilidade';
-import './style.css';
 
-export default function Login() {
+export default function LoginBibliotecario() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [login, setLogin] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
-  const [leituraAtiva, setLeituraAtiva] = useState(false); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -43,28 +42,17 @@ export default function Login() {
         const tipoUsuario = responseData.tipo_usuario || 'aluno';
         const userId = responseData.id || '';
 
-        localStorage.clear();
-        
         // Verificar se o usuário é bibliotecário
         if (tipoUsuario === 'bibliotecario') {
-          // Para bibliotecários, armazenar temporariamente apenas para a sessão atual
-          // Não usar localStorage para bibliotecários
           sessionStorage.setItem('userName', userName);
           sessionStorage.setItem('isLoggedIn', 'true');
           sessionStorage.setItem('tipoUsuario', tipoUsuario);
           sessionStorage.setItem('userId', userId);
           
-          console.log('Login bibliotecário bem-sucedido (sessão temporária):', { userName, tipoUsuario });
+          console.log('Login bibliotecário bem-sucedido:', { userName, tipoUsuario });
           navigate('/bibliotecario');
         } else {
-          // Para outros usuários, continuar usando localStorage
-          localStorage.setItem('userName', userName);
-          localStorage.setItem('isLoggedIn', 'true');
-          localStorage.setItem('tipoUsuario', tipoUsuario);
-          localStorage.setItem('userId', userId);
-          
-          console.log('Login bem-sucedido:', { userName, tipoUsuario });
-          navigate('/');
+          setErro('Acesso restrito apenas para bibliotecários.');
         }
       } else {
         setErro(responseData.message || 'Erro no login');
@@ -76,55 +64,24 @@ export default function Login() {
   };
 
   return (
-    <>
-      <Acessibilidade
-        leituraAtiva={leituraAtiva}
-        setLeituraAtiva={setLeituraAtiva}
-      />
-      <div className="conteudo-principal">
-        <div className="topo">
-          <div
-            className="logo-senai"
-            tabIndex={0}
-            role="img"
-            aria-label="Logotipo Senai"
-            data-leitura="Logotipo Senai"
-          >
-            <img src="/img/logoSenai.png" alt="Senai" width="200" height="100" />
-          </div>
+    <div className={styles['login-bibliotecario-container']}>
+      <div className={styles['login-bibliotecario-content']}>
+        <div className={styles['logo-section']}>
+          <img src="/img/logoSenai.png" alt="Senai" width="350" height="175" />
+          <h1>Acesso Bibliotecário</h1>
+          <p>Sistema de Gerenciamento da Biblioteca SENAI</p>
         </div>
 
-        <div
-          className="visual"
-          tabIndex={0}
-          role="banner"
-          aria-label="Seção principal da biblioteca"
-          data-leitura="Biblioteca Senai. Conhecimento que transforma: explore, aprenda e evolua com a Biblioteca do SENAI."
-        >
-          <b>Biblioteca Senai</b>
-          <p>
-            Conhecimento que transforma: explore, aprenda e evolua com a Biblioteca do SENAI.
-          </p>
-          <img src="/img/biblioteca-senai.png" alt="Livros" width="320" height="200" />
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <div className="formulario">
-            <strong
-              data-leitura="Acesse sua conta e continue explorando o caminho do conhecimento."
-              tabIndex={0}
-              role="heading"
-              aria-level="2"
-            >
-              Acesse sua conta e continue explorando o caminho do
-              <br />
-              conhecimento.
+        <form onSubmit={handleSubmit} className={styles['login-form']}>
+          <div className={styles.formulario}>
+            <strong>
+              Acesse sua conta de bibliotecário
             </strong>
 
-            <div className="campo">
-              <div className="base">
+            <div className={styles.campo}>
+              <div className={styles.base}>
                 <i className="fas fa-envelope" aria-hidden="true"></i>
-                <label htmlFor="login" tabIndex={0} data-leitura="E-mail ou CPF, apenas números">
+                <label htmlFor="login">
                   E-mail ou CPF (Apenas números)
                   <span aria-label="Campo obrigatório">*</span>
                 </label>
@@ -137,16 +94,14 @@ export default function Login() {
                 required
                 value={login}
                 onChange={(e) => setLogin(e.target.value)}
-                aria-describedby="login-help"
-                data-leitura="Digite seu e-mail ou CPF"
                 autoComplete="username"
               />
             </div>
 
-            <div className="campo">
-              <div className="base">
+            <div className={styles.campo}>
+              <div className={styles.base}>
                 <i className="fas fa-lock" aria-hidden="true"></i>
-                <label htmlFor="senha" tabIndex={0} data-leitura="Senha">
+                <label htmlFor="senha">
                   Senha
                   <span aria-label="Campo obrigatório">*</span>
                 </label>
@@ -159,12 +114,10 @@ export default function Login() {
                 required
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
-                aria-describedby="senha-help"
-                data-leitura="Digite sua senha"
                 autoComplete="current-password"
               />
               <i
-                className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} visibilidade`}
+                className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'} ${styles.visibilidade}`}
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                 role="button"
@@ -175,34 +128,30 @@ export default function Login() {
                     setShowPassword(!showPassword);
                   }
                 }}
-                data-leitura={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
               ></i>
 
-              <div className="esqueceu">
-                <Link to="/esquecisenha" className="esqueceu-senha" data-leitura="Esqueci minha senha">
+              <div className={styles.esqueceu}>
+                <Link to="/esquecisenha" className={styles['esqueceu-senha']}>
                   <b>Esqueci minha senha</b>
                 </Link>
               </div>
             </div>
 
             {erro && (
-              <div className="mensagem-erro" role="alert" aria-live="polite" data-leitura={`Erro: ${erro}`}>
+              <div className={styles['mensagem-erro']} role="alert" aria-live="polite">
                 {erro}
               </div>
             )}
 
-            <button type="submit" aria-describedby="btn-entrar-help" data-leitura="Botão Entrar">
+            <button type="submit">
               Entrar
             </button>
 
-            <div className="conta">
-              <p>
-                Não tem uma conta? <Link to="/cadastroUsuario" data-leitura="Crie aqui">Crie aqui.</Link>
-              </p>
-            </div>
+
           </div>
         </form>
       </div>
-    </>
+      <Acessibilidade />
+    </div>
   );
 }

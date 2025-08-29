@@ -2,9 +2,11 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-header("Access-Control-Allow-Origin: *"); // ajuste conforme necessário
+header("Access-Control-Allow-Origin: http://localhost:5173"); 
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+
 
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -22,10 +24,10 @@ function responder($success, $mensagem, $nome = '', $tipo = '', $id = '') {
     exit;
 }
 
-$login = $_POST['login'] ?? '';
-$senha = $_POST['senha'] ?? '';
+$login = trim($_POST['login'] ?? '');
+$senha = trim($_POST['senha'] ?? '');
 
-if (!$login || !$senha) {
+if (empty($login) || empty($senha)) {
     responder(false, "Login e senha são obrigatórios.");
 }
 

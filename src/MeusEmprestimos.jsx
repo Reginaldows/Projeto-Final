@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './meusemprestimos.module.css';
-import Acessibilidade from './acessibilidade';
+import Acessibilidade from './Acessibilidade';
 
 const MeusEmprestimos = () => {
   const navigate = useNavigate();
@@ -11,20 +11,23 @@ const MeusEmprestimos = () => {
   const [leituraAtiva, setLeituraAtiva] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [tipoMensagem, setTipoMensagem] = useState('');
+  const [multasPendentes, setMultasPendentes] = useState(0);
 
   useEffect(() => {
     carregarEmprestimos();
+    verificarMultasPendentes();
   }, []);
 
   const carregarEmprestimos = async () => {
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
-        navigate('/login');
+        setError('Sessão expirada. Faça login novamente.');
+        setTimeout(() => navigate('/login'), 2000);
         return;
       }
 
-      const response = await fetch('/php/listar_emprestimos_usuario.php', {
+      const response = await fetch('http://localhost/php/listar_emprestimos_usuario.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -44,6 +47,29 @@ const MeusEmprestimos = () => {
       setError('Erro ao carregar empréstimos');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const verificarMultasPendentes = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) return;
+
+      const response = await fetch('http://localhost/php/listar_multas_usuario.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ usuario_id: parseInt(userId) })
+      });
+
+      const result = await response.json();
+      
+      if (result.success && result.data.multas_pendentes) {
+        setMultasPendentes(result.data.multas_pendentes.length);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar multas:', error);
     }
   };
 
@@ -98,12 +124,24 @@ const MeusEmprestimos = () => {
         </div>
 
         <div className={styles.acoes}>
-          <button 
-            className={styles.botaoVoltar}
-            onClick={() => navigate('/biblioteca')}
-          >
-            ← Voltar à Biblioteca
-          </button>
+          <div className={styles.acoesEsquerda}>
+            <button 
+              className={styles.botaoVoltar}
+              onClick={() => navigate('/biblioteca')}
+            >
+              ← Voltar à Biblioteca
+            </button>
+          </div>
+          <div className={styles.acoesDireita}>
+            {multasPendentes > 0 && (
+              <button 
+                className={styles.botaoMultas}
+                onClick={() => navigate('/pagamento-multas')}
+              >
+                🚨 Pagar Multas ({multasPendentes})
+              </button>
+            )}
+          </div>
         </div>
 
         {emprestimos.length === 0 ? (
@@ -127,10 +165,11 @@ const MeusEmprestimos = () => {
                 <div key={emprestimo.id} className={`${styles.cardEmprestimo} ${styles[status]}`}>
                   <div className={styles.capaContainer}>
                     <img 
-                      src={emprestimo.capa || '/img/Biblioteca.png'} 
+                      src={emprestimo.capa ? `http://localhost/php/uploads/${emprestimo.capa.replace(/^.*[\\\/]/, '')}` : '/img/Biblioteca.png'} 
                       alt={emprestimo.titulo}
                       className={styles.capaLivro}
                       onError={(e) => {
+                        console.log('Erro ao carregar imagem:', e.target.src);
                         e.target.src = '/img/Biblioteca.png';
                       }}
                     />
@@ -153,9 +192,17 @@ const MeusEmprestimos = () => {
                       
                       <div className={styles.statusContainer}>
                         {status === 'atrasado' && (
-                          <div className={styles.statusAtrasado}>
-                            ⚠️ Atrasado ({Math.abs(diasRestantes)} dias)
-                          </div>
+                          <>
+                            <div className={styles.statusAtrasado}>
+                              ⚠️ Atrasado ({Math.abs(diasRestantes)} dias)
+                            </div>
+                            <button 
+                              className={styles.botaoMultaIndividual}
+                              onClick={() => navigate('/pagamento-multas')}
+                            >
+                              💰 Ver Multa
+                            </button>
+                          </>
                         )}
                         {status === 'vencendo' && (
                           <div className={styles.statusVencendo}>

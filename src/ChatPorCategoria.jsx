@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ChatFlutuante from './ChatFlutuante';
 import styles from './chatflutuante.module.css';
+import Acessibilidade from './Acessibilidade';
 
 const ChatPorCategoria = ({ categorias }) => {
   const [categoriaSelecionada, setCategoriaSelecionada] = useState('');
@@ -69,6 +70,7 @@ const ChatPorCategoria = ({ categorias }) => {
       )}
 
       {categoriaSelecionada && <ChatFlutuante categoria={categoriaSelecionada} />}
+      <Acessibilidade />
     </div>
   );
 };
