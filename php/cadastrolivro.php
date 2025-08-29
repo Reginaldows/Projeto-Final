@@ -20,7 +20,7 @@ if (!$data) {
 }
 
 
-$camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma', 'cdd', 'localizacao', 'quantidadeCopias'];
+$camposObrigatorios = ['titulo', 'autor', 'isbn', 'editora', 'ano', 'genero', 'paginas', 'idioma', 'cdd', 'cutter', 'edicao', 'localizacao', 'quantidadeCopias'];
 foreach ($camposObrigatorios as $campo) {
     if (empty($data[$campo])) {
         echo json_encode(["success" => false, "message" => "Campo obrigatório '$campo' não preenchido."]);
@@ -39,6 +39,8 @@ $paginas = intval($data['paginas']);
 $idioma = trim($data['idioma']);
 $descricao = trim($data['descricao'] ?? '');
 $cdd = trim($data['cdd']);
+$cutter = trim($data['cutter']);
+$edicao = trim($data['edicao']);
 $localizacao = trim($data['localizacao']);
 $quantidadeCopias = intval($data['quantidadeCopias']);
 
@@ -80,10 +82,10 @@ elseif (!empty($data['urlCapa'])) {
 
 
 $stmt = $conexao->prepare("INSERT INTO livros 
-    (titulo, autor, isbn, editora, ano, genero, paginas, idioma, descricao, cdd, localizacao, capa) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("ssssisssssss",
-    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $cdd, $localizacao, $caminhoDestino);
+    (titulo, autor, isbn, editora, ano, genero, paginas, idioma, descricao, cdd, cutter, edicao, localizacao, capa) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssssisssssssss",
+    $titulo, $autor, $isbn, $editora, $ano, $genero, $paginas, $idioma, $descricao, $cdd, $cutter, $edicao, $localizacao, $caminhoDestino);
 
 if ($stmt->execute()) {
     $livroId = $conexao->insert_id;
