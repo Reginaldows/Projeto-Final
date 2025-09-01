@@ -31,7 +31,8 @@ $query = "SELECT
     complemento,
     bairro,
     cidade,
-    estado
+    estado,
+    tipo_usuario
 FROM usuarios ORDER By nome ASC ;
 ";
 $result = mysqli_query($conexao, $query);

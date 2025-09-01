@@ -52,6 +52,13 @@ if (!password_verify($senha, $usuario['senha'])) {
     responder(false, "Senha incorreta.");
 }
 
+// Iniciar sessão e salvar dados do usuário
+session_start();
+$_SESSION['usuario_id'] = $usuario['id'];
+$_SESSION['nome'] = $usuario['nome'];
+$_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
+$_SESSION['email'] = $usuario['email'];
+
 $resposta_nome = $usuario['nome'];
 $resposta_tipo = $usuario['tipo_usuario'];
 $resposta_id = $usuario['id'];

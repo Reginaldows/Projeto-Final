@@ -179,7 +179,7 @@ const ListaUsuarios = () => {
           </thead>
           <tbody>
             {usuariosFiltrados.length > 0 ? (
-              usuariosFiltrados.filter(usuario => usuario.tipo_usuario !== 'bibliotecario').map((usuario) => (
+              usuariosFiltrados.filter(usuario => usuario.tipo_usuario === 'usuario').map((usuario) => (
                 <tr key={usuario.id} className={styles.tableRow}>
                   <td>{usuario.nome}</td>
                   <td>{usuario.email}</td>

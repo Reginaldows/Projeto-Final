@@ -125,7 +125,7 @@ try {
         exit;
     }
 
-    $stmt = $conexao->prepare("SELECT id, titulo, autor FROM livros WHERE id = ?");
+    $stmt = $conexao->prepare("SELECT id, titulo, autor, capa FROM livros WHERE id = ?");
     if (!$stmt) {
         $conexao->rollback();
         echo json_encode([
@@ -292,7 +292,10 @@ try {
         'dataEmprestimo' => date('d/m/Y', strtotime($data_emprestimo)),
         'dataDevolucao' => date('d/m/Y', strtotime($data_devolucao_prevista)),
         'diasEmprestimo' => 14,
-        'capaLivro' => 'https://via.placeholder.com/100x150/667eea/ffffff?text=Livro'
+        'capaLivro' => $livro['capa'] ? 
+            (strpos($livro['capa'], 'http') === 0 ? $livro['capa'] : 
+                "http://localhost:8080/php/uploads/" . basename($livro['capa'])) 
+            : "https://via.placeholder.com/100x150/667eea/ffffff?text=Livro"
     ];
 
     $emailJson = json_encode($emailData);
@@ -322,8 +325,20 @@ try {
         'message' => 'Empréstimo realizado com sucesso!',
         'data' => [
             'emprestimo_id' => $emprestimo_id,
-            'livro' => $livro['titulo'],
-            'usuario' => $usuario['nome'],
+            'livro' => [
+                'id' => $livro['id'],
+                'titulo' => $livro['titulo'],
+                'autor' => $livro['autor'],
+                'capa' => $livro['capa'] ? 
+                    (strpos($livro['capa'], 'http') === 0 ? $livro['capa'] : 
+                        "http://localhost:8080/php/uploads/" . basename($livro['capa'])) 
+                    : "https://via.placeholder.com/100x150/667eea/ffffff?text=Livro"
+            ],
+            'usuario' => [
+                'id' => $usuario['id'],
+                'nome' => $usuario['nome'],
+                'email' => $usuario['email']
+            ],
             'data_emprestimo' => date('d/m/Y', strtotime($data_emprestimo)),
             'data_devolucao' => date('d/m/Y', strtotime($data_devolucao_prevista))
         ]

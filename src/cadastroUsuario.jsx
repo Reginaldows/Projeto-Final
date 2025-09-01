@@ -78,6 +78,7 @@ const CadastroUsuario = () => {
   };
 
   return (
+    <>
     <div className={styles.cadastroEstanteWrapper}>
       <div className={styles.container}>
         <div className={styles.logoContainer}>
@@ -216,8 +217,9 @@ const CadastroUsuario = () => {
           </div>
         )}
       </div>
-      <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
     </div>
+    <Acessibilidade leituraAtiva={leituraAtiva} setLeituraAtiva={setLeituraAtiva} />
+    </>
   );
 };
 

@@ -75,7 +75,7 @@ try {
     }
 
     $stmt = $conexao->prepare("
-        SELECT r.id, r.usuario_id, r.tipo, r.data_reserva,
+        SELECT r.id, r.usuario_id, r.data_reserva,
                u.nome as usuario_nome, u.email as usuario_email
         FROM reservas r
         JOIN usuarios u ON r.usuario_id = u.id
@@ -113,8 +113,7 @@ try {
                 'tituloLivro' => $emprestimo['titulo'],
                 'autorLivro' => $emprestimo['autor'],
                 'dataReserva' => date('d/m/Y H:i', strtotime($reserva['data_reserva'])),
-                'dataDisponibilidade' => date('d/m/Y H:i'),
-                'tipoReserva' => $reserva['tipo']
+                'dataDisponibilidade' => date('d/m/Y H:i')
             ]
         ];
     }

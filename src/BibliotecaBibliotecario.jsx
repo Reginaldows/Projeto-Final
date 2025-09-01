@@ -145,7 +145,7 @@ const BibliotecaBibliotecario = () => {
       localStorage.removeItem('tipoUsuario');
       localStorage.removeItem('userId');
       setUserName('');
-      navigate('/login');
+      navigate('/login-bibliotecario');
       return; // Interrompe a execução do useEffect
     }
 
@@ -549,9 +549,9 @@ const BibliotecaBibliotecario = () => {
       // Criar dados para o modal de notificação personalizada
       const dadosEmprestimo = {
         livro: {
-          titulo: livroParaEmprestimo.titulo,
-          autor: livroParaEmprestimo.autor,
-          capa: livroParaEmprestimo.capa || '/img/Biblioteca.png'
+          titulo: resultado.data.livro.titulo,
+          autor: resultado.data.livro.autor,
+          capa: resultado.data.livro.capa || '/img/Biblioteca.png'
         },
         datas: {
           emprestimo: resultado.data.data_emprestimo,
@@ -652,7 +652,7 @@ const BibliotecaBibliotecario = () => {
                             localStorage.removeItem('userId');
                             setUserName(''); 
                             setShowLoginStatus(false); 
-                            navigate('/login');
+                            navigate('/login-bibliotecario');
                           }}
                         >
                           Sair
@@ -663,7 +663,7 @@ const BibliotecaBibliotecario = () => {
                         <p>Você não está logado</p>
                         <button 
                           className={styles.loginButton}
-                          onClick={(e) => { e.stopPropagation(); navigate('/login'); }}
+                          onClick={(e) => { e.stopPropagation(); navigate('/login-bibliotecario'); }}
                         >
                           Entrar
                         </button>

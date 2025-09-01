@@ -31,62 +31,26 @@ if ($_SESSION['tipo_usuario'] !== 'bibliotecario') {
 
 require_once 'conexao.php';
 
-
-function responder($success, $mensagem, $dados = null) {
-    echo json_encode([
-        'success' => $success,
-        'message' => $mensagem,
-        'dados' => $dados
-    ]);
-    exit;
-}
-
-
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
 try {
-    if (!$conexao) {
-        error_log("ERRO: Conexão com banco de dados falhou");
-        responder(false, "Erro na conexão com o banco de dados");
-    }
-    
-    error_log("DEBUG: Conexão com banco OK, iniciando consultas...");
-
-    error_log("DEBUG: Executando consulta 1 - Total de livros");
+    // Consulta 1 - Total de livros cadastrados
     $stmt = $conexao->prepare("SELECT COUNT(*) as total FROM livros");
-    if (!$stmt) {
-        error_log("ERRO: Falha ao preparar consulta 1: " . $conexao->error);
-        throw new Exception("Erro na consulta 1");
-    }
     $stmt->execute();
     $result = $stmt->get_result();
     $livrosCadastrados = $result->fetch_assoc()['total'];
-    error_log("DEBUG: Consulta 1 OK - Livros cadastrados: " . $livrosCadastrados);
 
-    error_log("DEBUG: Executando consulta 2 - Total de empréstimos");
+    // Consulta 2 - Total de empréstimos realizados
     $stmt = $conexao->prepare("SELECT COUNT(*) as total FROM emprestimos");
-    if (!$stmt) {
-        error_log("ERRO: Falha ao preparar consulta 2: " . $conexao->error);
-        throw new Exception("Erro na consulta 2");
-    }
     $stmt->execute();
     $result = $stmt->get_result();
-    $totalEmprestimos = $result->fetch_assoc()['total'];
-    error_log("DEBUG: Consulta 2 OK - Total empréstimos: " . $totalEmprestimos);
+    $livrosEmprestados = $result->fetch_assoc()['total'];
 
-    error_log("DEBUG: Executando consulta 3 - Livros atualmente emprestados");
-    $stmt = $conexao->prepare("SELECT COUNT(*) as total FROM emprestimos WHERE status = 'ativo'");
-    if (!$stmt) {
-        error_log("ERRO: Falha ao preparar consulta 3: " . $conexao->error);
-        throw new Exception("Erro na consulta 3");
-    }
+    // Consulta 3 - Livros atualmente emprestados
+    $stmt = $conexao->prepare("SELECT COUNT(*) as total FROM emprestimos WHERE status IN ('ativo', 'atrasado')");
     $stmt->execute();
     $result = $stmt->get_result();
     $livrosAtualmenteEmprestados = $result->fetch_assoc()['total'];
-    error_log("DEBUG: Consulta 3 OK - Livros atualmente emprestados: " . $livrosAtualmenteEmprestados);
 
-    error_log("DEBUG: Executando consulta 4 - Livro mais emprestado");
+    // Consulta 4 - Livro mais emprestado
     $stmt = $conexao->prepare("
         SELECT l.titulo, COUNT(e.id) as total_emprestimos 
         FROM livros l 
@@ -96,14 +60,9 @@ try {
         ORDER BY total_emprestimos DESC 
         LIMIT 1
     ");
-    if (!$stmt) {
-        error_log("ERRO: Falha ao preparar consulta 4: " . $conexao->error);
-        throw new Exception("Erro na consulta 4");
-    }
     $stmt->execute();
     $result = $stmt->get_result();
     $livroMaisEmprestado = $result->fetch_assoc();
-    error_log("DEBUG: Consulta 4 OK - Livro mais emprestado: " . ($livroMaisEmprestado ? $livroMaisEmprestado['titulo'] : 'Nenhum'));
     
     if (!$livroMaisEmprestado || $livroMaisEmprestado['total_emprestimos'] == 0) {
         $livroMaisEmprestado = [
@@ -111,20 +70,55 @@ try {
             'total_emprestimos' => 0
         ];
     }
+
+    // Consulta 5 - Multas pendentes
+    $stmt = $conexao->prepare("SELECT COUNT(*) as total FROM multas WHERE status = 'pendente'");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $multasPendentes = $result->fetch_assoc()['total'];
+
+    // Consulta 6 - Valor total das multas pagas
+    $stmt = $conexao->prepare("SELECT COALESCE(SUM(valor), 0) as total FROM multas WHERE status = 'paga'");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $valorMultasPagas = $result->fetch_assoc()['total'];
+
+    // Consulta 7 - Número de reservas
+    $stmt = $conexao->prepare("SELECT COUNT(*) as total FROM reservas WHERE status = 'ativa'");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $numeroReservas = $result->fetch_assoc()['total'];
+
+    // Consulta 8 - Usuários cadastrados
+    $stmt = $conexao->prepare("SELECT COUNT(*) as total FROM usuarios");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $usuariosCadastrados = $result->fetch_assoc()['total'];
+
     $dadosRelatorios = [
         'livrosCadastrados' => (int)$livrosCadastrados,
-        'livrosEmprestados' => (int)$totalEmprestimos,
+        'livrosEmprestados' => (int)$livrosEmprestados,
         'livrosAtualmenteEmprestados' => (int)$livrosAtualmenteEmprestados,
         'livroMaisEmprestado' => [
             'titulo' => $livroMaisEmprestado['titulo'],
             'total_emprestimos' => (int)$livroMaisEmprestado['total_emprestimos']
-        ]
+        ],
+        'multasPendentes' => (int)$multasPendentes,
+        'valorMultasPagas' => (float)$valorMultasPagas,
+        'numeroReservas' => (int)$numeroReservas,
+        'usuariosCadastrados' => (int)$usuariosCadastrados
     ];
 
-    responder(true, "Dados dos relatórios carregados com sucesso", $dadosRelatorios);
+    echo json_encode([
+        'success' => true,
+        'message' => 'Dados dos relatórios carregados com sucesso',
+        'dados' => $dadosRelatorios
+    ]);
 
 } catch (Exception $e) {
-    error_log("Erro ao buscar dados dos relatórios: " . $e->getMessage());
-    responder(false, "Erro interno do servidor ao buscar dados dos relatórios");
+    echo json_encode([
+        'success' => false,
+        'message' => 'Erro interno do servidor ao buscar dados dos relatórios: ' . $e->getMessage()
+    ]);
 }
 ?>

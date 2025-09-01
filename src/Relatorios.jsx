@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styles from './relatorios.module.css';
-import Acessibilidade from './Acessibilidade';
+import Acessibilidade from './acessibilidade';
 
 const Relatorios = () => {
   const [dados, setDados] = useState({
     livrosCadastrados: 0,
     livrosEmprestados: 0,
     livroMaisEmprestado: { titulo: 'Carregando...', total_emprestimos: 0 },
-    livrosAtualmenteEmprestados: 0
+    livrosAtualmenteEmprestados: 0,
+    multasPendentes: 0,
+    valorMultasPagas: 0,
+    numeroReservas: 0,
+    usuariosCadastrados: 0
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -125,6 +129,50 @@ const Relatorios = () => {
             <span className={styles.numeroEmprestimos}>
               {dados.livroMaisEmprestado.total_emprestimos} empréstimos
             </span>
+          </div>
+        </div>
+
+        <div className={styles.bloco}>
+          <div className={styles.blocoHeader}>
+            <h3>Multas Pendentes</h3>
+            <div className={styles.icone}>⚠️</div>
+          </div>
+          <div className={styles.blocoConteudo}>
+            <span className={styles.numero}>{dados.multasPendentes}</span>
+            <span className={styles.descricao}>Empréstimos com multa não paga</span>
+          </div>
+        </div>
+
+        <div className={styles.bloco}>
+          <div className={styles.blocoHeader}>
+            <h3>Valor Multas Pagas</h3>
+            <div className={styles.icone}>💰</div>
+          </div>
+          <div className={styles.blocoConteudo}>
+            <span className={styles.numero}>R$ {(dados.valorMultasPagas || 0).toFixed(2)}</span>
+            <span className={styles.descricao}>Total arrecadado com multas</span>
+          </div>
+        </div>
+
+        <div className={styles.bloco}>
+          <div className={styles.blocoHeader}>
+            <h3>Reservas Ativas</h3>
+            <div className={styles.icone}>📋</div>
+          </div>
+          <div className={styles.blocoConteudo}>
+            <span className={styles.numero}>{dados.numeroReservas}</span>
+            <span className={styles.descricao}>Livros reservados pelos usuários</span>
+          </div>
+        </div>
+
+        <div className={styles.bloco}>
+          <div className={styles.blocoHeader}>
+            <h3>Usuários Cadastrados</h3>
+            <div className={styles.icone}>👥</div>
+          </div>
+          <div className={styles.blocoConteudo}>
+            <span className={styles.numero}>{dados.usuariosCadastrados}</span>
+            <span className={styles.descricao}>Total de usuários no sistema</span>
           </div>
         </div>
       </div>
