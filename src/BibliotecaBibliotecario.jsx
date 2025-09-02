@@ -696,6 +696,9 @@ const BibliotecaBibliotecario = () => {
               <li className={styles.navItem}>
                 <button className={styles.navLink} onClick={() => navigate('/cadastro-livro')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Cadastrar Livro</button>
               </li>
+               <li className={styles.navItem}>
+                <button className={styles.navLink} onClick={() => navigate('/estoque')} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>estoque</button>
+              </li>
             </ul>
           </nav>
 
