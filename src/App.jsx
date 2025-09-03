@@ -21,11 +21,8 @@ import PagamentoMultas from './PagamentoMultas';
 import PagamentoSucesso from './PagamentoSucesso';
 import PagamentoFalha from './PagamentoFalha';
 import PagamentoPendente from './PagamentoPendente';
-import ListagemEstoque from './estoque';
-import InventarioEstoquePDF from './InventarioEstoquePDF';
 import viteLogo from '/vite.svg';
 import { iniciarScript } from './script';
-
 function App() {
   return (
     <BrowserRouter>
@@ -53,8 +50,6 @@ function App() {
         <Route path="/pagamento-sucesso" element={<PagamentoSucesso />} />
         <Route path="/pagamento-falha" element={<PagamentoFalha />} />
         <Route path="/pagamento-pendente" element={<PagamentoPendente />} />
-        <Route path="/estoque" element={<ListagemEstoque />} />
-        <Route path="/estoquePDF" element={<InventarioEstoquePDF />} />
       </Routes>
     </BrowserRouter>
   );
