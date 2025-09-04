@@ -91,13 +91,13 @@ try {
     $mail->isSMTP();
     $mail->Host = 'smtp.gmail.com';
     $mail->SMTPAuth = true;
-    $mail->Username = 'juniorfb98@gmail.com';
-    $mail->Password = 'pgyz zcgj oxft jisv';
+    $mail->Username = 'email';
+    $mail->Password = 'senha do app';
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
     $mail->Port = 465;
     $mail->CharSet = 'UTF-8';
 
-    $mail->setFrom('juniorfb98@gmail.com', 'Sistema SENAI');
+    $mail->setFrom('email', 'Sistema SENAI');
     $mail->addAddress($usuario['email'], $usuario['nome']);
 
     $mail->isHTML(true);
