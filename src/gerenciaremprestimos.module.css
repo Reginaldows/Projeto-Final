@@ -1,10 +1,11 @@
 /* Container principal */
 .container {
-    max-width: 1400px;
-    margin: 0 auto;
+    width: 100%;
+    margin: 0;
     padding: 20px;
     background-color: #f8f9fa;
     min-height: 100vh;
+    box-sizing: border-box;
 }
 
 /* Cabeçalho */
